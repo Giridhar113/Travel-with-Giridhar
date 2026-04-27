@@ -32,7 +32,6 @@ A responsive travel website built with HTML, CSS, and JavaScript. The project is
 Frontend Developer skilled in HTML, CSS, and JavaScript.
 
 - GitHub: https://github.com/Giridhar113
-- Portfolio: `about.html#developer`
 
 ## How to Run
 
