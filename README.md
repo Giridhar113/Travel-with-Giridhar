@@ -1,6 +1,6 @@
 # Travel with Giridhar
 
-**Release:** Travel Website v1.1
+**Release:** Travel Website v1.0
 
 A polished frontend travel website built with HTML, CSS, and JavaScript. The project presents destinations, travel packages, services, company information, and a contact form in a responsive portfolio-ready layout.
 
@@ -8,7 +8,7 @@ A polished frontend travel website built with HTML, CSS, and JavaScript. The pro
 
 Make the website more functional, professional, and ready to show as a frontend project.
 
-## v1.1 Updates
+## v1.0 Updates
 
 - Fixed and improved website content
 - Improved destination cards with better layout and actions
