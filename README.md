@@ -22,6 +22,8 @@ Make the website feel like a real travel planning business, not only a portfolio
 - Updated footer version to Travel Website v1.4
 - Updated WhatsApp links to the active contact number
 
+Full release history is available in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
+
 ## Core Features
 
 - AI-style trip planner
