@@ -1,5 +1,5 @@
-﻿(function () {
-  const whatsappNumber = "919876543210";
+(function () {
+  const whatsappNumber = "918179721034";
   const savedTripsKey = "savedTrips";
   const quoteText = "Hi, I want to plan a trip with Travel with Giridhar.";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(quoteText)}`;
@@ -397,6 +397,7 @@
         ["Travelers", value("travelers")],
         ["Traveler Type", value("travelersType")],
         ["EMI Needed", value("emiNeeded")],
+        ["Preferred Contact", value("preferredContact")],
         ["Requests", value("bookingNotes") || "No special requests added"]
       ];
       summary.innerHTML = rows.map(function (row) {
@@ -766,7 +767,7 @@
                 <p>${item[1]}</p>
                 <strong>From ${money(item[2])}</strong>
                 <span>${item[3]}</span>
-                <span class="v13-stars" aria-label="${item[5]} star rating">★★★★★ ${item[5]}</span>
+                <span class="v13-stars" aria-label="${item[5]} star rating">????? ${item[5]}</span>
                 <a class="btn btn-small" href="${bookingUrl(trip)}">Book Now</a>
               </div>
             </article>
@@ -883,11 +884,17 @@
         emailButton.textContent = "Sending...";
         Promise.resolve()
           .then(function () {
-            return sendEmailJs(emailJsConfig.messageTemplateId, {
+            return sendEmailJs(emailJsConfig.feedbackTemplateId, {
               from_name: "AI Trip Planner Lead",
               from_email: email,
+              customer_email: email,
+              to_email: emailJsConfig.ownerEmail,
+              owner_email: emailJsConfig.ownerEmail,
+              reply_to: email,
+              feedback_type: "AI Trip Planner Request",
+              feedback_rating: "Not rated",
               message
-            });
+            }, "AI Planner");
           })
           .then(function () {
             toast("Your AI trip plan was emailed successfully!", "success");
@@ -946,8 +953,8 @@
       <div class="v13-review-carousel" id="v13ReviewCarousel">
         <div class="v13-review-track" id="v13ReviewTrack">
           ${reviews.map(function (review) {
-            const full = "★★★★★".slice(0, Number(review[3]));
-            const empty = "☆☆☆☆☆".slice(0, 5 - Number(review[3]));
+            const full = "?????".slice(0, Number(review[3]));
+            const empty = "?????".slice(0, 5 - Number(review[3]));
             return `
               <article class="v13-review-card">
                 <div class="v13-review-person">
@@ -1201,10 +1208,123 @@
     });
   }
 
+  function initTravelChecklist() {
+    const boxes = Array.from(document.querySelectorAll("[data-checklist-item]"));
+    const progressText = document.getElementById("checklistProgressText");
+    const progressBar = document.getElementById("checklistProgressBar");
+    const key = "travelChecklistV14";
+
+    if (!boxes.length) return;
+
+    function read() {
+      try {
+        return JSON.parse(localStorage.getItem(key)) || {};
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function write(state) {
+      try {
+        localStorage.setItem(key, JSON.stringify(state));
+      } catch (error) {
+        toast("Checklist could not be saved in this browser.", "error");
+      }
+    }
+
+    function update() {
+      const state = read();
+      const done = boxes.filter(function (box) { return box.checked; }).length;
+      const total = boxes.length;
+
+      if (progressText) {
+        progressText.textContent = `${done} of ${total} completed`;
+      }
+
+      if (progressBar) {
+        progressBar.style.width = `${Math.round((done / total) * 100)}%`;
+      }
+
+      boxes.forEach(function (box) {
+        state[box.dataset.checklistItem] = box.checked;
+      });
+      write(state);
+    }
+
+    const saved = read();
+    boxes.forEach(function (box) {
+      box.checked = Boolean(saved[box.dataset.checklistItem]);
+      box.addEventListener("change", update);
+    });
+    update();
+  }
+
+  function initDestinationComparison() {
+    const first = document.getElementById("compareDestinationA");
+    const second = document.getElementById("compareDestinationB");
+    const result = document.getElementById("destinationCompareResult");
+    const cards = Array.from(document.querySelectorAll(".destination-card"));
+
+    if (!first || !second || !result || !cards.length) return;
+
+    const destinations = cards.map(function (card, index) {
+      const name = card.querySelector("h2") ? card.querySelector("h2").textContent.trim() : `Destination ${index + 1}`;
+      const priceText = card.querySelector(".price") ? card.querySelector(".price").textContent.trim() : "Custom quote";
+      const bestTime = card.querySelector(".best-time") ? card.querySelector(".best-time").textContent.replace("Best:", "").trim() : "Flexible";
+      const tags = (card.dataset.category || "").split(" ").filter(Boolean).slice(0, 3);
+      const details = card.querySelector("p") ? card.querySelector("p").textContent.trim() : "Curated travel experience.";
+
+      return {
+        name,
+        price: parseAmount(priceText),
+        priceText,
+        bestTime,
+        tags,
+        details,
+        bookUrl: `contact.html?destination=${encodeURIComponent(name)}#bookingForm`
+      };
+    });
+
+    function fill(select, selectedIndex) {
+      select.innerHTML = destinations.map(function (item, index) {
+        return `<option value="${index}"${index === selectedIndex ? " selected" : ""}>${item.name}</option>`;
+      }).join("");
+    }
+
+    function card(item, isBestValue) {
+      return `
+        <article class="destination-compare-card${isBestValue ? " is-best" : ""}">
+          <span>${isBestValue ? "Best Value" : "Trip Option"}</span>
+          <h3>${item.name}</h3>
+          <p>${item.details}</p>
+          <dl>
+            <div><dt>Budget</dt><dd>${item.priceText}</dd></div>
+            <div><dt>Best Time</dt><dd>${item.bestTime}</dd></div>
+            <div><dt>Best For</dt><dd>${item.tags.join(", ") || "Flexible travel"}</dd></div>
+          </dl>
+          <a href="${item.bookUrl}" class="btn btn-small">Plan This Trip</a>
+        </article>
+      `;
+    }
+
+    function render() {
+      const a = destinations[Number(first.value)] || destinations[0];
+      const b = destinations[Number(second.value)] || destinations[1] || destinations[0];
+      const aBest = a.price && b.price ? a.price <= b.price : true;
+      result.innerHTML = card(a, aBest) + card(b, !aBest);
+    }
+
+    fill(first, 0);
+    fill(second, Math.min(1, destinations.length - 1));
+    first.addEventListener("change", render);
+    second.addEventListener("change", render);
+    render();
+  }
+
   function updateFooterVersion() {
     document.querySelectorAll("footer p").forEach(function (paragraph) {
       if (/Travel Website v/i.test(paragraph.textContent)) {
-        paragraph.textContent = "Travel Website v1.3";
+        paragraph.textContent = "Travel Website v1.4";
       }
     });
   }
@@ -1256,6 +1376,8 @@
     initMobileBottomNav();
     decorateSaveButtons();
     lazyLoadImages();
+    initTravelChecklist();
+    initDestinationComparison();
     updateFooterVersion();
     document.addEventListener("click", function (event) {
       if (event.target.closest(".v13-trending-card, .v13-featured-card")) {
@@ -1267,11 +1389,3 @@
 
   ready(initV13);
 })();
-
-
-
-
-
-
-
-

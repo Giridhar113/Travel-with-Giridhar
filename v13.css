@@ -1262,3 +1262,232 @@
   gap: 10px;
   padding: 16px;
 }
+
+/* v1.4 startup-style planning sections */
+.seasonal-offers-section,
+.faq-section,
+.travel-checklist-section,
+.package-detail-guide,
+.destination-compare-tool {
+  position: relative;
+}
+
+.offer-grid,
+.faq-grid,
+.package-detail-guide {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.offer-card,
+.package-detail-card,
+.destination-compare-tool,
+.checklist-panel,
+.faq-grid details,
+.destination-compare-card {
+  background: linear-gradient(135deg, rgba(16, 19, 22, 0.96), rgba(20, 27, 31, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+}
+
+.offer-card,
+.package-detail-card,
+.faq-grid details,
+.destination-compare-card {
+  padding: 22px;
+}
+
+.offer-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 260px;
+}
+
+.offer-card h3,
+.package-detail-card h3,
+.destination-compare-card h3 {
+  color: var(--ink);
+  font-size: 1.15rem;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.offer-card p,
+.package-detail-card p,
+.destination-compare-tool p,
+.destination-compare-card p,
+.faq-grid p,
+.checklist-copy p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.offer-card strong {
+  color: var(--accent);
+  font-size: 1.05rem;
+  margin-top: auto;
+}
+
+.travel-checklist-section {
+  align-items: stretch;
+  display: grid;
+  gap: 22px;
+  grid-template-columns: minmax(0, 0.8fr) minmax(280px, 1.2fr);
+}
+
+.checklist-panel {
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+}
+
+.checklist-panel label {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: var(--ink);
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.checklist-panel input {
+  accent-color: var(--primary);
+}
+
+.checklist-progress {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.checklist-progress-track {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.checklist-progress-track span {
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  display: block;
+  height: 100%;
+  transition: width 0.3s ease;
+  width: 0;
+}
+
+.faq-grid details {
+  padding: 0;
+}
+
+.faq-grid summary {
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 700;
+  list-style: none;
+  padding: 18px 20px;
+}
+
+.faq-grid summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-grid details p {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0 20px 18px;
+}
+
+.package-detail-card {
+  display: grid;
+  gap: 12px;
+}
+
+.package-detail-card i {
+  color: var(--accent);
+  font-size: 1.6rem;
+}
+
+.advanced-search-grid,
+.destination-compare-controls,
+.destination-compare-result {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.advanced-search-grid {
+  margin-top: 14px;
+}
+
+.advanced-search-grid select,
+.destination-compare-controls select {
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  color: var(--ink);
+  min-height: 46px;
+  padding: 0 12px;
+  width: 100%;
+}
+
+.destination-compare-tool {
+  display: grid;
+  gap: 18px;
+  margin: 22px 0;
+  padding: 22px;
+}
+
+.destination-compare-card {
+  display: grid;
+  gap: 12px;
+}
+
+.destination-compare-card > span {
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.destination-compare-card.is-best {
+  border-color: rgba(34, 211, 197, 0.45);
+}
+
+.destination-compare-card dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.destination-compare-card dl div {
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  padding-top: 8px;
+}
+
+.destination-compare-card dt {
+  color: var(--muted);
+}
+
+.destination-compare-card dd {
+  color: var(--ink);
+  font-weight: 700;
+  margin: 0;
+  text-align: right;
+}
+
+@media (max-width: 760px) {
+  .travel-checklist-section {
+    grid-template-columns: 1fr;
+  }
+
+  .offer-card {
+    min-height: auto;
+  }
+}

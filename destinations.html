@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,7 +7,7 @@
       name="description"
       content="Search and filter top travel destinations by vibe, budget, best time to visit, and saved trip options."
     />
-    <title>Travel Guide | Destinations</title>
+    <title>Travel with Giridhar | Destinations & Trip Search</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
       rel="stylesheet"
@@ -90,11 +90,53 @@
           <p class="filter-status" id="filterStatus">
             Showing all destinations.
           </p>
+          <div class="advanced-search-grid" aria-label="Advanced destination search">
+            <label>
+              Max Budget
+              <select id="destinationBudgetFilter">
+                <option value="all">Any budget</option>
+                <option value="30000">Under Rs. 30,000</option>
+                <option value="60000">Under Rs. 60,000</option>
+                <option value="90000">Under Rs. 90,000</option>
+              </select>
+            </label>
+            <label>
+              Best Season
+              <select id="destinationSeasonFilter">
+                <option value="all">Any season</option>
+                <option value="oct-mar">Oct-Mar</option>
+                <option value="apr-jun">Apr-Jun</option>
+                <option value="jul-sep">Jul-Sep</option>
+              </select>
+            </label>
+          </div>
         </div>
+
+        <section class="destination-compare-tool" aria-label="Destination comparison tool">
+          <div>
+            <p class="hero-kicker">Destination Comparison</p>
+            <h2>Compare two places before you inquire</h2>
+            <p>
+              Choose two destinations to compare budget, best time, travel vibe,
+              and ideal traveler type.
+            </p>
+          </div>
+          <div class="destination-compare-controls">
+            <label>
+              First Destination
+              <select id="compareDestinationA"></select>
+            </label>
+            <label>
+              Second Destination
+              <select id="compareDestinationB"></select>
+            </label>
+          </div>
+          <div class="destination-compare-result" id="destinationCompareResult"></div>
+        </section>
 
         <div class="grid" id="destinationsGrid">
           <article class="card destination-card" data-category="beach romantic culture" data-destination="bali indonesia tropical beaches culture romantic" tabindex="0">
-            <img
+            <img decoding="async" loading="lazy"
               src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=700&auto=format&fit=crop&q=70"
               alt="Beach and temple landscape in Bali"
             />
@@ -120,7 +162,7 @@
           </article>
 
           <article class="card destination-card" data-category="romantic culture" data-destination="paris france city love landmarks cuisine romantic culture" tabindex="0">
-            <img
+            <img decoding="async" loading="lazy"
               src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=700&auto=format&fit=crop&q=70"
               alt="Eiffel Tower and Paris city view"
             />
@@ -146,7 +188,7 @@
           </article>
 
           <article class="card destination-card" data-category="beach family romantic" data-destination="goa india beaches nightlife coastal food beach family" tabindex="0">
-            <img
+            <img decoding="async" loading="lazy"
               src="https://images.unsplash.com/photo-1625505826533-5c80aca7d157?w=700&auto=format&fit=crop&q=70"
               alt="Palm trees and beach in Goa"
             />
@@ -172,7 +214,7 @@
           </article>
 
           <article class="card destination-card" data-category="adventure family" data-destination="manali india mountain adventure snow trekking family" tabindex="0">
-            <img
+            <img decoding="async" loading="lazy"
               src="https://images.unsplash.com/photo-1593181629936-11c609b8db9b?w=700&auto=format&fit=crop&q=70"
               alt="Snow mountains and valley in Manali"
             />
@@ -198,7 +240,7 @@
           </article>
 
           <article class="card destination-card" data-category="beach romantic" data-destination="santorini greece island sunset beaches romance romantic beach" tabindex="0">
-            <img
+            <img decoding="async" loading="lazy"
               src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=700&auto=format&fit=crop&q=70"
               alt="White buildings and sea view in Santorini"
             />
@@ -224,7 +266,7 @@
           </article>
 
           <article class="card destination-card" data-category="family adventure" data-destination="dubai uae luxury desert shopping skyline family adventure" tabindex="0">
-            <img
+            <img decoding="async" loading="lazy"
               src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=700&auto=format&fit=crop&q=70"
               alt="Dubai skyline with modern buildings"
             />
@@ -250,7 +292,7 @@
           </article>
 
           <article class="card destination-card" data-category="family culture" data-destination="singapore city gardens family shopping nightlife culture" tabindex="0">
-            <img
+            <img decoding="async" loading="lazy"
               src="https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=700&auto=format&fit=crop&q=70"
               alt="Singapore skyline and waterfront"
             />
@@ -276,7 +318,7 @@
           </article>
 
           <article class="card destination-card" data-category="culture family" data-destination="tokyo japan culture technology temples food family" tabindex="0">
-            <img
+            <img decoding="async" loading="lazy"
               src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=700&auto=format&fit=crop&q=70"
               alt="Tokyo city street with bright lights"
             />
@@ -302,7 +344,7 @@
           </article>
 
           <article class="card destination-card" data-category="family culture" data-destination="new york usa city skyline landmarks shopping family culture" tabindex="0">
-            <img
+            <img decoding="async" loading="lazy"
               src="https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?w=700&auto=format&fit=crop&q=70"
               alt="New York city skyline and street"
             />
@@ -328,7 +370,7 @@
           </article>
 
           <article class="card destination-card" data-category="culture romantic" data-destination="rome italy history monuments food culture romantic" tabindex="0">
-            <img
+            <img decoding="async" loading="lazy"
               src="https://images.unsplash.com/photo-1525874684015-58379d421a52?w=700&auto=format&fit=crop&q=70"
               alt="Historic architecture in Rome"
             />
@@ -360,7 +402,7 @@
     </main>
 
     <a
-      href="https://wa.me/919876543210?text=Hi%2C%20I%20want%20to%20plan%20a%20trip%20with%20Travel%20with%20Giridhar."
+      href="https://wa.me/918179721034?text=Hi%2C%20I%20want%20to%20plan%20a%20trip%20with%20Travel%20with%20Giridhar."
       class="whatsapp-float"
       target="_blank"
       rel="noreferrer"
@@ -376,7 +418,7 @@
           <h3>Travel Guide</h3>
           <p>&copy; 2026 Travel Guide. All rights reserved.</p>
           <p>Developed by Giridhar Reddy</p>
-          <p>Travel Website v1.3</p>
+          <p>Travel Website v1.4</p>
         </div>
         <div class="footer-links">
           <a href="index.html">Home</a>
@@ -403,6 +445,3 @@
     <script defer src="v13.js"></script>
 </body>
 </html>
-
-
-

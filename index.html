@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,7 +7,7 @@
       name="description"
       content="Travel with Giridhar offers curated destinations, packages, AI trip planning, reviews, and booking support for modern travelers."
     />
-    <title>Travel Guide | Home</title>
+    <title>Travel with Giridhar | AI Trip Planner & Tour Packages</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
       rel="stylesheet"
@@ -78,7 +78,7 @@
             </p>
             <div class="hero-actions">
               <a href="packages.html" class="btn-primary">View Packages</a>
-              <a href="#tripBudgetEstimator" class="btn btn-outline hero-secondary">Budget Tool</a>
+              <a href="packages.html#budgetRange" class="btn btn-outline hero-secondary">Budget Tool</a>
             </div>
             <div class="hero-badges" aria-label="Travel highlights">
               <span class="hero-badge"><strong>16</strong> Adventure Picks</span>
@@ -206,7 +206,7 @@
 
           <div class="slider-track">
             <article class="slider-slide is-active">
-              <img
+              <img decoding="async" loading="lazy"
                 src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=1200&auto=format&fit=crop&q=75"
                 alt="Bali beach and temple view"
               />
@@ -230,7 +230,7 @@
             </article>
 
             <article class="slider-slide">
-              <img
+              <img decoding="async" loading="lazy"
                 src="https://images.unsplash.com/photo-1593181629936-11c609b8db9b?w=1200&auto=format&fit=crop&q=75"
                 alt="Snow mountains in Manali"
               />
@@ -254,7 +254,7 @@
             </article>
 
             <article class="slider-slide">
-              <img
+              <img decoding="async" loading="lazy"
                 src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1200&auto=format&fit=crop&q=75"
                 alt="Dubai skyline at sunset"
               />
@@ -337,7 +337,7 @@
           <h2>Start with a favorite</h2>
           <div class="mini-destination-list">
             <a href="destinations.html" class="mini-destination">
-              <img
+              <img decoding="async" loading="lazy"
                 src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=300&auto=format&fit=crop&q=70"
                 alt="Bali beach"
               />
@@ -347,7 +347,7 @@
               </span>
             </a>
             <a href="destinations.html" class="mini-destination">
-              <img
+              <img decoding="async" loading="lazy"
                 src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=300&auto=format&fit=crop&q=70"
                 alt="Paris city"
               />
@@ -357,7 +357,7 @@
               </span>
             </a>
             <a href="destinations.html" class="mini-destination">
-              <img
+              <img decoding="async" loading="lazy"
                 src="https://images.unsplash.com/photo-1625505826533-5c80aca7d157?w=300&auto=format&fit=crop&q=70"
                 alt="Goa beach"
               />
@@ -448,6 +448,104 @@
         </div>
       </section>
 
+      <section class="section seasonal-offers-section" id="seasonalOffers">
+        <div class="section-heading-left">
+          <p class="hero-kicker">Seasonal Offers</p>
+          <h2>Limited-time trip ideas for this season</h2>
+          <p>
+            Pick a ready offer, then send an inquiry with your preferred date,
+            travelers, and budget. We will customize the final quote.
+          </p>
+        </div>
+        <div class="offer-grid">
+          <article class="offer-card">
+            <span class="trend-badge">Summer Break</span>
+            <h3>Goa Friends Getaway</h3>
+            <p>Beach stay, cafe hopping, local sightseeing, and water activity support.</p>
+            <strong>From Rs. 17,500/person</strong>
+            <a
+              href="contact.html?package=Goa%20Beach%20Escape&destination=Goa%2C%20India#bookingForm"
+              class="btn btn-small"
+              >Claim Offer</a
+            >
+          </article>
+          <article class="offer-card">
+            <span class="trend-badge">Family Pick</span>
+            <h3>Singapore School Holiday</h3>
+            <p>Family hotels, Sentosa attractions, transfers, and kid-friendly pacing.</p>
+            <strong>From Rs. 49,000/person</strong>
+            <a
+              href="contact.html?package=Singapore%20Family%20Fun&destination=Singapore#bookingForm"
+              class="btn btn-small"
+              >Plan Family Trip</a
+            >
+          </article>
+          <article class="offer-card">
+            <span class="trend-badge">Monsoon Calm</span>
+            <h3>Kerala Backwater Escape</h3>
+            <p>Houseboat cruise, resort stay, meals, and slow scenic travel planning.</p>
+            <strong>From Rs. 26,000/person</strong>
+            <a
+              href="contact.html?package=Kerala%20Backwater%20Retreat&destination=Kerala%2C%20India#bookingForm"
+              class="btn btn-small"
+              >Request Quote</a
+            >
+          </article>
+        </div>
+      </section>
+
+      <section class="section travel-checklist-section" id="travelChecklist">
+        <div class="checklist-copy">
+          <p class="hero-kicker">Travel Checklist</p>
+          <h2>Plan like a real trip, not just a brochure</h2>
+          <p>
+            Tick the essentials as you prepare. Your checklist is saved in this
+            browser so you can come back later.
+          </p>
+        </div>
+        <div class="checklist-panel" aria-label="Travel planning checklist">
+          <label><input type="checkbox" data-checklist-item="dates" /> Confirm travel dates</label>
+          <label><input type="checkbox" data-checklist-item="budget" /> Set total budget</label>
+          <label><input type="checkbox" data-checklist-item="documents" /> Check ID/passport documents</label>
+          <label><input type="checkbox" data-checklist-item="hotel" /> Choose hotel comfort level</label>
+          <label><input type="checkbox" data-checklist-item="transport" /> Confirm local transport needs</label>
+          <label><input type="checkbox" data-checklist-item="activities" /> Shortlist must-do activities</label>
+          <div class="checklist-progress">
+            <span id="checklistProgressText">0 of 6 completed</span>
+            <div class="checklist-progress-track"><span id="checklistProgressBar"></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section faq-section" id="faq">
+        <div class="section-heading-left">
+          <p class="hero-kicker">FAQ</p>
+          <h2>Common questions before booking</h2>
+          <p>
+            Clear answers make the site feel like a real travel desk, not only
+            a portfolio page.
+          </p>
+        </div>
+        <div class="faq-grid">
+          <details open>
+            <summary>Can I customize a package?</summary>
+            <p>Yes. You can change hotel type, trip duration, pickup city, activities, and budget range before the final quote.</p>
+          </details>
+          <details>
+            <summary>How fast will I get a reply?</summary>
+            <p>Booking requests are reviewed quickly. The target response time is within 2 hours during working hours.</p>
+          </details>
+          <details>
+            <summary>Are flights included?</summary>
+            <p>Flights are optional. The budget calculator can include estimated flight cost, and the booking form lets you request a custom quote.</p>
+          </details>
+          <details>
+            <summary>Do you support family and group trips?</summary>
+            <p>Yes. Family, couple, solo, and group trips are supported with package suggestions and traveler-count based estimates.</p>
+          </details>
+        </div>
+      </section>
+
       <section class="section review-slider-section">
         <h2 class="section-title">Traveler Reviews</h2>
         <div class="review-slider" id="reviewSlider">
@@ -531,7 +629,7 @@
     </main>
 
     <a
-      href="https://wa.me/919876543210?text=Hi%2C%20I%20want%20to%20plan%20a%20trip%20with%20Travel%20with%20Giridhar."
+      href="https://wa.me/918179721034?text=Hi%2C%20I%20want%20to%20plan%20a%20trip%20with%20Travel%20with%20Giridhar."
       class="whatsapp-float"
       target="_blank"
       rel="noreferrer"
@@ -547,7 +645,7 @@
           <h3>Travel Guide</h3>
           <p>&copy; 2026 Travel Guide. All rights reserved.</p>
           <p>Developed by Giridhar Reddy</p>
-          <p>Travel Website v1.3</p>
+          <p>Travel Website v1.4</p>
         </div>
         <div class="footer-links">
           <a href="index.html">Home</a>
@@ -574,7 +672,3 @@
     <script defer src="v13.js"></script>
 </body>
 </html>
-
-
-
-

@@ -1,76 +1,87 @@
-﻿# Travel with Giridhar
+# Travel with Giridhar
 
-**Release:** Travel Website v1.3
+**Release:** Travel Website v1.4
 
-A product-style travel website built with HTML, CSS, and vanilla JavaScript. The project includes destination discovery, package filtering, booking inquiries, AI-style planning, wishlist persistence, reviews, gallery browsing, and mobile conversion CTAs.
+A travel startup-style website built with HTML, CSS, and vanilla JavaScript. The experience helps users discover destinations, compare packages, estimate budgets, generate AI-style trip plans, save trips, and send booking inquiries through EmailJS.
 
-## v1.3 Updates
+## v1.4 Goal
 
-- Integrated EmailJS-ready booking and contact form submissions with success/error toasts
-- Rebuilt the booking request form as a 3-step progress stepper
-- Added destination-based package filtering inside the booking form
-- Added package search, category chips, price range controls, sorting, and live result count
-- Added package comparison selection with a sticky compare bar and comparison modal
-- Added global saved trips wishlist using localStorage
-- Added wishlist button in the navbar with saved count and slide-in drawer
-- Added homepage trip budget estimator with travelers, tier, duration, flights, insurance, breakdown, EMI estimate, and booking CTA
-- Replaced static trending cards with a horizontal auto-scrolling trending destinations slider
-- Rebuilt featured trips with homepage filter chips
-- Upgraded testimonials into an auto-rotating carousel with avatars, trip names, ratings, and verified traveler labels
-- Upgraded gallery with category filters, masonry layout, lazy-loaded images, and lightbox controls
-- Added AI Planner lead actions: email this plan and WhatsApp this plan
-- Added desktop sticky booking CTA and mobile Call / WhatsApp / Book Now CTA bar
-- Added mobile bottom navigation across all pages
-- Standardized footer version to Travel Website v1.3
+Make the website feel like a real travel planning business, not only a portfolio page.
 
-## Earlier Highlights
+## v1.4 Updates
 
-- 50 destinations and 50 travel packages
-- Destination search and filter chips
-- No destinations found empty state
-- Hero slider and AI-style trip planner
-- Package booking links prefill destination/package details
-- Blog, gallery, about, contact, and branded 404 pages
-- Dark/light theme toggle, back-to-top button, smooth animations, and responsive layout
+- Added seasonal offers on the homepage with direct quote CTAs
+- Added a persistent travel checklist using localStorage
+- Added a homepage FAQ section for trust and booking clarity
+- Added destination comparison tool on the Destinations page
+- Added advanced destination search controls for budget and best season
+- Improved package page messaging from EMI-first to quote-first planning
+- Added package detail guide for stay options, route planning, and travel support
+- Improved booking inquiry data sent to EmailJS: phone, budget, travel type, and preferred contact method
+- Fixed AI Planner email lead capture to use the configured feedback template instead of a removed message template
+- Updated footer version to Travel Website v1.4
+- Updated WhatsApp links to the active contact number
+
+## Core Features
+
+- AI-style trip planner
+- Budget calculator
+- Destination comparison
+- Advanced destination search
+- Travel category filters
+- Trending destinations slider
+- Customer review carousel
+- Travel blog
+- FAQ section
+- WhatsApp floating button
+- Better booking inquiry form
+- Travel checklist saved in localStorage
+- Seasonal offers
+- Package filters, sorting, wishlist, and comparison modal
 
 ## Pages
 
-- `index.html` - Home page with hero slider, featured trips, AI planner, budget estimator, trending slider, and reviews
-- `destinations.html` - Destination cards with search, filters, best-time labels, and saved trips
-- `packages.html` - Package cards with filters, sorting, wishlist, and comparison modal
+- `index.html` - Home page with hero slider, featured trips, AI planner, budget estimator, seasonal offers, checklist, FAQ, and reviews
+- `destinations.html` - Destination cards with search, filters, advanced search, comparison, best-time labels, and saved trips
+- `packages.html` - Package cards with filters, sorting, wishlist, comparison, budget estimator, and package detail guide
 - `blog.html` - Travel tips and planning guides
 - `gallery.html` - Filterable masonry gallery with lightbox
 - `about.html` - Company story, mission, reasons to choose us, and developer profile
-- `contact.html` - 3-step booking form and EmailJS-ready contact form
+- `contact.html` - 3-step booking form and EmailJS-ready feedback form
 - `404.html` - Branded not found page
 
-## EmailJS Setup
+## EmailJS Template Parameters
 
-Open `script.js` and replace these values with your EmailJS credentials:
-
-```js
-publicKey: "YOUR_PUBLIC_KEY",
-serviceId: "YOUR_SERVICE_ID",
-bookingTemplateId: "YOUR_BOOKING_TEMPLATE_ID",
-messageTemplateId: "YOUR_MESSAGE_TEMPLATE_ID",
-```
-
-Booking template parameters:
+Booking template:
 
 - `from_name`
 - `from_email`
+- `customer_email`
+- `to_email`
+- `owner_email`
+- `reply_to`
+- `phone`
 - `destination`
 - `package_name`
+- `travel_type`
+- `approx_budget`
 - `travel_date`
 - `travelers`
 - `travel_notes`
 - `emi_needed`
+- `preferred_contact`
 - `travelers_type`
 
-Message template parameters:
+Feedback / AI planner template:
 
 - `from_name`
 - `from_email`
+- `customer_email`
+- `to_email`
+- `owner_email`
+- `reply_to`
+- `feedback_type`
+- `feedback_rating`
 - `message`
 
 ## Tech Stack
@@ -78,19 +89,17 @@ Message template parameters:
 - HTML
 - CSS
 - Vanilla JavaScript
-- EmailJS-ready frontend form submission
+- localStorage
+- EmailJS
+- Vercel deployment
 
 ## Developer
 
-**Giridhar Reddy**  
+**Giridhar Reddy**
 Frontend Developer skilled in HTML, CSS, and JavaScript.
 
 - GitHub: https://github.com/Giridhar113/Travel-with-Giridhar
 - Portfolio: https://giridhar-portfolio-ten.vercel.app/
-
-## How to Run
-
-Open `index.html` in a browser, or serve the folder with any static server.
 
 ## Live Link
 

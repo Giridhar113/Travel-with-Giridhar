@@ -5,6 +5,8 @@ const savedCount = document.getElementById("savedCount");
 const clearSavedButton = document.getElementById("clearSaved");
 const filterChips = document.querySelectorAll(".filter-chip");
 const filterStatus = document.getElementById("filterStatus");
+const destinationBudgetFilter = document.getElementById("destinationBudgetFilter");
+const destinationSeasonFilter = document.getElementById("destinationSeasonFilter");
 const savedDestinationsKey = "travelGuideSavedDestinations";
 const themePreferenceKey = "travelGuideTheme";
 let activeDestinationFilter = "all";
@@ -15,6 +17,36 @@ function normalizeSearchText(value) {
     .replace(/,/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function parseRupeeAmount(value) {
+  return Number(String(value || "").replace(/[^\d]/g, "")) || 0;
+}
+
+function getDestinationSeasonTokens(card) {
+  if (card.dataset.season) {
+    return normalizeSearchText(card.dataset.season).split(" ").filter(Boolean);
+  }
+
+  const seasonText = normalizeSearchText(
+    card.querySelector(".best-time") ? card.querySelector(".best-time").textContent : ""
+  );
+  const tokens = [];
+
+  if (/oct|nov|dec|jan|feb|mar/.test(seasonText)) {
+    tokens.push("oct-mar");
+  }
+
+  if (/apr|may|jun/.test(seasonText)) {
+    tokens.push("apr-jun");
+  }
+
+  if (/jul|aug|sep/.test(seasonText)) {
+    tokens.push("jul-sep");
+  }
+
+  card.dataset.season = tokens.join(" ");
+  return tokens;
 }
 
 function refreshDestinationCards() {
@@ -343,6 +375,13 @@ function applyDestinationFilters() {
   const searchText = destinationSearch
     ? normalizeSearchText(destinationSearch.value)
     : "";
+  const maxBudget =
+    destinationBudgetFilter && destinationBudgetFilter.value !== "all"
+      ? Number(destinationBudgetFilter.value)
+      : Infinity;
+  const seasonFilter = destinationSeasonFilter
+    ? destinationSeasonFilter.value
+    : "all";
   let visibleCount = 0;
 
   cards.forEach(function (card) {
@@ -351,12 +390,19 @@ function applyDestinationFilters() {
     const categories = normalizeSearchText(card.dataset.category)
       .split(" ")
       .filter(Boolean);
+    const price =
+      parseRupeeAmount(card.dataset.price) ||
+      parseRupeeAmount(card.querySelector(".price") ? card.querySelector(".price").textContent : "");
+    const seasonTokens = getDestinationSeasonTokens(card);
     const haystack = `${content} ${keywords} ${categories.join(" ")}`;
     const matchesSearch =
       !searchText || haystack.includes(searchText);
     const matchesCategory =
       activeDestinationFilter === "all" || categories.includes(activeDestinationFilter);
-    const isVisible = matchesSearch && matchesCategory;
+    const matchesBudget = !price || price <= maxBudget;
+    const matchesSeason =
+      seasonFilter === "all" || seasonTokens.includes(seasonFilter);
+    const isVisible = matchesSearch && matchesCategory && matchesBudget && matchesSeason;
 
     card.toggleAttribute("hidden", !isVisible);
     card.style.display = isVisible ? "" : "none";
@@ -413,6 +459,12 @@ function resetDestinationControls() {
 if (destinationSearch) {
   destinationSearch.addEventListener("input", applyDestinationFilters);
 }
+
+[destinationBudgetFilter, destinationSeasonFilter].forEach(function (control) {
+  if (control) {
+    control.addEventListener("change", applyDestinationFilters);
+  }
+});
 
 if (filterChips.length) {
   filterChips.forEach(function (chip) {
@@ -1025,7 +1077,7 @@ const emailJsConfig = {
   ownerEmail: "giridhar.parlapalli@gmail.com",
 };
 const emailJsWhatsAppUrl =
-  "https://wa.me/919876543210?text=Hi%2C%20I%20tried%20the%20website%20form%20and%20want%20to%20plan%20a%20trip.";
+  "https://wa.me/918179721034?text=Hi%2C%20I%20tried%20the%20website%20form%20and%20want%20to%20plan%20a%20trip.";
 let emailJsInitialized = false;
 
 function getFormValue(form, fieldName) {
@@ -1231,12 +1283,18 @@ attachEmailJsSubmit(
       to_email: emailJsConfig.ownerEmail,
       owner_email: emailJsConfig.ownerEmail,
       reply_to: getFormValue(form, "bookingEmail"),
+      phone: `+91 ${getFormValue(form, "bookingPhone")}`,
       destination: getFormValue(form, "destination"),
       package_name: getFormValue(form, "package"),
+      travel_type: getFormValue(form, "travelType"),
+      approx_budget: getFormValue(form, "approxBudget")
+        ? `Rs. ${Number(getFormValue(form, "approxBudget")).toLocaleString("en-IN")}`
+        : "Not provided",
       travel_date: getFormValue(form, "travelDate"),
       travelers: getFormValue(form, "travelers"),
       travel_notes: getFormValue(form, "bookingNotes") || "No special requests added.",
       emi_needed: getFormValue(form, "emiNeeded"),
+      preferred_contact: getFormValue(form, "preferredContact"),
       travelers_type: getFormValue(form, "travelersType"),
     };
   },
@@ -1303,17 +1361,3 @@ if ("IntersectionObserver" in window) {
     item.classList.add("is-visible");
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
