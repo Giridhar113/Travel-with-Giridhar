@@ -98,7 +98,7 @@ Feedback / AI planner template:
 **Giridhar Reddy**
 Frontend Developer skilled in HTML, CSS, and JavaScript.
 
-- GitHub: https://github.com/Giridhar113/Travel-with-Giridhar
+- GitHub: https://github.com/Giridhar113
 - Portfolio: https://giridhar-portfolio-ten.vercel.app/
 
 ## Live Link
