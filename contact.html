@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Send a booking request or travel question to Travel with Giridhar and get practical trip planning support."
+    />
+    <title>Contact — Travel with Giridhar</title>
+    <meta property="og:title" content="Contact — Travel with Giridhar" />
+    <meta property="og:description" content="Send a booking request or travel question to Travel with Giridhar and get practical trip planning support." />
+    <meta property="og:image" content="https://travel-with-giridhar.vercel.app/services1.jpg" />
+    <meta property="og:url" content="https://travel-with-giridhar.vercel.app/contact.html" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Contact — Travel with Giridhar" />
+    <meta name="twitter:description" content="Send a booking request or travel question to Travel with Giridhar and get practical trip planning support." />
+    <meta name="twitter:image" content="https://travel-with-giridhar.vercel.app/services1.jpg" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="v13.css" />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+    ></script>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="logo">
+          <a href="index.html" class="logo-link">
+            <i class="fas fa-plane-departure"></i>
+            <div>
+              <span class="logo-text">Travel with</span>
+              <span class="logo-subtext">Giridhar</span>
+            </div>
+          </a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="destinations.html">Destinations</a></li>
+          <li><a href="packages.html">Packages</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html" class="active">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-hero contact-hero">
+        <h1>Plan Your Next Trip</h1>
+        <p>
+          Share your travel idea, choose a destination, and get a clear plan
+          for your next holiday with Travel with Giridhar.
+        </p>
+      </section>
+
+      <section class="section contact-overview" aria-label="Contact options">
+        <div class="contact-overview-grid">
+          <article class="contact-info-card">
+            <span class="contact-icon"><i class="fas fa-calendar-check"></i></span>
+            <h3>Quick Booking</h3>
+            <p>
+              Send your dates, travelers, and package choice. We will help you
+              with a practical quote.
+            </p>
+          </article>
+          <article class="contact-info-card">
+            <span class="contact-icon"><i class="fab fa-whatsapp"></i></span>
+            <h3>WhatsApp Support</h3>
+            <p>
+              Need a faster reply? Start a WhatsApp chat for destination and
+              payment guidance.
+            </p>
+          </article>
+          <article class="contact-info-card">
+            <span class="contact-icon"><i class="fas fa-route"></i></span>
+            <h3>Custom Planning</h3>
+            <p>
+              Tell us your budget and travel style, and we will suggest a route
+              that fits your plan.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section contact-layout">
+        <aside class="contact-sidebar">
+          <div class="panel contact-panel">
+            <p class="eyebrow">Trip Inquiry</p>
+            <h2>Plan With Confidence</h2>
+            <p>
+              Whether you want a beach break, family holiday, honeymoon, or
+              adventure trip, send your details and we will guide you with the
+              right destination, package, and budget range.
+            </p>
+            <ul class="feature-list">
+              <li>Personalized package suggestions</li>
+              <li>Budget-friendly travel planning</li>
+              <li>Support before and during your trip</li>
+            </ul>
+          </div>
+
+          <div class="panel contact-panel">
+            <h3>What Happens Next</h3>
+            <ol class="step-list">
+              <li>
+                <span>01</span>
+                <div>
+                  <strong>Share your plan</strong>
+                  <p>Fill the booking form with your preferred place and date.</p>
+                </div>
+              </li>
+              <li>
+                <span>02</span>
+                <div>
+                  <strong>Get a quote</strong>
+                  <p>We review your details and suggest a suitable package.</p>
+                </div>
+              </li>
+              <li>
+                <span>03</span>
+                <div>
+                  <strong>Confirm your trip</strong>
+                  <p>Finalize the plan, travelers, and payment option.</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </aside>
+
+        <form
+          class="panel contact-form booking-form contact-main-form booking-stepper-form"
+          id="bookingForm"
+          action="https://formspree.io/f/YOUR_BOOKING_FORM_ID"
+          method="POST"
+        >
+          <input
+            type="hidden"
+            name="_subject"
+            value="New booking request - Travel with Giridhar"
+          />
+          <input type="hidden" name="form_name" value="Booking Request" />
+          <div class="form-heading">
+            <p class="eyebrow">Booking Request</p>
+            <h2>Plan Your Trip In 3 Steps</h2>
+            <p>Choose a trip, add traveler details, then review and send your request.</p>
+          </div>
+
+          <div class="stepper-progress" aria-label="Booking progress">
+            <div class="stepper-item is-active" data-step-indicator="0"><span>1</span><strong>Choose Trip</strong></div>
+            <div class="stepper-item" data-step-indicator="1"><span>2</span><strong>Traveler Details</strong></div>
+            <div class="stepper-item" data-step-indicator="2"><span>3</span><strong>Review & Send</strong></div>
+          </div>
+
+          <section class="booking-step is-active" data-booking-step="0" aria-label="Choose your trip">
+            <div class="step-title-row">
+              <div>
+                <p class="eyebrow">Step 1</p>
+                <h3>Choose Your Trip</h3>
+              </div>
+            </div>
+            <p class="form-note" id="bookingHint">Choose a destination and package to request a quick quote.</p>
+            <div class="form-row">
+              <label>
+                Destination
+                <select name="destination" required>
+                  <option value="">Choose destination</option>
+                </select>
+              </label>
+              <label>
+                Package
+                <select name="package" required>
+                  <option value="">Choose package</option>
+                </select>
+              </label>
+            </div>
+            <div>
+              <strong>Travel Type</strong>
+              <div class="pill-group" role="radiogroup" aria-label="Travel type">
+                <label class="pill-option"><input type="radio" name="travelType" value="Beach" required /> Beach</label>
+                <label class="pill-option"><input type="radio" name="travelType" value="Adventure" /> Adventure</label>
+                <label class="pill-option"><input type="radio" name="travelType" value="Family" /> Family</label>
+                <label class="pill-option"><input type="radio" name="travelType" value="Romantic" /> Romantic</label>
+                <label class="pill-option"><input type="radio" name="travelType" value="Luxury" /> Luxury</label>
+              </div>
+            </div>
+            <label>
+              Approximate Budget: <span class="range-readout" data-budget-readout>Rs. 40,000</span>
+              <input type="range" name="approxBudget" min="10000" max="200000" step="5000" value="40000" />
+            </label>
+            <p class="step-error" aria-live="polite"></p>
+            <div class="stepper-actions">
+              <span></span>
+              <button type="button" class="btn" data-next-step>Next: Traveler Details</button>
+            </div>
+          </section>
+
+          <section class="booking-step" data-booking-step="1" aria-label="Traveler details">
+            <div class="step-title-row">
+              <div>
+                <p class="eyebrow">Step 2</p>
+                <h3>Traveler Details</h3>
+              </div>
+            </div>
+            <div class="form-row">
+              <label>
+                Full Name
+                <input type="text" name="bookingName" placeholder="Enter your name" required />
+              </label>
+              <label>
+                Email
+                <input type="email" name="bookingEmail" placeholder="Enter your email" required />
+              </label>
+            </div>
+            <div class="form-row">
+              <label>
+                Phone (+91)
+                <input type="tel" name="bookingPhone" placeholder="9876543210" pattern="[0-9]{10}" required />
+              </label>
+              <label>
+                Travel Date
+                <input type="date" name="travelDate" required />
+              </label>
+            </div>
+            <div class="form-row">
+              <label>
+                Number of Travelers
+                <div class="traveler-stepper">
+                  <button type="button" data-traveler-step="-1" aria-label="Decrease travelers">-</button>
+                  <input type="number" name="travelers" min="1" max="20" value="2" required />
+                  <button type="button" data-traveler-step="1" aria-label="Increase travelers">+</button>
+                </div>
+              </label>
+              <label>
+                Traveler Type
+                <select name="travelersType" required>
+                  <option value="">Choose traveler type</option>
+                  <option>Solo</option>
+                  <option>Couple</option>
+                  <option>Family</option>
+                  <option>Group</option>
+                </select>
+              </label>
+            </div>
+            <div>
+              <strong>EMI needed?</strong>
+              <div class="pill-group" role="radiogroup" aria-label="EMI needed">
+                <label class="pill-option"><input type="radio" name="emiNeeded" value="No" required checked /> No</label>
+                <label class="pill-option"><input type="radio" name="emiNeeded" value="Yes" /> Yes</label>
+              </div>
+            </div>
+            <div>
+              <strong>Preferred Contact</strong>
+              <div class="pill-group" role="radiogroup" aria-label="Preferred contact method">
+                <label class="pill-option"><input type="radio" name="preferredContact" value="WhatsApp" required checked /> WhatsApp</label>
+                <label class="pill-option"><input type="radio" name="preferredContact" value="Call" /> Call</label>
+                <label class="pill-option"><input type="radio" name="preferredContact" value="Email" /> Email</label>
+              </div>
+            </div>
+            <label>
+              Special Requests
+              <textarea name="bookingNotes" placeholder="Tell us your budget, hotel needs, food preference, or pickup city"></textarea>
+            </label>
+            <p class="step-error" aria-live="polite"></p>
+            <div class="stepper-actions">
+              <button type="button" class="btn btn-outline" data-prev-step>Previous</button>
+              <button type="button" class="btn" data-next-step>Next: Review</button>
+            </div>
+          </section>
+
+          <section class="booking-step" data-booking-step="2" aria-label="Review and send">
+            <div class="step-title-row">
+              <div>
+                <p class="eyebrow">Step 3</p>
+                <h3>Review & Send</h3>
+              </div>
+              <button type="button" class="edit-step-btn" data-edit-step="0">Edit trip</button>
+            </div>
+            <div class="step-summary-card" id="bookingSummary"></div>
+            <button type="button" class="edit-step-btn" data-edit-step="1">Edit traveler details</button>
+            <p class="step-error" aria-live="polite"></p>
+            <div class="stepper-actions">
+              <button type="button" class="btn btn-outline" data-prev-step>Previous</button>
+              <button type="submit" class="btn form-submit-btn">
+                <span class="btn-text">Send Booking Request</span>
+                <span class="btn-spinner" aria-hidden="true"></span>
+              </button>
+            </div>
+          </section>
+        </form>
+      </section>
+
+      <section class="section contact-layout contact-layout-secondary">
+        <div class="panel contact-panel">
+          <p class="eyebrow">Need Help?</p>
+          <h2>Ask a Travel Question</h2>
+          <p>
+            Have a question about pricing, destinations, services, or an
+            existing plan? Send a message and we will get back to you with clear
+            next steps.
+          </p>
+          <ul class="feature-list">
+            <li>Destination advice</li>
+            <li>Package questions</li>
+            <li>Support for existing plans</li>
+          </ul>
+        </div>
+
+        <form
+          class="panel contact-form contact-message-form"
+          id="contactForm"
+          action="https://formspree.io/f/YOUR_CONTACT_FORM_ID"
+          method="POST"
+        >
+          <input
+            type="hidden"
+            name="_subject"
+            value="New contact message - Travel with Giridhar"
+          />
+          <input type="hidden" name="form_name" value="Contact Message" />
+          <div class="form-heading">
+            <p class="eyebrow">Message Us</p>
+            <h2>Feedback & Contact Form</h2>
+          </div>
+          <div class="form-row">
+            <label>
+              Name
+              <input type="text" name="name" placeholder="Enter your name" required />
+            </label>
+            <label>
+              Email
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+              />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              Feedback Type
+              <select name="feedbackType" required>
+                <option>General Message</option>
+                <option>Booking Question</option>
+                <option>Website Feedback</option>
+                <option>Trip Feedback</option>
+              </select>
+            </label>
+            <label>
+              Rating
+              <select name="feedbackRating">
+                <option value="">Choose rating</option>
+                <option>5 - Excellent</option>
+                <option>4 - Good</option>
+                <option>3 - Average</option>
+                <option>2 - Needs Improvement</option>
+                <option>1 - Poor</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            Message
+            <textarea
+              name="message"
+              placeholder="Tell us about your travel plan"
+              required
+            ></textarea>
+          </label>
+          <button type="submit" class="btn form-submit-btn">
+            <span class="btn-text">Submit Feedback</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+          </button>
+        </form>
+      </section>
+    </main>
+
+    <div
+      class="toast-container"
+      id="toastContainer"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+    <a
+      href="https://wa.me/918179721034?text=Hi%2C%20I%20want%20to%20plan%20a%20trip%20with%20Travel%20with%20Giridhar."
+      class="whatsapp-float"
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Book via WhatsApp"
+    >
+      <i class="fab fa-whatsapp"></i>
+      <span>WhatsApp</span>
+    </a>
+
+    <footer class="footer">
+      <div class="footer-container">
+        <div>
+          <h3>Travel with Giridhar</h3>
+          <p>&copy; 2026 Travel with Giridhar. All rights reserved.</p>
+          <p>Developed by Giridhar Reddy</p>
+        </div>
+        <div class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+          <a href="blog.html">Blog</a>
+          <a href="gallery.html">Gallery</a>
+          <a
+            href="https://github.com/Giridhar113"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub</a
+          >
+          <a
+            href="https://giridhar-portfolio-ten.vercel.app/"
+            target="_blank"
+            rel="noreferrer"
+            >Portfolio</a
+          >
+        </div>
+      </div>
+    </footer>
+
+    <script defer src="script.js"></script>
+    <script defer src="v13.js"></script>
+  </body>
+</html>
