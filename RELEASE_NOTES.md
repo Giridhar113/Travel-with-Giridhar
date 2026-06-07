@@ -17,9 +17,11 @@
 ### Improvements
 
 - Improved package page messaging from EMI-first to quote-first travel planning.
-- Improved EmailJS booking payload with phone, budget, travel type, and preferred contact method.
+- Improved booking form payload with phone, budget, travel type, and preferred contact method.
 - Fixed AI Planner email lead capture to use the configured feedback template.
-- Updated footer version to Travel Website v1.4 across pages.
+- Added Formspree-ready booking and contact form endpoints.
+- Added a secure Claude planner API route for Vercel.
+- Removed visible footer version labels for cleaner brand presentation.
 - Updated WhatsApp and GitHub links.
 - Added lazy loading and async decoding to static images.
 - Improved page titles for stronger SEO and branding.

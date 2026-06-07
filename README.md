@@ -2,7 +2,7 @@
 
 **Release:** Travel Website v1.4
 
-A travel startup-style website built with HTML, CSS, and vanilla JavaScript. The experience helps users discover destinations, compare packages, estimate budgets, generate AI-style trip plans, save trips, and send booking inquiries through EmailJS.
+A travel startup-style website built with HTML, CSS, and vanilla JavaScript. The experience helps users discover destinations, compare packages, estimate budgets, generate Claude-powered trip plans, save trips, and send booking inquiries through Formspree-ready forms.
 
 ## v1.4 Goal
 
@@ -17,9 +17,9 @@ Make the website feel like a real travel planning business, not only a portfolio
 - Added advanced destination search controls for budget and best season
 - Improved package page messaging from EMI-first to quote-first planning
 - Added package detail guide for stay options, route planning, and travel support
-- Improved booking inquiry data sent to EmailJS: phone, budget, travel type, and preferred contact method
-- Fixed AI Planner email lead capture to use the configured feedback template instead of a removed message template
-- Updated footer version to Travel Website v1.4
+- Improved booking inquiry data sent through the form payload: phone, budget, travel type, and preferred contact method
+- Added a secure Claude planner API route for Vercel
+- Removed visible footer version labels for cleaner branding
 - Updated WhatsApp links to the active contact number
 
 Full release history is available in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
@@ -49,12 +49,17 @@ Full release history is available in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 - `blog.html` - Travel tips and planning guides
 - `gallery.html` - Filterable masonry gallery with lightbox
 - `about.html` - Company story, mission, reasons to choose us, and developer profile
-- `contact.html` - 3-step booking form and EmailJS-ready feedback form
+- `contact.html` - 3-step booking form and Formspree-ready feedback form
 - `404.html` - Branded not found page
 
-## EmailJS Template Parameters
+## Formspree Fields
 
-Booking template:
+Replace the placeholders in `contact.html`:
+
+- `https://formspree.io/f/YOUR_BOOKING_FORM_ID`
+- `https://formspree.io/f/YOUR_CONTACT_FORM_ID`
+
+Booking form fields:
 
 - `from_name`
 - `from_email`
@@ -74,7 +79,7 @@ Booking template:
 - `preferred_contact`
 - `travelers_type`
 
-Feedback / AI planner template:
+Contact form fields:
 
 - `from_name`
 - `from_email`
@@ -86,13 +91,22 @@ Feedback / AI planner template:
 - `feedback_rating`
 - `message`
 
+## Claude Planner Setup
+
+Add this Vercel environment variable for the AI Trip Planner:
+
+- `ANTHROPIC_API_KEY`
+
+The browser calls `/api/ai-planner`, and the serverless function calls Claude using `claude-sonnet-4-20250514`.
+
 ## Tech Stack
 
 - HTML
 - CSS
 - Vanilla JavaScript
 - localStorage
-- EmailJS
+- Formspree
+- Anthropic Claude API via Vercel serverless function
 - Vercel deployment
 
 ## Developer

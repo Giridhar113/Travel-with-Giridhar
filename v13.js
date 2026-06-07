@@ -740,14 +740,14 @@
     if (!oldGrid || oldGrid.dataset.v13Ready) return;
     oldGrid.dataset.v13Ready = "true";
     const trending = [
-      ["Goa Beach Escape", "Goa, India", 18000, "43 booked this week", "Hot", "4.8", "services1.jpg"],
-      ["Premium Bali Tour", "Bali, Indonesia", 40000, "36 booked this week", "Popular", "4.9", "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=900&auto=format&fit=crop&q=75"],
-      ["Manali Adventure Holiday", "Manali, India", 24000, "31 booked this week", "Hot", "4.7", "services2.jpg"],
-      ["Dubai Desert Luxury", "Dubai, UAE", 58000, "27 booked this week", "Luxury", "4.8", "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=900&auto=format&fit=crop&q=75"],
-      ["Kerala Backwater Retreat", "Kerala, India", 26000, "25 booked this week", "New", "4.6", "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=900&auto=format&fit=crop&q=75"],
-      ["Maldives Island Stay", "Maldives", 90000, "22 booked this week", "Popular", "4.9", "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=900&auto=format&fit=crop&q=75"],
-      ["Rajasthan Royal Tour", "Rajasthan, India", 35000, "19 booked this week", "Culture", "4.7", "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=900&auto=format&fit=crop&q=75"],
-      ["Singapore Family Fun", "Singapore", 50000, "18 booked this week", "Family", "4.8", "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=900&auto=format&fit=crop&q=75"]
+      ["Goa Beach Escape", "Goa, India", 18000, "Beach-ready getaway", "Hot", "4.8", "services1.jpg"],
+      ["Premium Bali Tour", "Bali, Indonesia", 40000, "Couples and beach favorite", "Popular", "4.9", "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=900&auto=format&fit=crop&q=75"],
+      ["Manali Adventure Holiday", "Manali, India", 24000, "Mountain adventure pick", "Hot", "4.7", "services2.jpg"],
+      ["Dubai Desert Luxury", "Dubai, UAE", 58000, "Premium city escape", "Luxury", "4.8", "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=900&auto=format&fit=crop&q=75"],
+      ["Kerala Backwater Retreat", "Kerala, India", 26000, "Slow travel favorite", "New", "4.6", "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=900&auto=format&fit=crop&q=75"],
+      ["Maldives Island Stay", "Maldives", 90000, "Island resort escape", "Popular", "4.9", "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=900&auto=format&fit=crop&q=75"],
+      ["Rajasthan Royal Tour", "Rajasthan, India", 35000, "Heritage and culture route", "Culture", "4.7", "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=900&auto=format&fit=crop&q=75"],
+      ["Singapore Family Fun", "Singapore", 50000, "Family city break", "Family", "4.8", "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=900&auto=format&fit=crop&q=75"]
     ];
     oldGrid.className = "v13-trending-wrap";
     oldGrid.innerHTML = `
@@ -937,9 +937,9 @@
     if (!section || section.dataset.v13Ready) return;
     section.dataset.v13Ready = "true";
     const reviews = [
-      ["Ananya Rao", "Mumbai", "Bali Premium Tour", "4", "The Bali package was well planned, comfortable, and easy to follow. Transfers and hotels were handled smoothly.", "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&auto=format&fit=crop&q=75"],
-      ["Vikram Kumar", "Hyderabad", "Goa Beach Escape", "5", "Our Goa trip felt relaxed and organized. Pricing was clear and the support before travel was very helpful.", "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&auto=format&fit=crop&q=75"],
-      ["Priya Mehta", "Bengaluru", "Manali Adventure Holiday", "5", "The Manali itinerary had the right mix of sightseeing, adventure, and rest time. It felt professionally planned.", "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=75"],
+      ["Ananya Rao", "Mumbai", "Bali Premium Tour - April 2026", "4", "The Bali package was well planned, comfortable, and easy to follow for our April 2026 beach holiday. Transfers and hotels were handled smoothly.", "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&auto=format&fit=crop&q=75"],
+      ["Vikram Kumar", "Hyderabad", "Goa Beach Escape - March 2026", "5", "Our Goa trip in March 2026 felt relaxed and organized. Pricing was clear and the support before travel was very helpful.", "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&auto=format&fit=crop&q=75"],
+      ["Priya Mehta", "Bengaluru", "Manali Adventure Holiday - February 2026", "5", "The Manali itinerary for February 2026 had the right mix of sightseeing, adventure, and rest time. It felt professionally planned.", "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=75"],
       ["Rahul Sharma", "Pune", "Dubai Desert Luxury", "5", "The Dubai plan was perfect for our family. The desert safari and city tour were the highlights.", "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=160&auto=format&fit=crop&q=75"],
       ["Sneha Iyer", "Chennai", "Kerala Backwater Retreat", "4", "The houseboat stay was peaceful and the itinerary did not feel rushed. Great option for families.", "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=160&auto=format&fit=crop&q=75"],
       ["Arjun Nair", "Kochi", "Singapore Family Fun", "5", "Clean planning, quick replies, and good attraction suggestions. The kids loved Sentosa.", "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=160&auto=format&fit=crop&q=75"]
@@ -1324,7 +1324,7 @@
   function updateFooterVersion() {
     document.querySelectorAll("footer p").forEach(function (paragraph) {
       if (/Travel Website v/i.test(paragraph.textContent)) {
-        paragraph.textContent = "Travel Website v1.4";
+        paragraph.remove();
       }
     });
   }

@@ -1039,17 +1039,113 @@ function renderSmartTrip(trip, days, travelType) {
   `;
 }
 
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function setAiPlannerLoading(isLoading) {
+  if (!aiPlannerForm) {
+    return;
+  }
+
+  const submitButton = aiPlannerForm.querySelector('button[type="submit"]');
+
+  if (!submitButton) {
+    return;
+  }
+
+  if (!submitButton.dataset.defaultText) {
+    submitButton.dataset.defaultText = submitButton.textContent.trim();
+  }
+
+  submitButton.disabled = isLoading;
+  submitButton.textContent = isLoading ? "Generating..." : submitButton.dataset.defaultText;
+}
+
+function renderGeneratedTripPlan(planData, inputs) {
+  if (!aiPlannerResult) {
+    return;
+  }
+
+  const lines = String(planData.plan || "")
+    .split(/\n+/)
+    .map(function (line) {
+      return line.trim();
+    })
+    .filter(Boolean);
+  const planItems = lines
+    .map(function (line) {
+      return `<li>${escapeHtml(line)}</li>`;
+    })
+    .join("");
+  const bookingUrl = `contact.html?package=${encodeURIComponent(
+    "AI Trip Plan"
+  )}&destination=${encodeURIComponent(planData.destination || "Custom Trip")}#bookingForm`;
+
+  aiPlannerResult.innerHTML = `
+    <span class="ai-pill">Claude plan</span>
+    <h3>${escapeHtml(planData.destination || "Custom Trip Plan")}</h3>
+    <p>Estimated cost: ${escapeHtml(planData.estimatedCost || `Rs. ${Number(inputs.budget).toLocaleString("en-IN")}`)}</p>
+    <div class="ai-result-meta">
+      <span>${escapeHtml(String(inputs.days))} day plan</span>
+      <span>${escapeHtml(String(inputs.travelers))} traveler(s)</span>
+      <span>${escapeHtml(inputs.travelType)} style</span>
+    </div>
+    <ul class="ai-itinerary">${planItems}</ul>
+    <a href="${bookingUrl}" class="btn">Book This Plan</a>
+  `;
+}
+
+async function generateClaudeTripPlan(inputs) {
+  const response = await fetch("/api/ai-planner", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(inputs),
+  });
+  const data = await response.json().catch(function () {
+    return {};
+  });
+
+  if (!response.ok) {
+    throw new Error(data.error || "Claude planner request failed.");
+  }
+
+  return data;
+}
+
 if (aiPlannerForm) {
-  aiPlannerForm.addEventListener("submit", function (event) {
+  aiPlannerForm.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const budget = Number(document.getElementById("aiBudget").value);
     const days = Number(document.getElementById("aiDays").value);
     const travelers = Number(document.getElementById("aiTravelers").value);
     const travelType = document.getElementById("aiTravelType").value;
-    const trip = findSmartTrip({ budget, days, travelers, travelType });
+    const plannerInputs = { budget, days, travelers, travelType };
 
-    renderSmartTrip(trip, days, travelType);
+    setAiPlannerLoading(true);
+
+    try {
+      const generatedPlan = await generateClaudeTripPlan(plannerInputs);
+      renderGeneratedTripPlan(generatedPlan, plannerInputs);
+    } catch (error) {
+      console.error("Claude planner failed:", error);
+      const trip = findSmartTrip(plannerInputs);
+      renderSmartTrip(trip, days, travelType);
+      showToast(
+        "Claude planner is not configured yet. Showing a local plan for now.",
+        "error"
+      );
+    } finally {
+      setAiPlannerLoading(false);
+    }
   });
 }
 
@@ -1208,13 +1304,13 @@ function sendEmailJs(templateId, templateParams, formLabel) {
   );
 }
 
-function getEmailJsErrorMessage(error) {
+function getFormSendErrorMessage(error) {
   if (error && error.text) {
-    return `EmailJS error: ${error.text}`;
+    return `Form error: ${error.text}`;
   }
 
   if (error && error.message) {
-    return `EmailJS error: ${error.message}`;
+    return `Form error: ${error.message}`;
   }
 
   return "Something went wrong. Please WhatsApp us directly.";
@@ -1227,6 +1323,46 @@ function sendAutoReply(templateParams) {
 
   return sendEmailJs(emailJsConfig.autoReplyTemplateId, templateParams, "Auto reply").catch(function (error) {
     console.warn("EmailJS auto reply failed:", error);
+  });
+}
+
+function isFormspreeForm(form) {
+  return Boolean(form && form.action && form.action.includes("formspree.io"));
+}
+
+function sendFormspree(form, templateParams) {
+  if (!isFormspreeForm(form) || form.action.includes("YOUR_")) {
+    return Promise.reject(
+      new Error("Formspree endpoint is missing. Replace the YOUR_FORM_ID placeholder in contact.html.")
+    );
+  }
+
+  const formData = new FormData(form);
+
+  Object.entries(templateParams).forEach(function ([key, value]) {
+    formData.set(key, value);
+  });
+
+  return fetch(form.action, {
+    method: "POST",
+    body: formData,
+    headers: {
+      Accept: "application/json",
+    },
+  }).then(function (response) {
+    if (response.ok) {
+      return response;
+    }
+
+    return response.json().catch(function () {
+      return {};
+    }).then(function (data) {
+      const message =
+        data && data.errors && data.errors[0] && data.errors[0].message
+          ? data.errors[0].message
+          : "Formspree submission failed.";
+      throw new Error(message);
+    });
   });
 }
 
@@ -1249,10 +1385,14 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
 
     Promise.resolve()
       .then(function () {
+        if (isFormspreeForm(form)) {
+          return sendFormspree(form, templateParams);
+        }
+
         return sendEmailJs(templateId, templateParams, formLabel);
       })
       .then(function () {
-        return sendAutoReply(templateParams);
+        return isFormspreeForm(form) ? Promise.resolve() : sendAutoReply(templateParams);
       })
       .then(function () {
         showToast(successMessage, "success");
@@ -1260,8 +1400,8 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
         setupBookingPrefill();
       })
       .catch(function (error) {
-        console.error("EmailJS send failed:", error);
-        showToast(getEmailJsErrorMessage(error), "error", {
+        console.error("Form send failed:", error);
+        showToast(getFormSendErrorMessage(error), "error", {
           href: emailJsWhatsAppUrl,
           label: "WhatsApp us",
         });

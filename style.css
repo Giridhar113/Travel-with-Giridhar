@@ -1934,6 +1934,13 @@ body.light-mode .not-found-card {
   margin-bottom: 2px;
 }
 
+.review-card small {
+  color: var(--muted);
+  display: block;
+  font-size: 0.78rem;
+  margin-bottom: 4px;
+}
+
 .stars {
   color: #ffd166;
   font-size: 0.95rem;
