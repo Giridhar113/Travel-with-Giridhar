@@ -1368,6 +1368,140 @@ function sendFormspree(form, templateParams) {
   });
 }
 
+let activeTwoFactorModal = null;
+
+function createTwoFactorCode() {
+  const values = new Uint32Array(1);
+
+  if (window.crypto && window.crypto.getRandomValues) {
+    window.crypto.getRandomValues(values);
+    return String(100000 + (values[0] % 900000));
+  }
+
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+function getTwoFactorTarget(templateParams) {
+  return (
+    templateParams.from_email ||
+    templateParams.customer_email ||
+    templateParams.phone ||
+    "this request"
+  );
+}
+
+function closeTwoFactorModal() {
+  if (activeTwoFactorModal) {
+    activeTwoFactorModal.remove();
+    activeTwoFactorModal = null;
+  }
+}
+
+function requestTwoFactorVerification(formLabel, templateParams) {
+  return new Promise(function (resolve, reject) {
+    closeTwoFactorModal();
+
+    let verificationCode = createTwoFactorCode();
+    const target = getTwoFactorTarget(templateParams);
+    const modal = document.createElement("div");
+    const titleId = `twoFactorTitle-${Date.now()}`;
+
+    modal.className = "two-factor-backdrop";
+    modal.innerHTML = `
+      <section class="two-factor-modal" role="dialog" aria-modal="true" aria-labelledby="${titleId}">
+        <button type="button" class="two-factor-close" aria-label="Cancel verification">&times;</button>
+        <span class="two-factor-badge"><i class="fas fa-shield-alt"></i> 2-Step Check</span>
+        <h2 id="${titleId}">${formLabel || "Request"} verification</h2>
+        <p>Enter the 6-digit code below to confirm sending this request for <strong>${escapeHtml(target)}</strong>.</p>
+        <div class="two-factor-code" data-two-factor-code>${verificationCode}</div>
+        <label>
+          Verification code
+          <input type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" data-two-factor-input placeholder="Enter 6-digit code" />
+        </label>
+        <p class="two-factor-error" data-two-factor-error aria-live="polite"></p>
+        <div class="two-factor-actions">
+          <button type="button" class="btn btn-outline" data-two-factor-refresh>Generate New Code</button>
+          <button type="button" class="btn" data-two-factor-submit>Verify & Send</button>
+        </div>
+      </section>
+    `;
+
+    activeTwoFactorModal = modal;
+    document.body.appendChild(modal);
+    document.body.classList.add("two-factor-open");
+
+    const input = modal.querySelector("[data-two-factor-input]");
+    const error = modal.querySelector("[data-two-factor-error]");
+    const codeDisplay = modal.querySelector("[data-two-factor-code]");
+    const verifyButton = modal.querySelector("[data-two-factor-submit]");
+    const refreshButton = modal.querySelector("[data-two-factor-refresh]");
+    const closeButton = modal.querySelector(".two-factor-close");
+
+    function cleanup() {
+      document.body.classList.remove("two-factor-open");
+      document.removeEventListener("keydown", handleKeyDown);
+      closeTwoFactorModal();
+    }
+
+    function cancelVerification() {
+      const errorObject = new Error("Two-step verification was cancelled.");
+      errorObject.name = "TwoFactorCancelled";
+      cleanup();
+      reject(errorObject);
+    }
+
+    function verifyCode() {
+      if (input.value.trim() === verificationCode) {
+        templateParams.two_step_verified = "Yes";
+        cleanup();
+        resolve();
+        return;
+      }
+
+      error.textContent = "Code does not match. Please try again.";
+      input.select();
+    }
+
+    function refreshCode() {
+      verificationCode = createTwoFactorCode();
+      codeDisplay.textContent = verificationCode;
+      input.value = "";
+      error.textContent = "New verification code generated.";
+      input.focus();
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        cancelVerification();
+      }
+    }
+
+    input.addEventListener("input", function () {
+      input.value = input.value.replace(/\D/g, "").slice(0, 6);
+      error.textContent = "";
+    });
+    input.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        verifyCode();
+      }
+    });
+    verifyButton.addEventListener("click", verifyCode);
+    refreshButton.addEventListener("click", refreshCode);
+    closeButton.addEventListener("click", cancelVerification);
+    modal.addEventListener("click", function (event) {
+      if (event.target === modal) {
+        cancelVerification();
+      }
+    });
+    document.addEventListener("keydown", handleKeyDown);
+
+    window.setTimeout(function () {
+      input.focus();
+    }, 80);
+  });
+}
+
 function attachEmailJsSubmit(form, buildParams, templateId, successMessage, formLabel) {
   if (!form) {
     return;
@@ -1387,6 +1521,9 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
 
     Promise.resolve()
       .then(function () {
+        return requestTwoFactorVerification(formLabel, templateParams);
+      })
+      .then(function () {
         if (isFormspreeForm(form)) {
           return sendFormspree(form, templateParams);
         }
@@ -1402,6 +1539,11 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
         setupBookingPrefill();
       })
       .catch(function (error) {
+        if (error && error.name === "TwoFactorCancelled") {
+          showToast("Verification cancelled. Your request was not sent.", "info");
+          return;
+        }
+
         console.error("Form send failed:", error);
         showToast(getFormSendErrorMessage(error), "error", {
           href: emailJsWhatsAppUrl,

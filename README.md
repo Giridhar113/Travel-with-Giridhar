@@ -37,6 +37,7 @@ Full release history is available in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 - FAQ section
 - WhatsApp floating button
 - Better booking inquiry form
+- Two-step form verification before booking/contact submissions
 - Travel checklist saved in localStorage
 - Seasonal offers
 - Package filters, sorting, wishlist, and comparison modal
@@ -98,6 +99,10 @@ Add this Vercel environment variable for the AI Trip Planner:
 - `ANTHROPIC_API_KEY`
 
 The browser calls `/api/ai-planner`, and the serverless function calls Claude using `claude-sonnet-4-20250514`.
+
+## Two-Step Verification
+
+Booking and contact submissions now require a 6-digit confirmation code before the form is sent. This is a front-end verification layer for the static site; production SMS/email OTP would need a backend provider.
 
 ## Tech Stack
 
