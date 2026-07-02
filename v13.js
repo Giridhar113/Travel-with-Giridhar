@@ -70,6 +70,91 @@
     return match ? Number(match[0]) : 3;
   }
 
+  let flexibleResultRowFrame = 0;
+
+  function getGridColumnCount(grid) {
+    const style = window.getComputedStyle(grid);
+
+    if (style.display !== "grid") {
+      return 1;
+    }
+
+    const template = style.gridTemplateColumns || "";
+    const columns = template.split(/\s+/).filter(function (column) {
+      return column && column !== "none";
+    });
+
+    return Math.max(columns.length, 1);
+  }
+
+  function isVisibleResultCard(card) {
+    if (card.hidden || card.classList.contains("is-filtered-out") || card.classList.contains("is-v13-hidden")) {
+      return false;
+    }
+
+    const style = window.getComputedStyle(card);
+    return style.display !== "none" && style.visibility !== "hidden";
+  }
+
+  function fillResultGridLastRow(gridSelector, cardSelector) {
+    const grid = document.querySelector(gridSelector);
+
+    if (!grid) {
+      return;
+    }
+
+    const allCards = Array.from(grid.querySelectorAll(cardSelector));
+    allCards.forEach(function (card) {
+      if (card.dataset.flexRowSpan) {
+        card.style.gridColumn = "";
+        delete card.dataset.flexRowSpan;
+      }
+    });
+
+    const columns = getGridColumnCount(grid);
+    const visibleCards = allCards.filter(isVisibleResultCard);
+
+    if (columns <= 1 || !visibleCards.length) {
+      return;
+    }
+
+    const remainder = visibleCards.length % columns;
+
+    if (!remainder) {
+      return;
+    }
+
+    let columnsLeft = columns;
+    visibleCards.slice(-remainder).forEach(function (card, index, lastRowCards) {
+      const cardsLeft = lastRowCards.length - index;
+      const span = Math.ceil(columnsLeft / cardsLeft);
+      columnsLeft -= span;
+
+      if (span > 1) {
+        card.style.gridColumn = `span ${span}`;
+        card.dataset.flexRowSpan = String(span);
+      }
+    });
+  }
+
+  function refreshFlexibleResultRows() {
+    fillResultGridLastRow(".package-grid", ".package-card");
+    fillResultGridLastRow("#destinationsGrid", ".destination-card");
+  }
+
+  function scheduleFlexibleResultRows() {
+    if (flexibleResultRowFrame) {
+      return;
+    }
+
+    flexibleResultRowFrame = window.requestAnimationFrame(function () {
+      flexibleResultRowFrame = 0;
+      refreshFlexibleResultRows();
+    });
+  }
+
+  window.refreshTravelResultRows = scheduleFlexibleResultRows;
+
   function getPackageCatalog() {
     const extras = typeof extraTravelPackages !== "undefined" && Array.isArray(extraTravelPackages) ? extraTravelPackages : [];
     const mappedExtras = extras.map(function (item, index) {
@@ -580,6 +665,7 @@
       }).forEach(function (card) { grid.appendChild(card); });
       count.textContent = `Showing ${visible.length} package${visible.length === 1 ? "" : "s"}`;
       empty.hidden = visible.length > 0;
+      scheduleFlexibleResultRows();
     }
 
     chips.forEach(function (chip) {
@@ -1289,6 +1375,13 @@
     });
   }
 
+  function initFlexibleResultRows() {
+    scheduleFlexibleResultRows();
+    window.addEventListener("resize", scheduleFlexibleResultRows);
+    window.setTimeout(scheduleFlexibleResultRows, 250);
+    window.setTimeout(scheduleFlexibleResultRows, 900);
+  }
+
   function keepHomeAtHeroOnFreshLoad() {
     const page = location.pathname.split("/").pop() || "index.html";
     const hash = location.hash;
@@ -1339,6 +1432,7 @@
     initTravelChecklist();
     initDestinationComparison();
     updateFooterVersion();
+    initFlexibleResultRows();
     document.addEventListener("click", function (event) {
       if (event.target.closest(".v13-trending-card, .v13-featured-card")) {
         setTimeout(decorateSaveButtons, 0);

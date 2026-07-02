@@ -1700,6 +1700,28 @@ details p {
   width: 100%;
 }
 
+.package-card[data-flex-row-span],
+.destination-card[data-flex-row-span] {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.42fr) minmax(0, 1fr);
+}
+
+.package-card[data-flex-row-span] > img,
+.destination-card[data-flex-row-span] > img {
+  height: 100%;
+  min-height: 250px;
+}
+
+.package-card[data-flex-row-span] .card-content,
+.destination-card[data-flex-row-span] .card-content {
+  padding: 24px;
+}
+
+.package-card[data-flex-row-span] .card-meta,
+.destination-card[data-flex-row-span] .card-meta {
+  align-items: start;
+}
+
 .blog-grid,
 .gallery-grid {
   display: grid;

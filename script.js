@@ -428,6 +428,10 @@ function applyDestinationFilters() {
       visibleCount === 1 ? "" : "s"
     }${searchLabel}.`;
   }
+
+  if (typeof window.refreshTravelResultRows === "function") {
+    window.refreshTravelResultRows();
+  }
 }
 
 function showVisibleDestinationCards() {
@@ -438,6 +442,10 @@ function showVisibleDestinationCards() {
       card.classList.add("is-visible");
     }
   });
+
+  if (typeof window.refreshTravelResultRows === "function") {
+    window.refreshTravelResultRows();
+  }
 }
 
 function resetDestinationControls() {
