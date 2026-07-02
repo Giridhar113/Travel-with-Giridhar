@@ -11,6 +11,7 @@
 }
 
 .wishlist-nav-btn,
+.currency-toggle-btn,
 .mobile-saved-btn {
   align-items: center;
   background: rgba(255, 255, 255, 0.06);
@@ -28,6 +29,7 @@
 }
 
 .wishlist-nav-btn:hover,
+.currency-toggle-btn:hover,
 .mobile-saved-btn:hover {
   border-color: var(--primary);
   color: var(--primary);
@@ -45,6 +47,35 @@
   justify-content: center;
   min-width: 20px;
   padding: 0 6px;
+}
+
+.newsletter-signup {
+  display: grid;
+  gap: 8px;
+  min-width: min(100%, 290px);
+}
+
+.newsletter-signup label {
+  color: var(--ink);
+  display: grid;
+  font-weight: 900;
+  gap: 8px;
+}
+
+.newsletter-signup label > div {
+  display: flex;
+  gap: 8px;
+}
+
+.newsletter-signup input {
+  min-width: 0;
+  padding: 11px 12px;
+}
+
+.newsletter-status {
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
 .booking-stepper-form {
@@ -552,6 +583,22 @@
   gap: 10px;
 }
 
+.wishlist-empty-state {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  text-align: left;
+}
+
+.wishlist-empty-state strong {
+  color: var(--ink);
+  font-size: 1.1rem;
+}
+
+.wishlist-empty-state span {
+  color: var(--muted);
+}
+
 .v13-featured-grid,
 .v13-budget-grid {
   display: grid;
@@ -970,7 +1017,8 @@
     padding-bottom: 132px;
   }
 
-  .navbar .wishlist-nav-btn {
+  .navbar .wishlist-nav-btn,
+  .navbar .currency-toggle-btn {
     display: none;
   }
 

@@ -1375,6 +1375,33 @@ details p {
   gap: 12px;
 }
 
+.ai-result.is-loading {
+  border-color: rgba(34, 211, 197, 0.3);
+}
+
+.ai-skeleton-stack {
+  display: grid;
+  gap: 10px;
+  margin: 6px 0;
+}
+
+.ai-skeleton-stack span {
+  animation: skeletonPulse 1.1s ease-in-out infinite;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(34, 211, 197, 0.22), rgba(255, 255, 255, 0.06));
+  background-size: 220% 100%;
+  border-radius: 999px;
+  display: block;
+  height: 12px;
+}
+
+.ai-skeleton-stack span:nth-child(2) {
+  width: 78%;
+}
+
+.ai-skeleton-stack span:nth-child(3) {
+  width: 58%;
+}
+
 .ai-result h3 {
   font-size: 1.45rem;
 }
@@ -2206,6 +2233,52 @@ body.light-mode .not-found-card {
   justify-self: flex-start;
 }
 
+.testimonial-submit-section {
+  align-items: stretch;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(240px, 0.8fr) minmax(320px, 1fr) minmax(280px, 0.9fr);
+}
+
+.testimonial-copy-panel,
+.testimonial-preview-panel {
+  align-self: stretch;
+}
+
+.testimonial-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.local-testimonial-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.local-testimonial-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+}
+
+.local-testimonial-card strong {
+  color: var(--ink);
+}
+
+.local-testimonial-card span {
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.local-testimonial-card p {
+  color: var(--muted);
+}
+
 .form-submit-btn {
   align-items: center;
   display: inline-flex;
@@ -2389,6 +2462,16 @@ body.two-factor-open {
 @keyframes submitSpin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes skeletonPulse {
+  from {
+    background-position: 220% 0;
+  }
+
+  to {
+    background-position: -220% 0;
   }
 }
 
@@ -2991,6 +3074,7 @@ body.destinations-page .destination-card:not(.is-filtered-out) {
 
   .split,
   .contact-layout,
+  .testimonial-submit-section,
   .form-row {
     grid-template-columns: 1fr;
   }

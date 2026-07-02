@@ -7,14 +7,14 @@
       name="description"
       content="Send a booking request or travel question to Travel with Giridhar and get practical trip planning support."
     />
-    <title>Contact — Travel with Giridhar</title>
-    <meta property="og:title" content="Contact — Travel with Giridhar" />
+    <title>Contact - Travel with Giridhar</title>
+    <meta property="og:title" content="Contact - Travel with Giridhar" />
     <meta property="og:description" content="Send a booking request or travel question to Travel with Giridhar and get practical trip planning support." />
     <meta property="og:image" content="https://travel-with-giridhar.vercel.app/services1.jpg" />
     <meta property="og:url" content="https://travel-with-giridhar.vercel.app/contact.html" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Contact — Travel with Giridhar" />
+    <meta name="twitter:title" content="Contact - Travel with Giridhar" />
     <meta name="twitter:description" content="Send a booking request or travel question to Travel with Giridhar and get practical trip planning support." />
     <meta name="twitter:image" content="https://travel-with-giridhar.vercel.app/services1.jpg" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
@@ -385,6 +385,65 @@
           </button>
         </form>
       </section>
+
+      <section class="section testimonial-submit-section" id="testimonialFormSection">
+        <div class="panel testimonial-copy-panel">
+          <p class="eyebrow">Share Your Experience</p>
+          <h2>Add a Travel Review</h2>
+          <p>
+            Save a short review for the demo site and optionally send it on
+            WhatsApp. Your saved review will appear in this browser's
+            testimonial preview.
+          </p>
+          <ul class="feature-list">
+            <li>Stored locally in this browser</li>
+            <li>Visible immediately after submit</li>
+            <li>Easy WhatsApp sharing</li>
+          </ul>
+        </div>
+
+        <form class="panel contact-form testimonial-form" id="testimonialForm">
+          <div class="form-heading">
+            <p class="eyebrow">Traveler Review</p>
+            <h2>Submit Testimonial</h2>
+          </div>
+          <div class="form-row">
+            <label>
+              Name
+              <input type="text" name="testimonialName" placeholder="Enter your name" required />
+            </label>
+            <label>
+              Destination
+              <input type="text" name="testimonialDestination" placeholder="Bali, Goa, Manali..." required />
+            </label>
+          </div>
+          <label>
+            Rating
+            <select name="testimonialRating" required>
+              <option value="">Choose rating</option>
+              <option value="5">5 - Excellent</option>
+              <option value="4">4 - Good</option>
+              <option value="3">3 - Average</option>
+              <option value="2">2 - Needs Improvement</option>
+              <option value="1">1 - Poor</option>
+            </select>
+          </label>
+          <label>
+            Review
+            <textarea name="testimonialText" placeholder="Tell us what made the trip memorable" required></textarea>
+          </label>
+          <div class="testimonial-actions">
+            <button type="submit" class="btn">Save Review</button>
+            <a class="btn btn-outline" id="testimonialWhatsAppLink" href="https://wa.me/918179721034" target="_blank" rel="noreferrer">Send WhatsApp</a>
+          </div>
+        </form>
+
+        <div class="panel testimonial-preview-panel">
+          <p class="eyebrow">Saved Reviews</p>
+          <h2>Local Testimonial Preview</h2>
+          <div class="local-testimonial-list" id="localTestimonialsList"></div>
+        </div>
+      </section>
     </main>
 
     <div
@@ -409,7 +468,7 @@
       <div class="footer-container">
         <div>
           <h3>Travel with Giridhar</h3>
-          <p>? 2026 Travel with Giridhar. All rights reserved.</p>
+          <p>&copy; 2026 Travel with Giridhar. All rights reserved.</p>
           <p>Developed by Giridhar Reddy</p>
         </div>
         <div class="footer-links">

@@ -19,6 +19,20 @@ function normalizeSearchText(value) {
     .trim();
 }
 
+function debounce(callback, delay) {
+  let timer;
+
+  return function () {
+    const args = arguments;
+    const context = this;
+
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      callback.apply(context, args);
+    }, delay);
+  };
+}
+
 function parseRupeeAmount(value) {
   return Number(String(value || "").replace(/[^\d]/g, "")) || 0;
 }
@@ -465,7 +479,7 @@ function resetDestinationControls() {
 }
 
 if (destinationSearch) {
-  destinationSearch.addEventListener("input", applyDestinationFilters);
+  destinationSearch.addEventListener("input", debounce(applyDestinationFilters, 180));
 }
 
 [destinationBudgetFilter, destinationSeasonFilter].forEach(function (control) {
@@ -1023,6 +1037,8 @@ function renderSmartTrip(trip, days, travelType) {
     return;
   }
 
+  const budget = Number(document.getElementById("aiBudget") ? document.getElementById("aiBudget").value : trip.estimatedCost);
+  const travelers = Number(document.getElementById("aiTravelers") ? document.getElementById("aiTravelers").value : 2);
   const itinerary = trip.itinerary
     .slice(0, Math.min(days, trip.itinerary.length))
     .map(function (item) {
@@ -1032,6 +1048,13 @@ function renderSmartTrip(trip, days, travelType) {
   const bookingUrl = `contact.html?package=${encodeURIComponent(
     trip.packageName
   )}&destination=${encodeURIComponent(trip.destination)}#bookingForm`;
+  setAiPlannerShareData({
+    destination: trip.destination,
+    budget,
+    days,
+    travelers,
+    travelType,
+  });
 
   aiPlannerResult.innerHTML = `
     <span class="ai-pill">Best match</span>
@@ -1045,6 +1068,18 @@ function renderSmartTrip(trip, days, travelType) {
     <ul class="ai-itinerary">${itinerary}</ul>
     <a href="${bookingUrl}" class="btn">Book This Plan</a>
   `;
+}
+
+function setAiPlannerShareData(data) {
+  if (!aiPlannerResult) {
+    return;
+  }
+
+  aiPlannerResult.dataset.shareDestination = data.destination || "";
+  aiPlannerResult.dataset.shareBudget = String(data.budget || "");
+  aiPlannerResult.dataset.shareDays = String(data.days || "");
+  aiPlannerResult.dataset.shareTravelers = String(data.travelers || "");
+  aiPlannerResult.dataset.shareType = data.travelType || "";
 }
 
 function escapeHtml(value) {
@@ -1073,6 +1108,23 @@ function setAiPlannerLoading(isLoading) {
 
   submitButton.disabled = isLoading;
   submitButton.textContent = isLoading ? "Generating..." : submitButton.dataset.defaultText;
+
+  if (aiPlannerResult) {
+    aiPlannerResult.classList.toggle("is-loading", isLoading);
+
+    if (isLoading) {
+      aiPlannerResult.innerHTML = `
+        <span class="ai-pill">Generating</span>
+        <h3>Building your trip plan</h3>
+        <div class="ai-skeleton-stack" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <p>Checking destination fit, budget, days, and travel style...</p>
+      `;
+    }
+  }
 }
 
 function renderGeneratedTripPlan(planData, inputs) {
@@ -1094,6 +1146,13 @@ function renderGeneratedTripPlan(planData, inputs) {
   const bookingUrl = `contact.html?package=${encodeURIComponent(
     "AI Trip Plan"
   )}&destination=${encodeURIComponent(planData.destination || "Custom Trip")}#bookingForm`;
+  setAiPlannerShareData({
+    destination: planData.destination || "Custom Trip",
+    budget: inputs.budget,
+    days: inputs.days,
+    travelers: inputs.travelers,
+    travelType: inputs.travelType,
+  });
 
   aiPlannerResult.innerHTML = `
     <span class="ai-pill">Claude plan</span>
@@ -1107,6 +1166,44 @@ function renderGeneratedTripPlan(planData, inputs) {
     <ul class="ai-itinerary">${planItems}</ul>
     <a href="${bookingUrl}" class="btn">Book This Plan</a>
   `;
+}
+
+function renderSharedPlannerFromUrl() {
+  if (!aiPlannerForm || !aiPlannerResult) {
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get("tripPlan") !== "1") {
+    return;
+  }
+
+  const budget = Number(params.get("budget")) || 40000;
+  const days = Number(params.get("days")) || 5;
+  const travelers = Number(params.get("travelers")) || 2;
+  const travelType = params.get("type") || "beach";
+  const destination = params.get("destination") || "";
+
+  document.getElementById("aiBudget").value = budget;
+  document.getElementById("aiDays").value = days;
+  document.getElementById("aiTravelers").value = travelers;
+  document.getElementById("aiTravelType").value = travelType;
+
+  const trip = {
+    ...findSmartTrip({ budget, days, travelers, travelType }),
+  };
+
+  if (destination) {
+    trip.destination = destination;
+  }
+
+  renderSmartTrip(trip, days, travelType);
+
+  const pill = aiPlannerResult.querySelector(".ai-pill");
+  if (pill) {
+    pill.textContent = "Shared plan";
+  }
 }
 
 async function generateClaudeTripPlan(inputs) {
@@ -1170,6 +1267,8 @@ if (surpriseTripButton) {
     renderSmartTrip(randomTrip, randomTrip.idealDays, travelType);
   });
 }
+
+renderSharedPlannerFromUrl();
 
 // EmailJS config - replace with your credentials.
 const emailJsConfig = {

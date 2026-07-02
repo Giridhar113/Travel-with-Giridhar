@@ -2,6 +2,10 @@
   const siteConfig = window.TRAVEL_SITE_CONFIG || {};
   const whatsappNumber = siteConfig.whatsappNumber || "918179721034";
   const savedTripsKey = "savedTrips";
+  const localTestimonialsKey = "travelLocalTestimonials";
+  const currencyPreferenceKey = "travelCurrencyPreference";
+  const newsletterKey = "travelNewsletterEmail";
+  const usdConversionRate = 83;
   const quoteText =
     siteConfig.whatsappMessage || "Hi, I want to plan a trip with Travel with Giridhar.";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(quoteText)}`;
@@ -47,10 +51,36 @@
   }
 
   function money(value) {
+    if (getCurrencyPreference() === "USD") {
+      return `$${Math.round(Number(value || 0) / usdConversionRate).toLocaleString("en-US")}`;
+    }
+
     if (typeof formatRupees === "function") {
       return formatRupees(value);
     }
     return `Rs. ${Number(value || 0).toLocaleString("en-IN")}`;
+  }
+
+  function getCurrencyPreference() {
+    try {
+      return localStorage.getItem(currencyPreferenceKey) === "USD" ? "USD" : "INR";
+    } catch (error) {
+      return "INR";
+    }
+  }
+
+  function setCurrencyPreference(currency) {
+    try {
+      localStorage.setItem(currencyPreferenceKey, currency);
+    } catch (error) {}
+  }
+
+  function formatStaticPrice(amount, currency) {
+    if (currency === "USD") {
+      return `$${Math.round(Number(amount || 0) / usdConversionRate).toLocaleString("en-US")}`;
+    }
+
+    return `Rs. ${Number(amount || 0).toLocaleString("en-IN")}`;
   }
 
   function slug(value) {
@@ -58,6 +88,15 @@
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
   function parseAmount(value) {
@@ -251,6 +290,9 @@
     document.querySelectorAll(".wishlist-count").forEach(function (node) {
       node.textContent = saved.length;
     });
+    document.querySelectorAll("#savedCount").forEach(function (node) {
+      node.textContent = `Saved trips: ${saved.length}`;
+    });
     document.querySelectorAll(".v13-save-btn").forEach(function (button) {
       const isSaved = saved.some(function (item) { return item.id === button.dataset.tripId; });
       button.classList.toggle("is-saved", isSaved);
@@ -285,7 +327,7 @@
         <div class="wishlist-head">
           <div>
             <p class="hero-kicker">Saved Trips</p>
-            <h2 id="wishlistTitle">Your Wishlist</h2>
+            <h2 id="wishlistTitle">My Wishlist</h2>
           </div>
           <button type="button" class="v13-close-btn" data-close-wishlist aria-label="Close saved trips"><i class="fas fa-times"></i></button>
         </div>
@@ -323,7 +365,13 @@
     if (!list) return;
     const saved = getSavedTrips();
     if (!saved.length) {
-      list.innerHTML = '<p class="v13-empty-state">No saved trips yet. Tap a heart on any package or destination.</p>';
+      list.innerHTML = `
+        <div class="v13-empty-state wishlist-empty-state">
+          <strong>No saved trips yet</strong>
+          <span>Tap a heart on any destination or package to build your shortlist.</span>
+          <a href="packages.html" class="btn btn-small">Browse Packages</a>
+        </div>
+      `;
       return;
     }
     list.innerHTML = saved.map(function (item) {
@@ -344,6 +392,9 @@
   }
 
   function decorateSaveButtons() {
+    document.querySelectorAll(".save-btn").forEach(function (button) {
+      button.remove();
+    });
     document.querySelectorAll(".package-card, .destination-card, .v13-featured-card, .v13-trending-card").forEach(function (card) {
       if (card.querySelector(".v13-save-btn")) return;
       const item = tripFromCard(card);
@@ -376,6 +427,143 @@
       actionBox.appendChild(button);
     });
     updateWishlistUi();
+  }
+
+  function initWishlistClearButtons() {
+    document.querySelectorAll("#clearSaved").forEach(function (button) {
+      if (button.dataset.v13WishlistReady) return;
+      button.dataset.v13WishlistReady = "true";
+      button.addEventListener("click", function () {
+        setSavedTrips([]);
+        updateWishlistUi();
+        toast("Wishlist cleared.", "success");
+      });
+    });
+  }
+
+  function initCurrencyToggle() {
+    document.querySelectorAll(".navbar").forEach(function (navbar) {
+      if (navbar.querySelector(".currency-toggle-btn")) return;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "currency-toggle-btn";
+      button.setAttribute("aria-label", "Toggle currency");
+      button.addEventListener("click", function () {
+        const next = getCurrencyPreference() === "INR" ? "USD" : "INR";
+        setCurrencyPreference(next);
+        updateCurrencyToggleLabels();
+        applyCurrencyToPage();
+        toast(`Prices switched to ${next}.`, "success");
+      });
+      navbar.appendChild(button);
+    });
+    updateCurrencyToggleLabels();
+    applyCurrencyToPage();
+  }
+
+  function initNewsletterSignup() {
+    document.querySelectorAll(".footer-container").forEach(function (footer, index) {
+      if (footer.querySelector(".newsletter-signup")) return;
+      const form = document.createElement("form");
+      form.className = "newsletter-signup";
+      form.innerHTML = `
+        <label for="newsletterEmail${index}">
+          <span>Get travel deals</span>
+          <div>
+            <input type="email" id="newsletterEmail${index}" name="newsletterEmail" placeholder="Email address" autocomplete="email" required />
+            <button type="submit" class="btn btn-small">Join</button>
+          </div>
+        </label>
+        <p class="newsletter-status" aria-live="polite"></p>
+      `;
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const input = form.elements.newsletterEmail;
+        const status = form.querySelector(".newsletter-status");
+        const email = input.value.trim();
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          status.textContent = "Enter a valid email address.";
+          toast("Please enter a valid email address.", "error");
+          return;
+        }
+
+        try {
+          localStorage.setItem(newsletterKey, email);
+        } catch (error) {}
+
+        status.textContent = "Saved locally for demo signup.";
+        input.value = "";
+        toast("Thanks! Travel deals signup saved locally.", "success");
+      });
+      footer.appendChild(form);
+    });
+  }
+
+  function updateCurrencyToggleLabels() {
+    const currency = getCurrencyPreference();
+    document.querySelectorAll(".currency-toggle-btn").forEach(function (button) {
+      button.innerHTML = `<i class="fas fa-coins"></i><span>${currency}</span>`;
+    });
+  }
+
+  function capturePriceOriginal(element) {
+    if (!element.dataset.priceOriginal) {
+      element.dataset.priceOriginal = element.textContent.trim();
+    }
+
+    if (!element.dataset.priceInr) {
+      const amount = parseAmount(element.dataset.priceOriginal);
+
+      if (amount) {
+        element.dataset.priceInr = String(amount);
+      }
+    }
+  }
+
+  function updatePriceText(element, currency) {
+    capturePriceOriginal(element);
+    const amount = Number(element.dataset.priceInr || 0);
+
+    if (!amount) {
+      return;
+    }
+
+    const replacement = formatStaticPrice(amount, currency);
+    const original = element.dataset.priceOriginal;
+    const pattern = /(From\s*)?(?:Rs\.|₹)\s*[\d,]+/i;
+
+    if (pattern.test(original)) {
+      element.textContent = original.replace(pattern, function (match, fromLabel) {
+        return `${fromLabel || ""}${replacement}`;
+      });
+    } else {
+      element.textContent = replacement;
+    }
+  }
+
+  function applyCurrencyToPage() {
+    const currency = getCurrencyPreference();
+    const priceSelectors = [
+      ".price",
+      ".offer-card > strong",
+      ".slider-meta strong",
+      ".v13-trending-content strong",
+      ".v13-featured-card .card-meta span",
+      ".compare-card strong",
+      ".budget-output strong"
+    ];
+
+    document.querySelectorAll(priceSelectors.join(",")).forEach(function (element) {
+      updatePriceText(element, currency);
+    });
+
+    ["packageMinPrice", "estimateTravelers"].forEach(function (id) {
+      const control = document.getElementById(id);
+      if (control) {
+        control.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    });
   }
 
   function initBookingStepper() {
@@ -554,9 +742,9 @@
         <label class="price-range-group">Price range
           <div class="dual-range">
             <input type="range" id="packageMinPrice" min="10000" max="150000" step="1000" value="10000" aria-label="Minimum package price" />
-            <input type="range" id="packageMaxPrice" min="10000" max="150000" step="1000" value="100000" aria-label="Maximum package price" />
+            <input type="range" id="packageMaxPrice" min="10000" max="150000" step="1000" value="150000" aria-label="Maximum package price" />
           </div>
-          <span class="v13-readout" id="packagePriceReadout">Rs. 10,000 - Rs. 1,00,000</span>
+          <span class="v13-readout" id="packagePriceReadout">Rs. 10,000 - Rs. 1,50,000</span>
         </label>
         <label>Sort
           <select id="packageSort">
@@ -952,12 +1140,60 @@
     if (!form || !result || result.dataset.aiShareReady) return;
     result.dataset.aiShareReady = "true";
     result.addEventListener("click", function (event) {
+      const copyButton = event.target.closest("[data-copy-ai-plan]");
+      if (copyButton) {
+        copyAiPlanLink(result);
+      }
+
       const whatsappButton = event.target.closest("[data-whatsapp-ai-plan]");
       if (whatsappButton) {
         const message = result.innerText.replace(/\s+/g, " ").trim();
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, "_blank", "noopener");
+        const shareUrl = buildAiPlanShareUrl(result);
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`${message}\n\nOpen plan: ${shareUrl}`)}`, "_blank", "noopener");
       }
     });
+  }
+
+  function buildAiPlanShareUrl(result) {
+    const url = new URL("index.html", window.location.href);
+    const title = result.querySelector("h3") ? result.querySelector("h3").textContent.trim() : "Custom Trip";
+
+    url.searchParams.set("tripPlan", "1");
+    url.searchParams.set("destination", result.dataset.shareDestination || title);
+    url.searchParams.set("budget", result.dataset.shareBudget || document.getElementById("aiBudget").value || "40000");
+    url.searchParams.set("days", result.dataset.shareDays || document.getElementById("aiDays").value || "5");
+    url.searchParams.set("travelers", result.dataset.shareTravelers || document.getElementById("aiTravelers").value || "2");
+    url.searchParams.set("type", result.dataset.shareType || document.getElementById("aiTravelType").value || "beach");
+    url.hash = "aiPlanner";
+
+    return url.toString();
+  }
+
+  function copyText(value) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(value);
+    }
+
+    const field = document.createElement("textarea");
+    field.value = value;
+    field.setAttribute("readonly", "");
+    field.style.position = "fixed";
+    field.style.opacity = "0";
+    document.body.appendChild(field);
+    field.select();
+    document.execCommand("copy");
+    field.remove();
+    return Promise.resolve();
+  }
+
+  function copyAiPlanLink(result) {
+    copyText(buildAiPlanShareUrl(result))
+      .then(function () {
+        toast("Shareable trip plan link copied.", "success");
+      })
+      .catch(function () {
+        toast("Could not copy the link. Please copy it from the address bar.", "error");
+      });
   }
 
   function addAiPlanButtons() {
@@ -966,7 +1202,7 @@
     if (!result.querySelector(".ai-itinerary")) return;
     const actions = document.createElement("div");
     actions.className = "v13-card-action-row";
-    actions.innerHTML = '<button type="button" class="btn btn-outline" data-whatsapp-ai-plan>WhatsApp This Plan</button>';
+    actions.innerHTML = '<button type="button" class="btn btn-outline" data-copy-ai-plan>Copy Link</button><button type="button" class="btn btn-outline" data-whatsapp-ai-plan>WhatsApp This Plan</button>';
     result.appendChild(actions);
   }
 
@@ -978,10 +1214,116 @@
     addAiPlanButtons();
   }
 
+  function getLocalTestimonials() {
+    try {
+      return JSON.parse(localStorage.getItem(localTestimonialsKey)) || [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function setLocalTestimonials(items) {
+    try {
+      localStorage.setItem(localTestimonialsKey, JSON.stringify(items));
+    } catch (error) {
+      toast("Review could not be saved in this browser.", "error");
+    }
+  }
+
+  function testimonialStars(rating) {
+    const value = Math.max(1, Math.min(5, Number(rating) || 5));
+    return `${"★".repeat(value)}${"☆".repeat(5 - value)}`;
+  }
+
+  function testimonialWhatsAppUrl(item) {
+    const message = [
+      "New Travel with Giridhar testimonial",
+      `Name: ${item.name}`,
+      `Destination: ${item.destination}`,
+      `Rating: ${item.rating}/5`,
+      `Review: ${item.review}`,
+    ].join("\n");
+    return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  }
+
+  function renderLocalTestimonials() {
+    const list = document.getElementById("localTestimonialsList");
+    const link = document.getElementById("testimonialWhatsAppLink");
+    const items = getLocalTestimonials();
+
+    if (link) {
+      link.href = items.length ? testimonialWhatsAppUrl(items[0]) : `https://wa.me/${whatsappNumber}`;
+    }
+
+    if (!list) return;
+
+    if (!items.length) {
+      list.innerHTML = '<div class="v13-empty-state">No local reviews yet. Add one to preview it here.</div>';
+      return;
+    }
+
+    list.innerHTML = items.slice(0, 4).map(function (item) {
+      return `
+        <article class="local-testimonial-card">
+          <strong>${escapeHtml(item.name)} - ${escapeHtml(item.destination)}</strong>
+          <span aria-label="${escapeHtml(item.rating)} star rating">${testimonialStars(item.rating)}</span>
+          <p>${escapeHtml(item.review)}</p>
+          <a class="btn btn-outline btn-small" href="${testimonialWhatsAppUrl(item)}" target="_blank" rel="noreferrer">Send WhatsApp</a>
+        </article>
+      `;
+    }).join("");
+  }
+
+  function initTestimonialForm() {
+    const form = document.getElementById("testimonialForm");
+    if (!form) {
+      renderLocalTestimonials();
+      return;
+    }
+
+    if (form.dataset.testimonialReady) return;
+    form.dataset.testimonialReady = "true";
+    renderLocalTestimonials();
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      const item = {
+        id: `review-${Date.now()}`,
+        name: form.elements.testimonialName.value.trim(),
+        destination: form.elements.testimonialDestination.value.trim(),
+        rating: Number(form.elements.testimonialRating.value),
+        review: form.elements.testimonialText.value.trim(),
+        date: new Date().toLocaleDateString("en-IN", { month: "short", year: "numeric" }),
+      };
+
+      if (!item.name || !item.destination || !item.rating || !item.review) {
+        toast("Please complete all testimonial fields.", "error");
+        return;
+      }
+
+      const saved = getLocalTestimonials();
+      saved.unshift(item);
+      setLocalTestimonials(saved.slice(0, 10));
+      form.reset();
+      renderLocalTestimonials();
+      toast("Review saved locally for the demo.", "success");
+    });
+  }
+
   function initReviews() {
     const section = document.querySelector(".review-slider-section");
     if (!section || section.dataset.v13Ready) return;
     section.dataset.v13Ready = "true";
+    const localReviews = getLocalTestimonials().map(function (item) {
+      return [
+        item.name,
+        "Local demo",
+        `${item.destination} - ${item.date || "Recent trip"}`,
+        String(item.rating || 5),
+        item.review,
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=160&auto=format&fit=crop&q=75"
+      ];
+    });
     const reviews = [
       ["Ananya Rao", "Mumbai", "Bali Premium Tour - April 2026", "4", "The Bali package was well planned, comfortable, and easy to follow for our April 2026 beach holiday. Transfers and hotels were handled smoothly.", "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&auto=format&fit=crop&q=75"],
       ["Vikram Kumar", "Hyderabad", "Goa Beach Escape - March 2026", "5", "Our Goa trip in March 2026 felt relaxed and organized. Pricing was clear and the support before travel was very helpful.", "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&auto=format&fit=crop&q=75"],
@@ -989,7 +1331,7 @@
       ["Rahul Sharma", "Pune", "Dubai Desert Luxury", "5", "The Dubai plan was perfect for our family. The desert safari and city tour were the highlights.", "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=160&auto=format&fit=crop&q=75"],
       ["Sneha Iyer", "Chennai", "Kerala Backwater Retreat", "4", "The houseboat stay was peaceful and the itinerary did not feel rushed. Great option for families.", "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=160&auto=format&fit=crop&q=75"],
       ["Arjun Nair", "Kochi", "Singapore Family Fun", "5", "Clean planning, quick replies, and good attraction suggestions. The kids loved Sentosa.", "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=160&auto=format&fit=crop&q=75"]
-    ];
+    ].concat(localReviews);
     section.innerHTML = `
       <div class="section-heading-left">
         <p class="hero-kicker">Testimonials</p>
@@ -999,15 +1341,14 @@
       <div class="v13-review-carousel" id="v13ReviewCarousel">
         <div class="v13-review-track" id="v13ReviewTrack">
           ${reviews.map(function (review) {
-            const full = "?????".slice(0, Number(review[3]));
-            const empty = "?????".slice(0, 5 - Number(review[3]));
+            const stars = testimonialStars(review[3]);
             return `
               <article class="v13-review-card">
                 <div class="v13-review-person">
                   <img class="v13-review-avatar" src="${review[5]}" alt="${review[0]}" loading="lazy" width="112" height="112" />
                   <div><h3>${review[0]}</h3><p>${review[1]} - ${review[2]}</p><span class="verified-badge">Verified Traveler</span></div>
                 </div>
-                <span class="v13-stars" aria-label="${review[3]} star rating">${full}${empty}</span>
+                <span class="v13-stars" aria-label="${review[3]} star rating">${stars}</span>
                 <p>${review[4]}</p>
               </article>
             `;
@@ -1154,17 +1495,6 @@
     const panel = document.querySelector(".search-panel .filter-tags");
     if (!panel || panel.dataset.v13Ready) return;
     panel.dataset.v13Ready = "true";
-    ["Budget", "Luxury", "Hill Station", "International"].forEach(function (label) {
-      const value = label.toLowerCase();
-      if (!panel.querySelector(`[data-filter="${value}"]`)) {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "filter-chip";
-        button.dataset.filter = value;
-        button.textContent = label;
-        panel.appendChild(button);
-      }
-    });
     document.querySelectorAll(".destination-card").forEach(function (card) {
       const name = card.querySelector("h2") ? card.querySelector("h2").textContent.toLowerCase() : "";
       const price = parseAmount(card.querySelector(".price") ? card.querySelector(".price").textContent : "");
@@ -1420,18 +1750,22 @@
     initHomeFeaturedTrips();
     initTrendingSlider();
     initBudgetEstimator();
+    initCurrencyToggle();
     enhanceAiPlannerWhatsAppShare();
     patchAiPlannerButtons();
+    initTestimonialForm();
     initReviews();
     initGallery();
     enhanceDestinationFilters();
     initStickyCtas();
     initMobileBottomNav();
     decorateSaveButtons();
+    initWishlistClearButtons();
     lazyLoadImages();
     initTravelChecklist();
     initDestinationComparison();
     updateFooterVersion();
+    initNewsletterSignup();
     initFlexibleResultRows();
     document.addEventListener("click", function (event) {
       if (event.target.closest(".v13-trending-card, .v13-featured-card")) {
