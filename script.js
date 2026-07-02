@@ -1173,7 +1173,9 @@ const emailJsConfig = {
   ownerEmail: "giridhar.parlapalli@gmail.com",
 };
 const emailJsWhatsAppUrl =
-  "https://wa.me/918179721034?text=Hi%2C%20I%20tried%20the%20website%20form%20and%20want%20to%20plan%20a%20trip.";
+  `https://wa.me/${
+    window.TRAVEL_SITE_CONFIG ? window.TRAVEL_SITE_CONFIG.whatsappNumber : "918179721034"
+  }?text=Hi%2C%20I%20tried%20the%20website%20form%20and%20want%20to%20plan%20a%20trip.`;
 let emailJsInitialized = false;
 
 function getFormValue(form, fieldName) {

@@ -107,6 +107,14 @@ The browser calls `/api/ai-planner`, and the serverless function calls Claude us
 - localStorage
 - Formspree
 - Anthropic Claude API via Vercel serverless function
+
+## Shared Site Config
+
+Brand/contact values are centralized in `site-config.js`:
+
+- Brand: `Travel with Giridhar`
+- WhatsApp: `918179721034`
+- GitHub: `https://github.com/Giridhar113/Travel-with-Giridhar`
 - Vercel deployment
 
 ## Developer
@@ -114,7 +122,7 @@ The browser calls `/api/ai-planner`, and the serverless function calls Claude us
 **Giridhar Reddy**
 Frontend Developer skilled in HTML, CSS, and JavaScript.
 
-- GitHub: https://github.com/Giridhar113
+- GitHub: https://github.com/Giridhar113/Travel-with-Giridhar
 - Portfolio: https://giridhar-portfolio-ten.vercel.app/
 
 ## Live Link

@@ -32,7 +32,7 @@ The site now feels more like a real travel startup experience with planning tool
 
 ---
 
-## Travel Website v1.3
+## Previous Interactive Release
 
 **Release goal:** Make the travel website more modern, interactive, and functional.
 
@@ -64,9 +64,9 @@ The site now feels more like a real travel startup experience with planning tool
 
 - Fixed booking form and feedback form separation.
 - Fixed footer version mismatch.
-- Fixed destination/package visibility issues from earlier v1.2 work.
+- Fixed destination/package visibility issues from earlier work.
 - Fixed inconsistent GitHub and portfolio links.
 
 ### Result
 
-v1.3 moved the project from a static frontend site into an interactive travel product prototype with search, filters, booking flow, wishlist, comparison, and review/gallery experiences.
+This release moved the project from a static frontend site into an interactive travel product prototype with search, filters, booking flow, wishlist, comparison, and review/gallery experiences.

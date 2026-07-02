@@ -1,7 +1,9 @@
 (function () {
-  const whatsappNumber = "918179721034";
+  const siteConfig = window.TRAVEL_SITE_CONFIG || {};
+  const whatsappNumber = siteConfig.whatsappNumber || "918179721034";
   const savedTripsKey = "savedTrips";
-  const quoteText = "Hi, I want to plan a trip with Travel with Giridhar.";
+  const quoteText =
+    siteConfig.whatsappMessage || "Hi, I want to plan a trip with Travel with Giridhar.";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(quoteText)}`;
 
   const basePackages = [

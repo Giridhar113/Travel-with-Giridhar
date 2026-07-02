@@ -1,4 +1,4 @@
-﻿/* Travel with Giridhar v1.3 enhancements */
+/* Travel with Giridhar enhancements */
 :root {
   --v13-glass: rgba(16, 19, 22, 0.86);
   --v13-good: #22d3c5;
@@ -1028,7 +1028,7 @@
   }
 }
 
-/* v1.3 polish: remove noisy duplicate conversion sections. */
+/* Polish: remove noisy duplicate conversion sections. */
 .package-tools,
 .sticky-booking-bar,
 .mobile-cta-bar {
@@ -1044,7 +1044,7 @@
     bottom: 72px;
   }
 }
-/* v1.3 hero stability: keep every slide inside the hero frame. */
+/* Hero stability: keep every slide inside the hero frame. */
 .hero.hero-slider {
   display: grid;
   height: clamp(560px, calc(100vh - 76px), 780px);
@@ -1091,7 +1091,7 @@
     padding: 82px 6% 118px;
   }
 }
-/* v1.3 budget estimator polish: cleaner, calmer layout. */
+/* Budget estimator polish: cleaner, calmer layout. */
 .v13-budget-estimator {
   max-width: 1180px;
   margin-inline: auto;
@@ -1185,7 +1185,7 @@
     width: 100%;
   }
 }
-/* v1.3 featured trips polish: lighter, cleaner filter area. */
+/* Featured trips polish: lighter, cleaner filter area. */
 .home-slider-section {
   padding-top: 54px;
 }
