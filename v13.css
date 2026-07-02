@@ -241,14 +241,16 @@
 }
 
 .v13-package-filter {
-  background: rgba(5, 6, 7, 0.9);
-  border-bottom: 1px solid var(--line);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  padding-bottom: 22px;
-  padding-top: 22px;
-  position: sticky;
-  top: 76px;
-  z-index: 8;
+  background: linear-gradient(135deg, rgba(16, 19, 22, 0.98), rgba(12, 16, 18, 0.98));
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+  margin: 28px auto 32px;
+  max-width: 1180px;
+  padding: 22px;
+  position: relative;
+  width: 90%;
+  z-index: 1;
 }
 
 .package-filter-grid {
@@ -256,9 +258,9 @@
   display: grid;
   gap: 16px;
   grid-template-columns: minmax(220px, 1.4fr) minmax(230px, 1fr) minmax(170px, 0.8fr);
-  margin: 0 auto;
-  max-width: 1180px;
-  width: 90%;
+  margin: 0;
+  max-width: none;
+  width: 100%;
 }
 
 .price-range-group {
@@ -283,9 +285,9 @@
   font-weight: 800;
   gap: 14px;
   justify-content: space-between;
-  margin: 16px auto 0;
-  max-width: 1180px;
-  width: 90%;
+  margin: 18px 0 0;
+  max-width: none;
+  width: 100%;
 }
 
 .package-card,
