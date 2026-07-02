@@ -860,55 +860,13 @@
     calculate();
   }
 
-  function enhanceAiPlannerLeadCapture() {
+  function enhanceAiPlannerWhatsAppShare() {
     const form = document.getElementById("aiPlannerForm");
     const result = document.getElementById("aiPlannerResult");
-    if (!form || !result || form.querySelector("#aiLeadEmail")) return;
-    const emailLabel = document.createElement("label");
-    emailLabel.innerHTML = 'Email for plan <input type="email" id="aiLeadEmail" placeholder="your@email.com" />';
-    form.insertBefore(emailLabel, form.querySelector(".ai-actions"));
+    if (!form || !result || result.dataset.aiShareReady) return;
+    result.dataset.aiShareReady = "true";
     result.addEventListener("click", function (event) {
-      const emailButton = event.target.closest("[data-email-ai-plan]");
       const whatsappButton = event.target.closest("[data-whatsapp-ai-plan]");
-      if (emailButton) {
-        const email = document.getElementById("aiLeadEmail").value.trim();
-        if (!email) {
-          toast("Enter your email in the AI Planner first.", "error");
-          document.getElementById("aiLeadEmail").focus();
-          return;
-        }
-        const message = result.innerText.replace(/\s+/g, " ").trim();
-        if (typeof sendEmailJs !== "function") {
-          toast("Email service is not ready yet. Please WhatsApp us directly.", "error", { href: whatsappUrl, label: "WhatsApp" });
-          return;
-        }
-        emailButton.disabled = true;
-        emailButton.textContent = "Sending...";
-        Promise.resolve()
-          .then(function () {
-            return sendEmailJs(emailJsConfig.feedbackTemplateId, {
-              from_name: "AI Trip Planner Lead",
-              from_email: email,
-              customer_email: email,
-              to_email: emailJsConfig.ownerEmail,
-              owner_email: emailJsConfig.ownerEmail,
-              reply_to: email,
-              feedback_type: "AI Trip Planner Request",
-              feedback_rating: "Not rated",
-              message
-            }, "AI Planner");
-          })
-          .then(function () {
-            toast("Your AI trip plan was emailed successfully!", "success");
-          })
-          .catch(function () {
-            toast("Something went wrong. Please WhatsApp us directly.", "error", { href: whatsappUrl, label: "WhatsApp" });
-          })
-          .finally(function () {
-            emailButton.disabled = false;
-            emailButton.textContent = "Email Me This Plan";
-          });
-      }
       if (whatsappButton) {
         const message = result.innerText.replace(/\s+/g, " ").trim();
         window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, "_blank", "noopener");
@@ -918,11 +876,11 @@
 
   function addAiPlanButtons() {
     const result = document.getElementById("aiPlannerResult");
-    if (!result || result.querySelector("[data-email-ai-plan]")) return;
+    if (!result || result.querySelector("[data-whatsapp-ai-plan]")) return;
     if (!result.querySelector(".ai-itinerary")) return;
     const actions = document.createElement("div");
     actions.className = "v13-card-action-row";
-    actions.innerHTML = '<button type="button" class="btn btn-outline" data-email-ai-plan>Email Me This Plan</button><button type="button" class="btn btn-outline" data-whatsapp-ai-plan>WhatsApp This Plan</button>';
+    actions.innerHTML = '<button type="button" class="btn btn-outline" data-whatsapp-ai-plan>WhatsApp This Plan</button>';
     result.appendChild(actions);
   }
 
@@ -1369,7 +1327,7 @@
     initHomeFeaturedTrips();
     initTrendingSlider();
     initBudgetEstimator();
-    enhanceAiPlannerLeadCapture();
+    enhanceAiPlannerWhatsAppShare();
     patchAiPlannerButtons();
     initReviews();
     initGallery();
