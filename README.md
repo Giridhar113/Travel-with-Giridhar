@@ -1,32 +1,32 @@
 # Travel with Giridhar
 
-**Release:** Travel Website v1.4
+**Release:** Travel Website v1.5
 
-A travel startup-style website built with HTML, CSS, and vanilla JavaScript. The experience helps users discover destinations, compare packages, estimate budgets, generate Claude-powered trip plans, save trips, and send booking inquiries through Formspree-ready forms.
+A travel startup-style website built with HTML, CSS, and vanilla JavaScript. The experience helps users discover destinations, compare packages, estimate budgets, generate Claude-powered trip plans, save/share trip ideas, and send booking inquiries through Formspree-ready forms.
 
-## v1.4 Goal
+## v1.5 Goal
 
-Make the website feel like a real travel planning business, not only a portfolio page.
+Make the website feel more product-ready with shareable planning, saved trip context, stronger filtering controls, and client-side lead capture.
 
-## v1.4 Updates
+## v1.5 Updates
 
-- Added seasonal offers on the homepage with direct quote CTAs
-- Added a persistent travel checklist using localStorage
-- Added a homepage FAQ section for trust and booking clarity
-- Added destination comparison tool on the Destinations page
-- Added advanced destination search controls for budget and best season
-- Improved package page messaging from EMI-first to quote-first planning
-- Added package detail guide for stay options, route planning, and travel support
-- Improved booking inquiry data sent through the form payload: phone, budget, travel type, and preferred contact method
-- Added a secure Claude planner API route for Vercel
-- Removed visible footer version labels for cleaner branding
-- Updated WhatsApp links to the active contact number
+- Added debounced destination search with focused travel-type filters
+- Added live package price filtering with a reset action
+- Added AI Trip Planner share links and local AI plan history
+- Added wishlist drawer improvements with clear empty states and quick booking links
+- Added testimonial submission with local preview and WhatsApp handoff
+- Added INR/USD currency toggle using a fixed static conversion rate
+- Added footer newsletter signup with client-side validation
+- Added AI Planner skeleton loading state
+- Fixed footer copyright rendering and cleaned encoding issues
 
 Full release history is available in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 
 ## Core Features
 
 - AI-style trip planner
+- Shareable trip plans
+- Saved AI plan history
 - Budget calculator
 - Destination comparison
 - Advanced destination search
@@ -39,18 +39,21 @@ Full release history is available in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 - Better booking inquiry form
 - Two-step form verification before booking/contact submissions
 - Travel checklist saved in localStorage
+- Newsletter signup saved in localStorage
+- Testimonial submission demo flow
+- INR/USD currency toggle
 - Seasonal offers
 - Package filters, sorting, wishlist, and comparison modal
 
 ## Pages
 
-- `index.html` - Home page with hero slider, featured trips, AI planner, budget estimator, seasonal offers, checklist, FAQ, and reviews
+- `index.html` - Home page with hero slider, featured trips, AI planner, saved AI plans, budget estimator, seasonal offers, checklist, FAQ, and reviews
 - `destinations.html` - Destination cards with search, filters, advanced search, comparison, best-time labels, and saved trips
 - `packages.html` - Package cards with filters, sorting, wishlist, comparison, budget estimator, and package detail guide
 - `blog.html` - Travel tips and planning guides
 - `gallery.html` - Filterable masonry gallery with lightbox
 - `about.html` - Company story, mission, reasons to choose us, and developer profile
-- `contact.html` - 3-step booking form and Formspree-ready feedback form
+- `contact.html` - 3-step booking form, Formspree-ready feedback form, and local testimonial form
 - `404.html` - Branded not found page
 
 ## Formspree Fields

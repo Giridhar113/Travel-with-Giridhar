@@ -1431,6 +1431,63 @@ details p {
   animation: resultGlow 5.5s ease-in-out infinite;
 }
 
+.ai-history-panel {
+  background: rgba(5, 6, 7, 0.48);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  display: grid;
+  gap: 16px;
+  grid-column: 1 / -1;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.ai-history-head {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.ai-history-head h3 {
+  font-size: 1.2rem;
+}
+
+.ai-history-list {
+  display: grid;
+  gap: 12px;
+}
+
+.ai-history-item {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 14px;
+}
+
+.ai-history-item strong,
+.ai-history-item span,
+.ai-history-item small {
+  display: block;
+}
+
+.ai-history-item span,
+.ai-history-item small {
+  color: var(--muted);
+}
+
+.ai-history-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 .package-tools {
   max-width: 1180px;
   padding-bottom: 26px;
@@ -3038,6 +3095,14 @@ body.destinations-page .destination-card:not(.is-filtered-out) {
   .slider-slide,
   .slider-slide.is-active {
     grid-template-columns: 1fr;
+  }
+
+  .ai-history-item {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-history-actions {
+    justify-content: flex-start;
   }
 
   .slider-slide img {

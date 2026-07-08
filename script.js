@@ -473,6 +473,14 @@ function resetDestinationControls() {
     destinationSearch.value = "";
   }
 
+  if (destinationBudgetFilter) {
+    destinationBudgetFilter.value = "all";
+  }
+
+  if (destinationSeasonFilter) {
+    destinationSeasonFilter.value = "all";
+  }
+
   filterChips.forEach(function (button) {
     button.classList.toggle("is-active", button.dataset.filter === "all");
   });

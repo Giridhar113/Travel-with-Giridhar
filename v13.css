@@ -321,6 +321,14 @@
   width: 100%;
 }
 
+.result-line-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
 .package-card,
 .destination-card,
 .slider-slide,
@@ -1313,7 +1321,7 @@
   padding: 16px;
 }
 
-/* v1.4 startup-style planning sections */
+/* v1.5 startup-style planning sections */
 .seasonal-offers-section,
 .faq-section,
 .travel-checklist-section,

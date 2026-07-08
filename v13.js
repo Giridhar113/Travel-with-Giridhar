@@ -5,6 +5,7 @@
   const localTestimonialsKey = "travelLocalTestimonials";
   const currencyPreferenceKey = "travelCurrencyPreference";
   const newsletterKey = "travelNewsletterEmail";
+  const aiPlanHistoryKey = "travelAiPlanHistory";
   const usdConversionRate = 83;
   const quoteText =
     siteConfig.whatsappMessage || "Hi, I want to plan a trip with Travel with Giridhar.";
@@ -760,7 +761,10 @@
         <div class="v13-filter-chips" aria-label="Package filters">
           ${["All", "Beach", "Adventure", "Family", "Honeymoon", "Luxury", "Budget", "International"].map(function (tag) { return `<button type="button" class="v13-chip${tag === "All" ? " is-active" : ""}" data-package-filter="${tag.toLowerCase()}">${tag}</button>`; }).join("")}
         </div>
-        <span id="packageResultsCount">Showing packages</span>
+        <div class="result-line-actions">
+          <span id="packageResultsCount">Showing packages</span>
+          <button type="button" class="btn btn-outline btn-small" id="resetPackageFilters">Reset Filters</button>
+        </div>
       </div>
     `;
     listSection.parentNode.insertBefore(filter, listSection);
@@ -816,6 +820,7 @@
     const priceReadout = document.getElementById("packagePriceReadout");
     const sort = document.getElementById("packageSort");
     const count = document.getElementById("packageResultsCount");
+    const reset = document.getElementById("resetPackageFilters");
     const chips = Array.from(document.querySelectorAll("[data-package-filter]"));
     let active = "all";
     const empty = document.createElement("p");
@@ -864,8 +869,47 @@
       });
     });
     [search, minRange, maxRange, sort].forEach(function (control) { control.addEventListener("input", apply); control.addEventListener("change", apply); });
+    if (reset) {
+      reset.addEventListener("click", function () {
+        search.value = "";
+        minRange.value = "10000";
+        maxRange.value = "150000";
+        sort.value = "default";
+        active = "all";
+        chips.forEach(function (item) { item.classList.toggle("is-active", item.dataset.packageFilter === "all"); });
+        apply();
+        toast("Package filters reset.", "success");
+      });
+    }
     apply();
     setupPackageComparison(cards);
+  }
+
+  function initDestinationResetButton() {
+    const panel = document.querySelector(".search-panel");
+    const tools = panel ? panel.querySelector(".saved-tools") : null;
+
+    if (!panel || !tools || document.getElementById("resetDestinationFilters")) {
+      return;
+    }
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn btn-outline btn-small";
+    button.id = "resetDestinationFilters";
+    button.textContent = "Reset Filters";
+    button.addEventListener("click", function () {
+      if (typeof resetDestinationControls === "function") {
+        resetDestinationControls();
+      }
+
+      if (typeof applyDestinationFilters === "function") {
+        applyDestinationFilters();
+      }
+
+      toast("Destination filters reset.", "success");
+    });
+    tools.appendChild(button);
   }
 
   function setupPackageComparison(cards) {
@@ -1196,6 +1240,145 @@
       });
   }
 
+  function getAiPlanHistory() {
+    try {
+      return JSON.parse(localStorage.getItem(aiPlanHistoryKey)) || [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function setAiPlanHistory(items) {
+    try {
+      localStorage.setItem(aiPlanHistoryKey, JSON.stringify(items));
+    } catch (error) {
+      toast("Plan history could not be saved in this browser.", "error");
+    }
+  }
+
+  function planFromResult(result) {
+    if (!result || !result.querySelector(".ai-itinerary")) {
+      return null;
+    }
+
+    const destination = result.dataset.shareDestination || (result.querySelector("h3") ? result.querySelector("h3").textContent.trim() : "Custom Trip");
+    const budget = result.dataset.shareBudget || (document.getElementById("aiBudget") ? document.getElementById("aiBudget").value : "");
+    const days = result.dataset.shareDays || (document.getElementById("aiDays") ? document.getElementById("aiDays").value : "");
+    const travelers = result.dataset.shareTravelers || (document.getElementById("aiTravelers") ? document.getElementById("aiTravelers").value : "");
+    const type = result.dataset.shareType || (document.getElementById("aiTravelType") ? document.getElementById("aiTravelType").value : "");
+    const shareUrl = buildAiPlanShareUrl(result);
+
+    return {
+      id: slug(`${destination}-${budget}-${days}-${travelers}-${type}`),
+      destination,
+      budget,
+      days,
+      travelers,
+      type,
+      shareUrl,
+      bookUrl: `contact.html?package=${encodeURIComponent("AI Trip Plan")}&destination=${encodeURIComponent(destination)}#bookingForm`,
+      createdAt: new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short" }),
+    };
+  }
+
+  function saveAiPlanFromResult(result) {
+    const plan = planFromResult(result);
+
+    if (!plan) {
+      renderAiPlanHistory();
+      return;
+    }
+
+    const history = getAiPlanHistory().filter(function (item) {
+      return item.id !== plan.id;
+    });
+    history.unshift(plan);
+    setAiPlanHistory(history.slice(0, 5));
+    renderAiPlanHistory();
+  }
+
+  function initAiPlanHistoryPanel() {
+    const result = document.getElementById("aiPlannerResult");
+
+    if (!result || document.getElementById("aiPlanHistoryPanel")) {
+      return;
+    }
+
+    const panel = document.createElement("aside");
+    panel.className = "ai-history-panel";
+    panel.id = "aiPlanHistoryPanel";
+    panel.innerHTML = `
+      <div class="ai-history-head">
+        <div>
+          <p class="hero-kicker">Plan History</p>
+          <h3>Saved AI Plans</h3>
+        </div>
+        <button type="button" class="btn btn-outline btn-small" data-clear-ai-history>Clear</button>
+      </div>
+      <div class="ai-history-list" id="aiPlanHistoryList"></div>
+    `;
+    panel.addEventListener("click", function (event) {
+      const copy = event.target.closest("[data-copy-ai-history]");
+      const remove = event.target.closest("[data-remove-ai-history]");
+      const clear = event.target.closest("[data-clear-ai-history]");
+
+      if (copy) {
+        const item = getAiPlanHistory().find(function (plan) { return plan.id === copy.dataset.copyAiHistory; });
+        if (item) {
+          copyText(item.shareUrl).then(function () {
+            toast("Saved plan link copied.", "success");
+          });
+        }
+      }
+
+      if (remove) {
+        setAiPlanHistory(getAiPlanHistory().filter(function (plan) { return plan.id !== remove.dataset.removeAiHistory; }));
+        renderAiPlanHistory();
+      }
+
+      if (clear) {
+        setAiPlanHistory([]);
+        renderAiPlanHistory();
+        toast("AI plan history cleared.", "success");
+      }
+    });
+    result.insertAdjacentElement("afterend", panel);
+    renderAiPlanHistory();
+  }
+
+  function renderAiPlanHistory() {
+    const list = document.getElementById("aiPlanHistoryList");
+
+    if (!list) {
+      return;
+    }
+
+    const history = getAiPlanHistory();
+
+    if (!history.length) {
+      list.innerHTML = '<p class="v13-empty-state">No saved AI plans yet. Generate a plan to save it here.</p>';
+      return;
+    }
+
+    list.innerHTML = history.map(function (plan) {
+      return `
+        <article class="ai-history-item">
+          <div>
+            <strong>${escapeHtml(plan.destination)}</strong>
+            <span>${escapeHtml(plan.days)} days - ${escapeHtml(plan.travelers)} traveler(s) - ${escapeHtml(plan.type)}</span>
+            <small>${escapeHtml(plan.budget ? money(Number(plan.budget)) : "Custom budget")} - Saved ${escapeHtml(plan.createdAt || "today")}</small>
+          </div>
+          <div class="ai-history-actions">
+            <a href="${plan.shareUrl}" class="btn btn-outline btn-small">Open</a>
+            <button type="button" class="btn btn-outline btn-small" data-copy-ai-history="${plan.id}">Copy</button>
+            <a href="${plan.bookUrl}" class="btn btn-small">Book</a>
+            <button type="button" class="btn btn-outline btn-small" data-remove-ai-history="${plan.id}" aria-label="Remove ${escapeHtml(plan.destination)} plan">Remove</button>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
   function addAiPlanButtons() {
     const result = document.getElementById("aiPlannerResult");
     if (!result || result.querySelector("[data-whatsapp-ai-plan]")) return;
@@ -1204,6 +1387,7 @@
     actions.className = "v13-card-action-row";
     actions.innerHTML = '<button type="button" class="btn btn-outline" data-copy-ai-plan>Copy Link</button><button type="button" class="btn btn-outline" data-whatsapp-ai-plan>WhatsApp This Plan</button>';
     result.appendChild(actions);
+    saveAiPlanFromResult(result);
   }
 
   function patchAiPlannerButtons() {
@@ -1751,12 +1935,14 @@
     initTrendingSlider();
     initBudgetEstimator();
     initCurrencyToggle();
+    initAiPlanHistoryPanel();
     enhanceAiPlannerWhatsAppShare();
     patchAiPlannerButtons();
     initTestimonialForm();
     initReviews();
     initGallery();
     enhanceDestinationFilters();
+    initDestinationResetButton();
     initStickyCtas();
     initMobileBottomNav();
     decorateSaveButtons();

@@ -1,5 +1,34 @@
 # Travel with Giridhar Release Notes
 
+## Travel Website v1.5
+
+**Release goal:** Make the travel website feel more product-ready with better planning continuity, shareable trip ideas, stronger filters, and client-side lead capture.
+
+### New Features
+
+- Added debounced destination search with focused chips for Beach, Adventure, Family, Luxury, and Culture.
+- Added reset controls for destination and package filters.
+- Added shareable AI Trip Planner links that restore the selected destination, budget, days, travelers, and travel type.
+- Added local AI plan history with Open, Copy, Book, Remove, and Clear actions.
+- Added testimonial submission on the Contact page with local preview and WhatsApp sharing.
+- Added INR/USD currency toggle using a fixed static conversion rate.
+- Added footer newsletter signup with client-side validation and local demo storage.
+- Added AI Planner skeleton loading state while a plan is being generated.
+
+### Improvements
+
+- Improved wishlist drawer empty state and quick booking links.
+- Improved package price range defaults so all packages are visible before filtering.
+- Improved package and destination grids so filtered final rows use available space cleanly.
+- Fixed footer copyright rendering across all pages.
+- Cleaned encoding artifacts in title and review text.
+
+### Result
+
+v1.5 turns the project into a stronger interactive travel product demo with saved planning context, shareable plans, polished filters, cleaner UX states, and clearer release documentation.
+
+---
+
 ## Travel Website v1.4
 
 **Release goal:** Create a travel startup-style experience where users feel like they are planning a real trip and interacting with a travel business.
