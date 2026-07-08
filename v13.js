@@ -110,6 +110,11 @@
     return match ? Number(match[0]) : 3;
   }
 
+  function ratingStarsMarkup(rating) {
+    const value = Math.max(1, Math.min(5, Math.round(Number(rating) || 5)));
+    return `${"&#9733;".repeat(value)}${"&#9734;".repeat(5 - value)}`;
+  }
+
   let flexibleResultRowFrame = 0;
 
   function getGridColumnCount(grid) {
@@ -1087,7 +1092,7 @@
                 <p>${item[1]}</p>
                 <strong>From ${money(item[2])}</strong>
                 <span>${item[3]}</span>
-                <span class="v13-stars" aria-label="${item[5]} star rating">????? ${item[5]}</span>
+                <span class="v13-stars" aria-label="${item[5]} star rating">${ratingStarsMarkup(item[5])} ${item[5]}</span>
                 <a class="btn btn-small" href="${bookingUrl(trip)}">Book Now</a>
               </div>
             </article>
@@ -1415,8 +1420,7 @@
   }
 
   function testimonialStars(rating) {
-    const value = Math.max(1, Math.min(5, Number(rating) || 5));
-    return `${"★".repeat(value)}${"☆".repeat(5 - value)}`;
+    return ratingStarsMarkup(rating);
   }
 
   function testimonialWhatsAppUrl(item) {
@@ -1450,7 +1454,7 @@
       return `
         <article class="local-testimonial-card">
           <strong>${escapeHtml(item.name)} - ${escapeHtml(item.destination)}</strong>
-          <span aria-label="${escapeHtml(item.rating)} star rating">${testimonialStars(item.rating)}</span>
+          <span aria-label="${escapeHtml(item.rating)} star rating">${ratingStarsMarkup(item.rating)}</span>
           <p>${escapeHtml(item.review)}</p>
           <a class="btn btn-outline btn-small" href="${testimonialWhatsAppUrl(item)}" target="_blank" rel="noreferrer">Send WhatsApp</a>
         </article>
@@ -1525,7 +1529,7 @@
       <div class="v13-review-carousel" id="v13ReviewCarousel">
         <div class="v13-review-track" id="v13ReviewTrack">
           ${reviews.map(function (review) {
-            const stars = testimonialStars(review[3]);
+            const stars = ratingStarsMarkup(review[3]);
             return `
               <article class="v13-review-card">
                 <div class="v13-review-person">
