@@ -1156,6 +1156,33 @@
   margin-bottom: 18px;
 }
 
+.hero-slider .hero-actions .btn {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.95rem;
+  font-weight: 900;
+  justify-content: center;
+  letter-spacing: 0;
+  min-height: 52px;
+  min-width: 190px;
+  padding: 0 28px;
+}
+
+.hero-slider .hero-actions .btn-primary {
+  box-shadow: 0 18px 42px rgba(255, 107, 87, 0.32);
+}
+
+.hero-slider .hero-actions .hero-secondary,
+.hero-slider .hero-actions .btn-outline {
+  background: rgba(5, 8, 9, 0.42);
+  border-color: rgba(255, 107, 87, 0.88);
+}
+
+.hero-slider .hero-actions .btn:hover {
+  transform: translateY(-3px);
+}
+
 .hero-slider .hero-badge {
   padding: 8px 14px;
 }
@@ -1641,6 +1668,117 @@
 
   .offer-card {
     min-height: auto;
+  }
+}
+
+/* v1.5 visual cleanup: reduce floating clutter and tighten key homepage sections. */
+.theme-toggle,
+.back-to-top {
+  display: none !important;
+}
+
+.home-slider-section .v13-featured-grid {
+  align-items: stretch;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.home-slider-section .v13-featured-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.home-slider-section .v13-featured-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.home-slider-section .v13-featured-content .btn {
+  margin-top: auto;
+}
+
+.v13-trending-track {
+  grid-auto-columns: minmax(230px, calc((100% - 36px) / 3));
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  scrollbar-width: none;
+}
+
+.v13-trending-track::-webkit-scrollbar {
+  display: none;
+}
+
+.home-dashboard-main .v13-trending-track {
+  grid-auto-columns: minmax(230px, calc((100% - 18px) / 2));
+}
+
+.v13-slider-arrows {
+  margin-bottom: -4px;
+}
+
+.v13-trending-card {
+  min-width: 0;
+}
+
+.travel-checklist-section {
+  align-items: center;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(360px, 1.1fr);
+}
+
+.checklist-panel {
+  gap: 10px;
+  padding: clamp(18px, 2.5vw, 24px);
+}
+
+.checklist-panel label {
+  align-items: center;
+  border-radius: 9px;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  justify-content: start;
+  min-height: 54px;
+  padding: 12px 14px;
+}
+
+.checklist-panel input[type="checkbox"] {
+  height: 17px;
+  justify-self: center;
+  width: 17px;
+}
+
+.checklist-progress {
+  margin-top: 2px;
+  padding-top: 4px;
+}
+
+@media (max-width: 1020px) {
+  .home-slider-section .v13-featured-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .v13-trending-track,
+  .home-dashboard-main .v13-trending-track {
+    grid-auto-columns: minmax(240px, 78%);
+  }
+
+  .travel-checklist-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-slider-section .v13-featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-slider .hero-actions .btn {
+    min-height: 50px;
+    min-width: 100%;
+  }
+
+  .checklist-panel {
+    grid-template-columns: 1fr;
   }
 }
 
