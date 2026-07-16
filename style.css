@@ -3346,9 +3346,7 @@ body.destinations-page .destination-card:not(.is-filtered-out) {
 
 .hero-content {
   background: linear-gradient(135deg, rgba(5, 6, 7, 0.34), rgba(5, 6, 7, 0));
-  border-left: 3px solid rgba(255, 107, 87, 0.8);
   max-width: 710px;
-  padding-left: 28px;
 }
 
 .hero h1 {
