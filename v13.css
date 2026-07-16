@@ -1369,8 +1369,10 @@
 }
 
 .route-ticket-copy {
+  align-content: center;
   display: grid;
   gap: 16px;
+  justify-items: start;
   padding: clamp(24px, 4vw, 34px);
 }
 
@@ -1387,10 +1389,20 @@
 }
 
 .route-ticket-actions {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 6px;
+}
+
+.route-ticket-actions .btn {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  min-height: 50px;
+  width: auto;
 }
 
 .route-visual-card {
@@ -1495,6 +1507,61 @@
 
 .route-steps strong {
   color: var(--accent);
+}
+
+.route-live-tools {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.route-live-tools label {
+  color: var(--muted);
+  display: grid;
+  font-size: 0.84rem;
+  font-weight: 900;
+  gap: 7px;
+}
+
+.route-live-tools select {
+  background: #090f11;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: var(--ink);
+  font: inherit;
+  min-height: 44px;
+  padding: 0 12px;
+  width: 100%;
+}
+
+.route-live-actions {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.route-live-actions .btn {
+  justify-content: center;
+  min-height: 42px;
+  text-align: center;
+}
+
+.route-google-map {
+  background: rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  min-height: 250px;
+  overflow: hidden;
+}
+
+.route-google-map iframe {
+  border: 0;
+  display: block;
+  height: 280px;
+  width: 100%;
 }
 
 .ticket-flip-grid {
@@ -1633,6 +1700,10 @@
 
   .ticket-flip-card {
     min-height: 250px;
+  }
+
+  .route-live-actions {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -1900,6 +1900,78 @@
     window.setTimeout(scheduleFlexibleResultRows, 900);
   }
 
+  function initRouteMapPlanner() {
+    const section = document.getElementById("routePreview");
+    if (!section || section.dataset.routeReady) return;
+    section.dataset.routeReady = "true";
+
+    const routes = {
+      bali: {
+        code: "DPS",
+        label: "Bali",
+        destination: "Bali, Indonesia",
+        packageName: "Premium Bali Tour"
+      },
+      manali: {
+        code: "KUU",
+        label: "Manali",
+        destination: "Manali, India",
+        packageName: "Manali Adventure Holiday"
+      },
+      dubai: {
+        code: "DXB",
+        label: "Dubai",
+        destination: "Dubai, UAE",
+        packageName: "Dubai Desert Luxury"
+      },
+      goa: {
+        code: "GOI",
+        label: "Goa",
+        destination: "Goa, India",
+        packageName: "Goa Beach Escape"
+      }
+    };
+
+    const origin = "Hyderabad, India";
+    const select = section.querySelector("#routeDestinationSelect");
+    const fromCode = section.querySelector("[data-route-from-code]");
+    const toCode = section.querySelector("[data-route-to-code]");
+    const fromLabel = section.querySelector("[data-route-from-label]");
+    const toLabel = section.querySelector("[data-route-to-label]");
+    const mapFrame = section.querySelector("#routeGoogleMap");
+    const mapLink = section.querySelector("#routeOpenMaps");
+    const bookLink = section.querySelector("#routeBookTrip");
+
+    if (!select || !mapFrame || !mapLink || !bookLink) return;
+
+    function mapEmbedUrl(destination) {
+      return `https://maps.google.com/maps?saddr=${encodeURIComponent(origin)}&daddr=${encodeURIComponent(destination)}&output=embed`;
+    }
+
+    function mapOpenUrl(destination) {
+      return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`;
+    }
+
+    function bookingUrl(item) {
+      return `contact.html?package=${encodeURIComponent(item.packageName)}&destination=${encodeURIComponent(item.destination)}#bookingForm`;
+    }
+
+    function updateRoute() {
+      const item = routes[select.value] || routes.bali;
+      if (fromCode) fromCode.textContent = "HYD";
+      if (toCode) toCode.textContent = item.code;
+      if (fromLabel) fromLabel.textContent = "Hyderabad";
+      if (toLabel) toLabel.textContent = item.label;
+      mapFrame.src = mapEmbedUrl(item.destination);
+      mapFrame.title = `Google map showing route from Hyderabad to ${item.label}`;
+      mapLink.href = mapOpenUrl(item.destination);
+      bookLink.href = bookingUrl(item);
+    }
+
+    select.addEventListener("change", updateRoute);
+    updateRoute();
+  }
+
   function keepHomeAtHeroOnFreshLoad() {
     const page = location.pathname.split("/").pop() || "index.html";
     const hash = location.hash;
@@ -1956,6 +2028,7 @@
     initDestinationComparison();
     updateFooterVersion();
     initNewsletterSignup();
+    initRouteMapPlanner();
     initFlexibleResultRows();
     document.addEventListener("click", function (event) {
       if (event.target.closest(".v13-trending-card, .v13-featured-card")) {
