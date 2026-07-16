@@ -6,6 +6,7 @@ const destinations = [
     name: "Paris, France",
     shortName: "Paris",
     tagline: "Romance, cafes, and the Eiffel Tower",
+    ribbon: "Romantic City",
     model: "eiffel",
     color: "#ff6b57",
     image:
@@ -18,6 +19,7 @@ const destinations = [
     name: "Agra, India",
     shortName: "Taj Mahal",
     tagline: "Heritage, marble domes, and sunrise views",
+    ribbon: "Heritage Icon",
     model: "taj",
     color: "#22d3c5",
     image:
@@ -30,6 +32,7 @@ const destinations = [
     name: "Santorini, Greece",
     shortName: "Santorini",
     tagline: "White cliffs, blue domes, and sunset stays",
+    ribbon: "Island Escape",
     model: "santorini",
     color: "#38bdf8",
     image:
@@ -42,6 +45,7 @@ const destinations = [
     name: "Machu Picchu, Peru",
     shortName: "Machu Picchu",
     tagline: "Ancient terraces and mountain adventure",
+    ribbon: "Adventure Pick",
     model: "machu",
     color: "#84cc16",
     image:
@@ -54,6 +58,7 @@ const destinations = [
     name: "Dubai, UAE",
     shortName: "Dubai",
     tagline: "Skyline, desert safari, and luxury escapes",
+    ribbon: "Luxury Skyline",
     model: "dubai",
     color: "#f6c453",
     image:
@@ -66,6 +71,7 @@ const destinations = [
     name: "Bali, Indonesia",
     shortName: "Bali",
     tagline: "Temples, tropical stays, and beach sunsets",
+    ribbon: "Beach Culture",
     model: "bali",
     color: "#a78bfa",
     image:
@@ -97,7 +103,9 @@ function renderLabels(section) {
         <button type="button" class="destination-showcase-label${
           index === 0 ? " is-active" : ""
         }" data-showcase-index="${index}">
-          <span>${item.shortName}</span>
+          <img class="destination-showcase-thumb" src="${item.image}" alt="${item.name}" loading="lazy" decoding="async" />
+          <span class="destination-showcase-ribbon">${item.ribbon}</span>
+          <span class="destination-showcase-title">${item.shortName}</span>
           <small>${item.tagline}</small>
         </button>
       `,
@@ -115,7 +123,7 @@ function renderMobileFallback(section) {
         <article class="destination-showcase-mobile-card" data-showcase-mobile-card="${index}">
           <img src="${item.image}" alt="${item.name}" loading="lazy" decoding="async" />
           <div>
-            <span>${item.shortName}</span>
+            <span>${item.ribbon}</span>
             <h3>${item.name}</h3>
             <p>${item.tagline}</p>
           </div>
