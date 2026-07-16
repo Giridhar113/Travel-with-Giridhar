@@ -208,51 +208,7 @@
           </div>
         </div>
 
-        <div class="route-visual-card" aria-label="Animated Hyderabad to Bali route preview">
-          <div class="route-card-header">
-            <span data-route-from-code>HYD</span>
-            <i class="fas fa-plane"></i>
-            <span data-route-to-code>DPS</span>
-          </div>
-          <svg class="route-map" viewBox="0 0 620 360" role="img" aria-labelledby="routeMapTitle">
-            <title id="routeMapTitle">Animated travel route from Hyderabad to Bali</title>
-            <defs>
-              <radialGradient id="routeGlow" cx="50%" cy="45%" r="68%">
-                <stop offset="0%" stop-color="#22d3c5" stop-opacity="0.26" />
-                <stop offset="58%" stop-color="#0d3f42" stop-opacity="0.18" />
-                <stop offset="100%" stop-color="#050607" stop-opacity="0" />
-              </radialGradient>
-              <linearGradient id="routeLineGradient" x1="0%" x2="100%">
-                <stop offset="0%" stop-color="#ff6b57" />
-                <stop offset="100%" stop-color="#22d3c5" />
-              </linearGradient>
-            </defs>
-            <rect width="620" height="360" rx="28" fill="url(#routeGlow)" />
-            <path class="route-land route-land-a" d="M70 248 C130 205 172 228 226 182 C284 134 342 162 386 126 C442 80 518 100 560 70 L560 306 L70 306 Z" />
-            <path class="route-land route-land-b" d="M44 125 C98 86 154 112 190 82 C237 42 300 62 322 103 C342 142 294 174 230 166 C156 156 116 172 44 125 Z" />
-            <path id="routePath" class="route-line" d="M132 232 C245 88 385 74 492 186" />
-            <path class="route-line route-line-soft" d="M132 232 C245 88 385 74 492 186" />
-            <g class="route-pin route-pin-from" transform="translate(132 232)">
-              <circle r="14" />
-              <text x="0" y="39" data-route-from-label>Hyderabad</text>
-            </g>
-            <g class="route-pin route-pin-to" transform="translate(492 186)">
-              <circle r="14" />
-              <text x="0" y="39" data-route-to-label>Bali</text>
-            </g>
-            <g class="route-plane">
-              <path d="M0 -13 L30 0 L0 13 L6 2 L-14 7 L-9 0 L-14 -7 L6 -2 Z">
-                <animateMotion dur="6s" repeatCount="indefinite" rotate="auto">
-                  <mpath href="#routePath" />
-                </animateMotion>
-              </path>
-            </g>
-          </svg>
-          <div class="route-steps">
-            <span><strong>1</strong> Choose</span>
-            <span><strong>2</strong> Compare</span>
-            <span><strong>3</strong> Book</span>
-          </div>
+        <div class="route-visual-card" aria-label="Google Maps route planner from Hyderabad">
           <div class="route-live-tools">
             <label for="routeDestinationSelect">
               Choose destination
@@ -285,8 +241,8 @@
           <div class="route-google-map">
             <iframe
               id="routeGoogleMap"
-              title="Google map showing route from Hyderabad to Bali"
-              src="https://maps.google.com/maps?saddr=Hyderabad%2C%20India&daddr=Bali%2C%20Indonesia&output=embed"
+              title="Google map showing Bali, Indonesia"
+              src="https://www.google.com/maps?q=Bali%2C%20Indonesia&output=embed"
               loading="eager"
               referrerpolicy="no-referrer-when-downgrade"
             ></iframe>

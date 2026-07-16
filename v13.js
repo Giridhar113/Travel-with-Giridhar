@@ -1934,10 +1934,6 @@
 
     const origin = "Hyderabad, India";
     const select = section.querySelector("#routeDestinationSelect");
-    const fromCode = section.querySelector("[data-route-from-code]");
-    const toCode = section.querySelector("[data-route-to-code]");
-    const fromLabel = section.querySelector("[data-route-from-label]");
-    const toLabel = section.querySelector("[data-route-to-label]");
     const mapFrame = section.querySelector("#routeGoogleMap");
     const mapLink = section.querySelector("#routeOpenMaps");
     const bookLink = section.querySelector("#routeBookTrip");
@@ -1945,7 +1941,7 @@
     if (!select || !mapFrame || !mapLink || !bookLink) return;
 
     function mapEmbedUrl(destination) {
-      return `https://maps.google.com/maps?saddr=${encodeURIComponent(origin)}&daddr=${encodeURIComponent(destination)}&output=embed`;
+      return `https://www.google.com/maps?q=${encodeURIComponent(destination)}&output=embed`;
     }
 
     function mapOpenUrl(destination) {
@@ -1958,12 +1954,8 @@
 
     function updateRoute() {
       const item = routes[select.value] || routes.bali;
-      if (fromCode) fromCode.textContent = "HYD";
-      if (toCode) toCode.textContent = item.code;
-      if (fromLabel) fromLabel.textContent = "Hyderabad";
-      if (toLabel) toLabel.textContent = item.label;
       mapFrame.src = mapEmbedUrl(item.destination);
-      mapFrame.title = `Google map showing route from Hyderabad to ${item.label}`;
+      mapFrame.title = `Google map showing ${item.destination}`;
       mapLink.href = mapOpenUrl(item.destination);
       bookLink.href = bookingUrl(item);
     }
