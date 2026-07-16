@@ -1333,6 +1333,319 @@
     width: 100%;
   }
 }
+
+/* Route preview + CSS-3D boarding passes */
+.route-ticket-section {
+  align-items: stretch;
+  display: grid;
+  gap: 22px;
+  grid-template-columns: minmax(280px, 0.84fr) minmax(360px, 1.16fr);
+  position: relative;
+}
+
+.route-ticket-section::before {
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255, 107, 87, 0.15), transparent 28%),
+    radial-gradient(circle at 78% 52%, rgba(34, 211, 197, 0.16), transparent 32%);
+  content: "";
+  inset: -28px 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.route-ticket-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+.route-ticket-copy,
+.route-visual-card,
+.ticket-flip-card {
+  background: linear-gradient(135deg, rgba(16, 19, 22, 0.96), rgba(8, 12, 14, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.28);
+}
+
+.route-ticket-copy {
+  display: grid;
+  gap: 16px;
+  padding: clamp(24px, 4vw, 34px);
+}
+
+.route-ticket-copy h2 {
+  color: var(--ink);
+  font-size: clamp(1.8rem, 4vw, 2.65rem);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.route-ticket-copy p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.route-ticket-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.route-visual-card {
+  display: grid;
+  gap: 14px;
+  overflow: hidden;
+  padding: 18px;
+}
+
+.route-card-header,
+.route-steps {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.route-card-header {
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 1.6px;
+}
+
+.route-card-header i {
+  color: var(--primary);
+  transform: rotate(18deg);
+}
+
+.route-map {
+  background: linear-gradient(135deg, rgba(255, 107, 87, 0.1), rgba(34, 211, 197, 0.1));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  display: block;
+  min-height: 260px;
+  width: 100%;
+}
+
+.route-land {
+  fill: rgba(255, 255, 255, 0.08);
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1;
+}
+
+.route-line {
+  fill: none;
+  stroke: url(#routeLineGradient);
+  stroke-dasharray: 10 12;
+  stroke-linecap: round;
+  stroke-width: 5;
+}
+
+.route-line-soft {
+  filter: drop-shadow(0 0 12px rgba(34, 211, 197, 0.55));
+  opacity: 0.55;
+  stroke-dasharray: none;
+  stroke-width: 2;
+}
+
+.route-plane path {
+  fill: var(--primary);
+  filter: drop-shadow(0 8px 12px rgba(255, 107, 87, 0.34));
+}
+
+.route-pin circle {
+  animation: routePinPulse 2.4s ease-in-out infinite;
+  fill: var(--accent);
+  stroke: rgba(255, 255, 255, 0.76);
+  stroke-width: 3;
+}
+
+.route-pin-to circle {
+  animation-delay: 1.2s;
+  fill: var(--primary);
+}
+
+.route-pin text {
+  fill: #fff;
+  font-size: 16px;
+  font-weight: 900;
+  text-anchor: middle;
+}
+
+.route-steps {
+  gap: 10px;
+}
+
+.route-steps span {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  color: var(--muted);
+  display: inline-flex;
+  flex: 1;
+  font-size: 0.84rem;
+  font-weight: 800;
+  gap: 8px;
+  justify-content: center;
+  min-height: 38px;
+  padding: 7px 10px;
+}
+
+.route-steps strong {
+  color: var(--accent);
+}
+
+.ticket-flip-grid {
+  display: grid;
+  gap: 14px;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  perspective: 1200px;
+}
+
+.ticket-flip-card {
+  border-radius: 12px;
+  min-height: 235px;
+  outline: none;
+  overflow: visible;
+}
+
+.ticket-flip-inner {
+  border-radius: inherit;
+  height: 100%;
+  min-height: inherit;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ticket-flip-card:hover .ticket-flip-inner,
+.ticket-flip-card:focus .ticket-flip-inner,
+.ticket-flip-card:focus-within .ticket-flip-inner {
+  transform: rotateY(180deg);
+}
+
+.ticket-face {
+  backface-visibility: hidden;
+  border-radius: 12px;
+  display: grid;
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+}
+
+.ticket-front {
+  background: #0b1012;
+  grid-template-rows: 132px auto auto auto;
+}
+
+.ticket-front::after {
+  border-left: 2px dashed rgba(255, 255, 255, 0.22);
+  content: "";
+  inset: 0 auto 0 76%;
+  position: absolute;
+}
+
+.ticket-front img {
+  height: 132px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.ticket-chip {
+  background: rgba(255, 107, 87, 0.18);
+  border: 1px solid rgba(255, 107, 87, 0.36);
+  border-radius: 999px;
+  color: #ffc1b8;
+  font-size: 0.72rem;
+  font-weight: 900;
+  justify-self: start;
+  margin: 14px 16px 0;
+  padding: 6px 10px;
+  text-transform: uppercase;
+}
+
+.ticket-face h3 {
+  color: var(--ink);
+  font-size: 1.2rem;
+  line-height: 1.2;
+  margin: 8px 16px 0;
+}
+
+.ticket-face p {
+  color: var(--muted);
+  margin: 6px 16px 16px;
+}
+
+.ticket-back {
+  align-content: center;
+  background:
+    linear-gradient(90deg, transparent 74%, rgba(255, 255, 255, 0.07) 74%, rgba(255, 255, 255, 0.07) 75%, transparent 75%),
+    radial-gradient(circle at 10% 20%, rgba(34, 211, 197, 0.18), transparent 34%),
+    linear-gradient(135deg, #151a1e, #0b0f11);
+  gap: 8px;
+  padding: 20px;
+  transform: rotateY(180deg);
+}
+
+.ticket-back span {
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.ticket-back h3,
+.ticket-back p {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.ticket-back a {
+  align-self: start;
+  color: var(--primary);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+@keyframes routePinPulse {
+  0%,
+  100% {
+    r: 12;
+    opacity: 0.82;
+  }
+  50% {
+    r: 16;
+    opacity: 1;
+  }
+}
+
+@media (max-width: 980px) {
+  .route-ticket-section {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-flip-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-flip-card {
+    min-height: 250px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-plane path animateMotion {
+    display: none;
+  }
+
+  .ticket-flip-inner {
+    transition: none;
+  }
+}
+
 /* Featured trips polish: lighter, cleaner filter area. */
 .home-slider-section {
   padding-top: 54px;

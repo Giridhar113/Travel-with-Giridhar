@@ -194,6 +194,134 @@
         </div>
       </section>
 
+      <section class="section route-ticket-section" id="routePreview">
+        <div class="route-ticket-copy">
+          <p class="hero-kicker">Route Preview</p>
+          <h2>See the trip path before you book</h2>
+          <p>
+            A quick route-style preview helps you understand the destination,
+            budget range, and booking flow before sending an inquiry.
+          </p>
+          <div class="route-ticket-actions">
+            <a href="packages.html" class="btn">Compare Trips</a>
+            <a href="contact.html#bookingForm" class="btn btn-outline">Plan My Route</a>
+          </div>
+        </div>
+
+        <div class="route-visual-card" aria-label="Animated Hyderabad to Bali route preview">
+          <div class="route-card-header">
+            <span>HYD</span>
+            <i class="fas fa-plane"></i>
+            <span>DPS</span>
+          </div>
+          <svg class="route-map" viewBox="0 0 620 360" role="img" aria-labelledby="routeMapTitle">
+            <title id="routeMapTitle">Animated travel route from Hyderabad to Bali</title>
+            <defs>
+              <radialGradient id="routeGlow" cx="50%" cy="45%" r="68%">
+                <stop offset="0%" stop-color="#22d3c5" stop-opacity="0.26" />
+                <stop offset="58%" stop-color="#0d3f42" stop-opacity="0.18" />
+                <stop offset="100%" stop-color="#050607" stop-opacity="0" />
+              </radialGradient>
+              <linearGradient id="routeLineGradient" x1="0%" x2="100%">
+                <stop offset="0%" stop-color="#ff6b57" />
+                <stop offset="100%" stop-color="#22d3c5" />
+              </linearGradient>
+            </defs>
+            <rect width="620" height="360" rx="28" fill="url(#routeGlow)" />
+            <path class="route-land route-land-a" d="M70 248 C130 205 172 228 226 182 C284 134 342 162 386 126 C442 80 518 100 560 70 L560 306 L70 306 Z" />
+            <path class="route-land route-land-b" d="M44 125 C98 86 154 112 190 82 C237 42 300 62 322 103 C342 142 294 174 230 166 C156 156 116 172 44 125 Z" />
+            <path id="routePath" class="route-line" d="M132 232 C245 88 385 74 492 186" />
+            <path class="route-line route-line-soft" d="M132 232 C245 88 385 74 492 186" />
+            <g class="route-pin route-pin-from" transform="translate(132 232)">
+              <circle r="14" />
+              <text x="0" y="39">Hyderabad</text>
+            </g>
+            <g class="route-pin route-pin-to" transform="translate(492 186)">
+              <circle r="14" />
+              <text x="0" y="39">Bali</text>
+            </g>
+            <g class="route-plane">
+              <path d="M0 -13 L30 0 L0 13 L6 2 L-14 7 L-9 0 L-14 -7 L6 -2 Z">
+                <animateMotion dur="6s" repeatCount="indefinite" rotate="auto">
+                  <mpath href="#routePath" />
+                </animateMotion>
+              </path>
+            </g>
+          </svg>
+          <div class="route-steps">
+            <span><strong>1</strong> Choose</span>
+            <span><strong>2</strong> Compare</span>
+            <span><strong>3</strong> Book</span>
+          </div>
+        </div>
+
+        <div class="ticket-flip-grid" aria-label="Featured boarding pass trips">
+          <article class="ticket-flip-card" tabindex="0">
+            <div class="ticket-flip-inner">
+              <div class="ticket-face ticket-front">
+                <img
+                  src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=500&auto=format&fit=crop&q=75"
+                  alt="Bali temple and beach"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="ticket-chip">Beach</span>
+                <h3>Bali Premium</h3>
+                <p>From Rs. 40,000</p>
+              </div>
+              <div class="ticket-face ticket-back">
+                <span>5 Days / 4 Nights</span>
+                <h3>Bali Premium Tour</h3>
+                <p>Temples, waterfalls, beach sunsets, hotel stay, and transfers.</p>
+                <a href="contact.html?package=Premium%20Bali%20Tour&destination=Bali%2C%20Indonesia#bookingForm">View Trip</a>
+              </div>
+            </div>
+          </article>
+          <article class="ticket-flip-card" tabindex="0">
+            <div class="ticket-flip-inner">
+              <div class="ticket-face ticket-front">
+                <img
+                  src="https://images.unsplash.com/photo-1593181629936-11c609b8db9b?w=500&auto=format&fit=crop&q=75"
+                  alt="Manali snow mountains"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="ticket-chip">Adventure</span>
+                <h3>Manali Escape</h3>
+                <p>From Rs. 24,000</p>
+              </div>
+              <div class="ticket-face ticket-back">
+                <span>4 Days / 3 Nights</span>
+                <h3>Manali Adventure</h3>
+                <p>Snow points, scenic cafes, mountain views, and activity support.</p>
+                <a href="contact.html?package=Manali%20Adventure%20Holiday&destination=Manali%2C%20India#bookingForm">View Trip</a>
+              </div>
+            </div>
+          </article>
+          <article class="ticket-flip-card" tabindex="0">
+            <div class="ticket-flip-inner">
+              <div class="ticket-face ticket-front">
+                <img
+                  src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=500&auto=format&fit=crop&q=75"
+                  alt="Dubai skyline"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="ticket-chip">Luxury</span>
+                <h3>Dubai Luxury</h3>
+                <p>From Rs. 58,000</p>
+              </div>
+              <div class="ticket-face ticket-back">
+                <span>4 Days / 3 Nights</span>
+                <h3>Dubai Desert Luxury</h3>
+                <p>City skyline, shopping, premium stay, and desert safari.</p>
+                <a href="contact.html?package=Dubai%20Desert%20Luxury&destination=Dubai%2C%20UAE#bookingForm">View Trip</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <section class="section home-slider-section">
         <div class="section-heading-left">
           <p class="hero-kicker">Featured Trips</p>
