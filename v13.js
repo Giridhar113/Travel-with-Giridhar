@@ -1905,33 +1905,6 @@
     if (!section || section.dataset.routeReady) return;
     section.dataset.routeReady = "true";
 
-    const routes = {
-      bali: {
-        code: "DPS",
-        label: "Bali",
-        destination: "Bali, Indonesia",
-        packageName: "Premium Bali Tour"
-      },
-      manali: {
-        code: "KUU",
-        label: "Manali",
-        destination: "Manali, India",
-        packageName: "Manali Adventure Holiday"
-      },
-      dubai: {
-        code: "DXB",
-        label: "Dubai",
-        destination: "Dubai, UAE",
-        packageName: "Dubai Desert Luxury"
-      },
-      goa: {
-        code: "GOI",
-        label: "Goa",
-        destination: "Goa, India",
-        packageName: "Goa Beach Escape"
-      }
-    };
-
     const origin = "Hyderabad, India";
     const select = section.querySelector("#routeDestinationSelect");
     const mapFrame = section.querySelector("#routeGoogleMap");
@@ -1939,6 +1912,68 @@
     const bookLink = section.querySelector("#routeBookTrip");
 
     if (!select || !mapFrame || !mapLink || !bookLink) return;
+
+    function createRouteItems() {
+      const byDestination = new Map();
+
+      function addRoute(destination, packageName) {
+        const name = String(destination || "").trim();
+
+        if (!name) {
+          return;
+        }
+
+        const key = name.toLowerCase();
+
+        if (!byDestination.has(key)) {
+          byDestination.set(key, {
+            id: `route-${byDestination.size}`,
+            destination: name,
+            packageName: packageName || `${name} Custom Trip`
+          });
+        } else if (packageName && /Custom Trip$/i.test(byDestination.get(key).packageName)) {
+          byDestination.get(key).packageName = packageName;
+        }
+      }
+
+      getPackageCatalog().forEach(function (item) {
+        addRoute(item.destination, item.title);
+      });
+
+      budgetDestinations.forEach(function (item) {
+        addRoute(item.name);
+      });
+
+      if (typeof extraDestinations !== "undefined" && Array.isArray(extraDestinations)) {
+        extraDestinations.forEach(function (item) {
+          addRoute(item.name);
+        });
+      }
+
+      document.querySelectorAll(".destination-card h2").forEach(function (heading) {
+        addRoute(heading.textContent);
+      });
+
+      return Array.from(byDestination.values());
+    }
+
+    const routes = createRouteItems();
+
+    select.innerHTML = "";
+    routes.forEach(function (item) {
+      const option = document.createElement("option");
+      option.value = item.id;
+      option.textContent = item.destination;
+      select.appendChild(option);
+    });
+
+    const bali = routes.find(function (item) {
+      return item.destination.toLowerCase() === "bali, indonesia";
+    });
+
+    if (bali) {
+      select.value = bali.id;
+    }
 
     function mapEmbedUrl(destination) {
       return `https://www.google.com/maps?q=${encodeURIComponent(destination)}&output=embed`;
@@ -1953,7 +1988,14 @@
     }
 
     function updateRoute() {
-      const item = routes[select.value] || routes.bali;
+      const item = routes.find(function (route) {
+        return route.id === select.value;
+      }) || routes[0];
+
+      if (!item) {
+        return;
+      }
+
       mapFrame.src = mapEmbedUrl(item.destination);
       mapFrame.title = `Google map showing ${item.destination}`;
       mapLink.href = mapOpenUrl(item.destination);
