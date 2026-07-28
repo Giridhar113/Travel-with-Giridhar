@@ -1965,6 +1965,25 @@ body.gallery-lightbox-open {
   padding: 0 26px;
 }
 
+.hero-slider .hero-badges {
+  margin-bottom: 54px;
+  position: relative;
+  z-index: 8;
+}
+
+.hero-slider .hero-badge {
+  min-height: 38px;
+}
+
+.hero-slider .hero-slider-dots {
+  bottom: 24px;
+  z-index: 9;
+}
+
+.hero-slider .hero-slider-dots button {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+}
+
 main > .section {
   padding-bottom: clamp(44px, 6vw, 70px);
   padding-top: clamp(44px, 6vw, 70px);
@@ -2181,12 +2200,21 @@ main > .section {
 
 @media (max-width: 720px) {
   .hero.hero-slider {
-    min-height: 650px;
+    min-height: 700px;
   }
 
   .hero-slider .hero-content {
     border-radius: 22px;
     padding: 24px 18px;
+  }
+
+  .hero-slider .hero-badges {
+    margin-bottom: 74px;
+  }
+
+  .hero-slider .hero-slider-dots {
+    bottom: 22px;
+    width: min(92vw, 420px);
   }
 
   .home-slider-section .v13-featured-grid,
