@@ -1872,12 +1872,36 @@ function getTravelApiBaseUrl() {
   return String(config.apiBaseUrl || fallbackBase).replace(/\/$/, "");
 }
 
+function isTravelApiConfigured() {
+  const baseUrl = getTravelApiBaseUrl();
+
+  return Boolean(baseUrl) && !/your-travel-api\.example\.com/i.test(baseUrl);
+}
+
+function createTravelApiConfigError() {
+  const isLocalPage =
+    window.location.protocol === "file:" ||
+    ["localhost", "127.0.0.1"].includes(window.location.hostname);
+  const error = new Error(
+    isLocalPage
+      ? "Booking backend is not running. Start the server folder with npm.cmd start, then try again."
+      : "Booking backend is not connected on the live site yet. Please use WhatsApp for this booking."
+  );
+
+  error.code = "TRAVEL_API_NOT_CONFIGURED";
+  return error;
+}
+
 function buildTravelApiUrl(path) {
   const baseUrl = getTravelApiBaseUrl();
   return `${baseUrl}${path}`;
 }
 
 function sendBookingApi(templateParams) {
+  if (!isTravelApiConfigured()) {
+    return Promise.reject(createTravelApiConfigError());
+  }
+
   const payload = {
     name: templateParams.from_name,
     email: templateParams.from_email,
@@ -2211,12 +2235,20 @@ function sendEmailJs(templateId, templateParams, formLabel) {
 }
 
 function getFormSendErrorMessage(error) {
+  if (error && error.code === "TRAVEL_API_NOT_CONFIGURED") {
+    return error.message;
+  }
+
   if (error && error.text) {
-    return `Form error: ${error.text}`;
+    return error.text;
   }
 
   if (error && error.message) {
-    return `Form error: ${error.message}`;
+    if (/failed to fetch|networkerror|load failed/i.test(error.message)) {
+      return "Booking backend is not reachable right now. Please use WhatsApp, or try again after the backend is online.";
+    }
+
+    return error.message;
   }
 
   return "Something went wrong. Please WhatsApp us directly.";
@@ -2433,6 +2465,10 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
 
     Promise.resolve()
       .then(function () {
+        if (isBookingApiForm(form) && !isTravelApiConfigured()) {
+          throw createTravelApiConfigError();
+        }
+
         if (shouldUseClientOnlySubmission(form, templateId)) {
           return sendClientOnlyForm(form);
         }
