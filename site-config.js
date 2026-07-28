@@ -5,6 +5,11 @@
     githubUrl: "https://github.com/Giridhar113/Travel-with-Giridhar",
     portfolioUrl: "https://giridhar-portfolio-ten.vercel.app/",
     whatsappMessage: "Hi, I want to plan a trip with Travel with Giridhar.",
+    apiBaseUrl:
+      window.location.protocol === "file:" ||
+      ["localhost", "127.0.0.1"].includes(window.location.hostname)
+        ? "http://localhost:5000"
+        : "https://your-travel-api.example.com",
   };
 
   window.TRAVEL_SITE_CONFIG = siteConfig;
@@ -29,7 +34,7 @@
       }
 
       if (copyright) {
-        copyright.textContent = `© 2026 ${siteConfig.brandName}. All rights reserved.`;
+        copyright.textContent = `\u00a9 2026 ${siteConfig.brandName}. All rights reserved.`;
       }
     }
 

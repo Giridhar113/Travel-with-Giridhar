@@ -8,6 +8,9 @@ const filterStatus = document.getElementById("filterStatus");
 const destinationBudgetFilter = document.getElementById("destinationBudgetFilter");
 const destinationSeasonFilter = document.getElementById("destinationSeasonFilter");
 const savedDestinationsKey = "travelGuideSavedDestinations";
+const savedTripsKey = "savedTrips";
+const savedFilterCount = document.getElementById("savedFilterCount");
+const destinationLoading = document.getElementById("destinationLoading");
 const themePreferenceKey = "travelGuideTheme";
 let activeDestinationFilter = "all";
 
@@ -85,110 +88,119 @@ function setStorageItem(key, value) {
   }
 }
 
-const destinationImages = {
-  beach:
-    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=700&auto=format&fit=crop&q=70",
-  adventure:
-    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=700&auto=format&fit=crop&q=70",
-  culture:
-    "https://images.unsplash.com/photo-1525874684015-58379d421a52?w=700&auto=format&fit=crop&q=70",
-  city:
-    "https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?w=700&auto=format&fit=crop&q=70",
-  family:
-    "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=700&auto=format&fit=crop&q=70",
-  romantic:
-    "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=700&auto=format&fit=crop&q=70",
-  nature:
-    "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=700&auto=format&fit=crop&q=70",
-  desert:
-    "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=700&auto=format&fit=crop&q=70",
-};
+function slugForSavedTrip(value) {
+  return normalizeSearchText(value)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 
-const extraDestinations = [
-  { name: "Kerala, India", price: "From Rs. 26,000", category: "nature family romantic", tags: ["Nature", "Family"], best: "Best: Sep-Mar", image: "nature", desc: "Backwaters, houseboats, greenery, and peaceful resort stays.", detail: "Cruise through backwaters, enjoy local meals, visit waterfalls, and relax in calm nature resorts." },
-  { name: "Jaipur, India", price: "From Rs. 20,000", category: "culture family", tags: ["Culture", "Family"], best: "Best: Oct-Mar", image: "desert", desc: "Royal palaces, forts, markets, food, and heritage stays.", detail: "Explore Amer Fort, City Palace, colorful bazaars, local food, and evening cultural experiences." },
-  { name: "Kashmir, India", price: "From Rs. 32,000", category: "romantic family adventure", tags: ["Romantic", "Adventure"], best: "Best: Mar-Oct", image: "adventure", desc: "Lakes, valleys, snow views, gardens, and peaceful stays.", detail: "Enjoy Srinagar, Gulmarg, houseboats, gardens, snow activities, and scenic mountain drives." },
-  { name: "Ladakh, India", price: "From Rs. 38,000", category: "adventure culture", tags: ["Adventure", "Culture"], best: "Best: May-Sep", image: "adventure", desc: "High-altitude landscapes, monasteries, lakes, and road trips.", detail: "Visit Pangong Lake, Nubra Valley, monasteries, mountain passes, and scenic desert valleys." },
-  { name: "Andaman, India", price: "From Rs. 42,000", category: "beach romantic family", tags: ["Beach", "Family"], best: "Best: Oct-May", image: "beach", desc: "Clear beaches, island hopping, snorkeling, and quiet stays.", detail: "Plan Havelock, Radhanagar Beach, cellular jail visit, water activities, and relaxed island time." },
-  { name: "Maldives", price: "From Rs. 90,000", category: "beach romantic", tags: ["Beach", "Romantic"], best: "Best: Nov-Apr", image: "beach", desc: "Luxury island resorts, clear water, snorkeling, and slow days.", detail: "Choose beach villas, speedboat transfers, snorkeling, sunset dinners, and peaceful island stays." },
-  { name: "Phuket, Thailand", price: "From Rs. 46,000", category: "beach family adventure", tags: ["Beach", "Adventure"], best: "Best: Nov-Apr", image: "beach", desc: "Island tours, beaches, nightlife, and water adventures.", detail: "Visit Phi Phi islands, Patong, viewpoints, night markets, and beach activity spots." },
-  { name: "Bangkok, Thailand", price: "From Rs. 40,000", category: "culture family city", tags: ["Culture", "Family"], best: "Best: Nov-Feb", image: "city", desc: "Temples, shopping streets, street food, and city energy.", detail: "Explore temples, floating markets, malls, local food streets, and evening river views." },
-  { name: "London, UK", price: "From Rs. 110,000", category: "culture family city", tags: ["Culture", "Family"], best: "Best: Apr-Sep", image: "city", desc: "Museums, landmarks, shopping, parks, and royal sights.", detail: "Visit Big Ben, London Eye, museums, parks, shopping streets, and heritage neighborhoods." },
-  { name: "Swiss Alps, Switzerland", price: "From Rs. 125,000", category: "romantic family adventure", tags: ["Romantic", "Adventure"], best: "Best: Apr-Oct", image: "adventure", desc: "Snow peaks, scenic trains, lakes, and mountain villages.", detail: "Plan Interlaken, Lucerne, Jungfrau region, lake cruises, and scenic train routes." },
-  { name: "Amsterdam, Netherlands", price: "From Rs. 90,000", category: "culture romantic city", tags: ["Culture", "Romantic"], best: "Best: Apr-Oct", image: "city", desc: "Canals, museums, cycling streets, cafes, and city walks.", detail: "Enjoy canal cruises, art museums, flower markets, cycling routes, and cozy cafes." },
-  { name: "Istanbul, Turkey", price: "From Rs. 75,000", category: "culture romantic family", tags: ["Culture", "Romantic"], best: "Best: Apr-Jun", image: "culture", desc: "Historic mosques, markets, Bosphorus views, and local food.", detail: "Visit Hagia Sophia, bazaars, Bosphorus cruise, heritage lanes, and Turkish food spots." },
-  { name: "Seoul, South Korea", price: "From Rs. 88,000", category: "culture city family", tags: ["Culture", "Family"], best: "Best: Mar-May", image: "city", desc: "Modern streets, palaces, cafes, shopping, and culture.", detail: "Explore palaces, shopping districts, food streets, cafes, and city viewpoints." },
-  { name: "Sydney, Australia", price: "From Rs. 120,000", category: "beach family city", tags: ["Beach", "Family"], best: "Best: Sep-Nov", image: "city", desc: "Harbor views, beaches, city attractions, and coastal walks.", detail: "Visit Opera House, Bondi Beach, harbor cruises, museums, and coastal neighborhoods." },
-  { name: "Queenstown, New Zealand", price: "From Rs. 135,000", category: "adventure romantic nature", tags: ["Adventure", "Nature"], best: "Best: Dec-Feb", image: "adventure", desc: "Adventure sports, lakes, mountains, and scenic drives.", detail: "Enjoy lake views, adventure activities, mountain rides, day trips, and peaceful stays." },
-  { name: "Cairo, Egypt", price: "From Rs. 82,000", category: "culture family adventure", tags: ["Culture", "Family"], best: "Best: Oct-Apr", image: "desert", desc: "Pyramids, museums, river views, and ancient history.", detail: "Visit pyramids, Egyptian Museum, Nile views, markets, and heritage sites." },
-  { name: "Cape Town, South Africa", price: "From Rs. 105,000", category: "adventure beach nature", tags: ["Adventure", "Nature"], best: "Best: Nov-Mar", image: "nature", desc: "Mountains, beaches, coastal routes, wildlife, and city views.", detail: "Explore Table Mountain, beaches, coastal drives, vineyards, and local experiences." },
-  { name: "Barcelona, Spain", price: "From Rs. 86,000", category: "beach culture city", tags: ["Beach", "Culture"], best: "Best: May-Jun", image: "city", desc: "Architecture, beaches, food streets, and creative city life.", detail: "Visit Sagrada Familia, beaches, Gothic Quarter, markets, and evening plazas." },
-  { name: "Venice, Italy", price: "From Rs. 78,000", category: "romantic culture", tags: ["Romantic", "Culture"], best: "Best: Apr-Jun", image: "romantic", desc: "Canals, gondolas, old streets, and romantic views.", detail: "Enjoy canal rides, old squares, island visits, cafes, and sunset walks." },
-  { name: "Prague, Czech Republic", price: "From Rs. 72,000", category: "culture romantic city", tags: ["Culture", "Romantic"], best: "Best: May-Sep", image: "city", desc: "Castles, bridges, old town lanes, cafes, and history.", detail: "Explore Prague Castle, Charles Bridge, old town squares, markets, and viewpoints." },
-  { name: "Hampi, India", price: "From Rs. 16,000", category: "culture adventure", tags: ["Culture", "Adventure"], best: "Best: Oct-Feb", image: "culture", desc: "Ancient ruins, boulders, temples, and unique landscapes.", detail: "Visit heritage ruins, river spots, viewpoints, temples, and relaxed backpacker cafes." },
-  { name: "Mysore, India", price: "From Rs. 14,000", category: "culture family", tags: ["Culture", "Family"], best: "Best: Oct-Mar", image: "culture", desc: "Palaces, gardens, temples, food, and weekend comfort.", detail: "Explore Mysore Palace, Brindavan Gardens, markets, temples, and local food." },
-  { name: "Ooty, India", price: "From Rs. 18,000", category: "nature family romantic", tags: ["Nature", "Family"], best: "Best: Oct-Jun", image: "nature", desc: "Tea gardens, lakes, viewpoints, and cool-weather stays.", detail: "Enjoy botanical gardens, lake boating, tea estates, toy train rides, and hill views." },
-  { name: "Coorg, India", price: "From Rs. 20,000", category: "nature romantic family", tags: ["Nature", "Romantic"], best: "Best: Oct-Mar", image: "nature", desc: "Coffee estates, waterfalls, forest stays, and scenic roads.", detail: "Plan coffee plantation walks, waterfalls, viewpoints, local food, and peaceful stays." },
-  { name: "Rishikesh, India", price: "From Rs. 17,000", category: "adventure culture", tags: ["Adventure", "Culture"], best: "Best: Sep-Apr", image: "adventure", desc: "River rafting, yoga, cafes, temples, and mountain views.", detail: "Try rafting, riverside cafes, yoga centers, suspension bridges, and evening aarti." },
-  { name: "Varanasi, India", price: "From Rs. 18,000", category: "culture family", tags: ["Culture", "Family"], best: "Best: Oct-Mar", image: "culture", desc: "Ghats, spiritual walks, boat rides, and heritage lanes.", detail: "Experience sunrise boat rides, temple walks, evening aarti, local food, and old lanes." },
-  { name: "Udaipur, India", price: "From Rs. 24,000", category: "romantic culture family", tags: ["Romantic", "Culture"], best: "Best: Oct-Mar", image: "romantic", desc: "Lakes, palaces, rooftop cafes, markets, and royal stays.", detail: "Visit City Palace, lakes, heritage hotels, markets, boat rides, and sunset points." },
-  { name: "Jaisalmer, India", price: "From Rs. 28,000", category: "adventure culture romantic", tags: ["Adventure", "Culture"], best: "Best: Nov-Feb", image: "desert", desc: "Desert camps, forts, dunes, music, and heritage stays.", detail: "Enjoy dune safari, desert camp, fort walks, cultural nights, and market visits." },
-  { name: "Darjeeling, India", price: "From Rs. 25,000", category: "nature family romantic", tags: ["Nature", "Family"], best: "Best: Mar-May", image: "nature", desc: "Tea estates, mountain views, toy train, and cafes.", detail: "Visit tea gardens, Tiger Hill, toy train routes, monasteries, and local cafes." },
-  { name: "Shillong, India", price: "From Rs. 30,000", category: "nature adventure family", tags: ["Nature", "Adventure"], best: "Best: Oct-Apr", image: "nature", desc: "Waterfalls, lakes, caves, scenic roads, and fresh weather.", detail: "Explore waterfalls, caves, viewpoints, local markets, and day trips around Meghalaya." },
-  { name: "Pondicherry, India", price: "From Rs. 17,000", category: "beach culture romantic", tags: ["Beach", "Culture"], best: "Best: Oct-Mar", image: "beach", desc: "French streets, beaches, cafes, art, and slow travel.", detail: "Walk through White Town, visit beaches, cafes, Auroville, and heritage streets." },
-  { name: "Lakshadweep, India", price: "From Rs. 55,000", category: "beach romantic adventure", tags: ["Beach", "Adventure"], best: "Best: Oct-May", image: "beach", desc: "Blue lagoons, coral islands, snorkeling, and quiet beaches.", detail: "Plan island stays, water activities, lagoon views, beach walks, and peaceful evenings." },
-  { name: "Mauritius", price: "From Rs. 95,000", category: "beach romantic family", tags: ["Beach", "Romantic"], best: "Best: May-Dec", image: "beach", desc: "Island resorts, beaches, waterfalls, and scenic coastal drives.", detail: "Enjoy resort stays, beach activities, nature parks, shopping, and coastal sightseeing." },
-  { name: "Baku, Azerbaijan", price: "From Rs. 68,000", category: "city culture family", tags: ["City", "Culture"], best: "Best: Apr-Jun", image: "city", desc: "Modern skyline, old city lanes, food, and Caspian views.", detail: "Visit Flame Towers, old city, boulevard, museums, markets, and day trips." },
-  { name: "Kathmandu, Nepal", price: "From Rs. 35,000", category: "culture adventure family", tags: ["Culture", "Adventure"], best: "Best: Sep-Nov", image: "culture", desc: "Temples, mountain views, local markets, and short hikes.", detail: "Explore heritage squares, stupas, local food, nearby viewpoints, and cultural walks." },
-  { name: "Bhutan", price: "From Rs. 58,000", category: "culture nature family", tags: ["Culture", "Nature"], best: "Best: Mar-May", image: "nature", desc: "Monasteries, valleys, peaceful towns, and scenic drives.", detail: "Visit Paro, Thimphu, Punakha, monasteries, viewpoints, and calm mountain valleys." },
-  { name: "Vietnam", price: "From Rs. 62,000", category: "culture family adventure", tags: ["Culture", "Family"], best: "Best: Feb-Apr", image: "culture", desc: "Cities, food streets, bays, lantern towns, and history.", detail: "Plan Hanoi, Ha Long Bay, Da Nang, Hoi An, local markets, and food walks." },
-  { name: "Malaysia", price: "From Rs. 45,000", category: "family city culture", tags: ["Family", "Culture"], best: "Best: Dec-Apr", image: "city", desc: "City attractions, islands, shopping, food, and family fun.", detail: "Visit Kuala Lumpur, Genting, Langkawi, malls, theme parks, and food streets." },
-  { name: "Hong Kong", price: "From Rs. 82,000", category: "city family culture", tags: ["City", "Family"], best: "Best: Oct-Dec", image: "city", desc: "Skyline views, shopping, theme parks, and harbor nights.", detail: "Enjoy Victoria Peak, harbor views, Disneyland, markets, and city food spots." },
-  { name: "Doha, Qatar", price: "From Rs. 60,000", category: "city family culture", tags: ["City", "Family"], best: "Best: Nov-Mar", image: "city", desc: "Museums, skyline, desert experiences, souqs, and waterfronts.", detail: "Visit Souq Waqif, museums, skyline points, desert activities, and waterfront walks." },
-];
+function getSharedSavedTrips() {
+  try {
+    const parsed = JSON.parse(getStorageItem(savedTripsKey)) || [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+}
 
-const extraTravelPackages = [
-  { title: "Kerala Backwater Deluxe", destination: "Kerala, India", duration: "4 Days / 3 Nights", price: "Rs. 30,000", amount: 30000, image: "nature", group: true, features: ["Houseboat stay", "Backwater cruise", "Meals and local sightseeing"] },
-  { title: "Jaipur Heritage Break", destination: "Jaipur, India", duration: "3 Days / 2 Nights", price: "Rs. 20,000", amount: 20000, image: "desert", group: true, features: ["Heritage hotel", "Fort and palace tour", "Market visit"] },
-  { title: "Kashmir Valley Escape", destination: "Kashmir, India", duration: "5 Days / 4 Nights", price: "Rs. 38,000", amount: 38000, image: "adventure", group: true, features: ["Houseboat experience", "Gulmarg day trip", "Private transfers"] },
-  { title: "Ladakh Road Adventure", destination: "Ladakh, India", duration: "6 Days / 5 Nights", price: "Rs. 48,000", amount: 48000, image: "adventure", group: true, features: ["Nubra and Pangong", "Monastery visits", "Adventure route support"] },
-  { title: "Andaman Island Holiday", destination: "Andaman, India", duration: "5 Days / 4 Nights", price: "Rs. 52,000", amount: 52000, image: "beach", group: true, features: ["Havelock stay", "Ferry transfers", "Snorkeling assistance"] },
-  { title: "Phuket Island Fun", destination: "Phuket, Thailand", duration: "4 Days / 3 Nights", price: "Rs. 48,000", amount: 48000, image: "beach", group: false, features: ["Island tour", "Beach stay", "Airport transfers"] },
-  { title: "Bangkok Shopping Tour", destination: "Bangkok, Thailand", duration: "4 Days / 3 Nights", price: "Rs. 42,000", amount: 42000, image: "city", group: true, features: ["City hotel", "Temple tour", "Shopping route"] },
-  { title: "London Classic Explorer", destination: "London, UK", duration: "6 Days / 5 Nights", price: "Rs. 118,000", amount: 118000, image: "city", group: false, features: ["Landmark tour", "Museum visits", "Transport support"] },
-  { title: "Swiss Alps Scenic Tour", destination: "Swiss Alps, Switzerland", duration: "6 Days / 5 Nights", price: "Rs. 135,000", amount: 135000, image: "adventure", group: false, features: ["Scenic train", "Mountain day trip", "Lake city stay"] },
-  { title: "Amsterdam Canal Holiday", destination: "Amsterdam, Netherlands", duration: "4 Days / 3 Nights", price: "Rs. 92,000", amount: 92000, image: "city", group: false, features: ["Canal cruise", "Museum route", "Central hotel"] },
-  { title: "Istanbul Culture Tour", destination: "Istanbul, Turkey", duration: "5 Days / 4 Nights", price: "Rs. 78,000", amount: 78000, image: "culture", group: true, features: ["Old city tour", "Bosphorus cruise", "Market walk"] },
-  { title: "Seoul City Lights", destination: "Seoul, South Korea", duration: "5 Days / 4 Nights", price: "Rs. 90,000", amount: 90000, image: "city", group: false, features: ["Palace visits", "Shopping streets", "Cafe districts"] },
-  { title: "Sydney Harbor Trip", destination: "Sydney, Australia", duration: "6 Days / 5 Nights", price: "Rs. 128,000", amount: 128000, image: "city", group: false, features: ["Harbor tour", "Beach day", "City attractions"] },
-  { title: "Queenstown Adventure", destination: "Queenstown, New Zealand", duration: "6 Days / 5 Nights", price: "Rs. 140,000", amount: 140000, image: "adventure", group: false, features: ["Adventure activities", "Lake stay", "Scenic drives"] },
-  { title: "Cairo Pyramid Journey", destination: "Cairo, Egypt", duration: "5 Days / 4 Nights", price: "Rs. 86,000", amount: 86000, image: "desert", group: true, features: ["Pyramid visit", "Museum tour", "Nile evening"] },
-  { title: "Cape Town Nature Tour", destination: "Cape Town, South Africa", duration: "6 Days / 5 Nights", price: "Rs. 110,000", amount: 110000, image: "nature", group: false, features: ["Table Mountain", "Coastal drive", "City stay"] },
-  { title: "Barcelona Beach City", destination: "Barcelona, Spain", duration: "5 Days / 4 Nights", price: "Rs. 88,000", amount: 88000, image: "city", group: true, features: ["City tour", "Beach time", "Food market visit"] },
-  { title: "Venice Romantic Stay", destination: "Venice, Italy", duration: "4 Days / 3 Nights", price: "Rs. 80,000", amount: 80000, image: "romantic", group: false, features: ["Canal ride", "Island visit", "Central stay"] },
-  { title: "Prague Old Town Tour", destination: "Prague, Czech Republic", duration: "4 Days / 3 Nights", price: "Rs. 74,000", amount: 74000, image: "city", group: true, features: ["Castle route", "Old town walk", "Cafe evenings"] },
-  { title: "Hampi Heritage Trail", destination: "Hampi, India", duration: "3 Days / 2 Nights", price: "Rs. 16,000", amount: 16000, image: "culture", group: true, features: ["Ruins tour", "Temple visits", "Local transport"] },
-  { title: "Mysore Palace Weekend", destination: "Mysore, India", duration: "2 Days / 1 Night", price: "Rs. 14,000", amount: 14000, image: "culture", group: true, features: ["Palace visit", "Garden evening", "Food stops"] },
-  { title: "Ooty Hill Station", destination: "Ooty, India", duration: "3 Days / 2 Nights", price: "Rs. 18,000", amount: 18000, image: "nature", group: true, features: ["Hill stay", "Lake visit", "Tea garden route"] },
-  { title: "Coorg Coffee Retreat", destination: "Coorg, India", duration: "3 Days / 2 Nights", price: "Rs. 21,000", amount: 21000, image: "nature", group: true, features: ["Coffee estate stay", "Waterfall visit", "Nature walks"] },
-  { title: "Rishikesh River Adventure", destination: "Rishikesh, India", duration: "3 Days / 2 Nights", price: "Rs. 19,000", amount: 19000, image: "adventure", group: true, features: ["Rafting support", "Cafe walk", "Evening aarti"] },
-  { title: "Varanasi Spiritual Trip", destination: "Varanasi, India", duration: "3 Days / 2 Nights", price: "Rs. 18,000", amount: 18000, image: "culture", group: true, features: ["Boat ride", "Ghat walk", "Temple route"] },
-  { title: "Udaipur Lake Holiday", destination: "Udaipur, India", duration: "3 Days / 2 Nights", price: "Rs. 26,000", amount: 26000, image: "romantic", group: true, features: ["Lake view stay", "Palace visit", "Boat ride"] },
-  { title: "Jaisalmer Desert Camp", destination: "Jaisalmer, India", duration: "3 Days / 2 Nights", price: "Rs. 28,000", amount: 28000, image: "desert", group: true, features: ["Desert camp", "Dune safari", "Cultural night"] },
-  { title: "Darjeeling Tea Trail", destination: "Darjeeling, India", duration: "4 Days / 3 Nights", price: "Rs. 27,000", amount: 27000, image: "nature", group: true, features: ["Tea gardens", "Toy train", "Tiger Hill"] },
-  { title: "Shillong Waterfall Tour", destination: "Shillong, India", duration: "5 Days / 4 Nights", price: "Rs. 34,000", amount: 34000, image: "nature", group: true, features: ["Waterfalls", "Caves", "Scenic drives"] },
-  { title: "Pondicherry Cafe Break", destination: "Pondicherry, India", duration: "3 Days / 2 Nights", price: "Rs. 17,000", amount: 17000, image: "beach", group: true, features: ["White Town stay", "Beach time", "Auroville visit"] },
-  { title: "Lakshadweep Lagoon Plan", destination: "Lakshadweep, India", duration: "5 Days / 4 Nights", price: "Rs. 58,000", amount: 58000, image: "beach", group: false, features: ["Island stay", "Lagoon view", "Water activities"] },
-  { title: "Mauritius Island Escape", destination: "Mauritius", duration: "5 Days / 4 Nights", price: "Rs. 98,000", amount: 98000, image: "beach", group: false, features: ["Resort stay", "Island tour", "Beach activities"] },
-  { title: "Baku City Break", destination: "Baku, Azerbaijan", duration: "4 Days / 3 Nights", price: "Rs. 70,000", amount: 70000, image: "city", group: true, features: ["Old city tour", "Boulevard walk", "Day trip support"] },
-  { title: "Kathmandu Valley Tour", destination: "Kathmandu, Nepal", duration: "4 Days / 3 Nights", price: "Rs. 36,000", amount: 36000, image: "culture", group: true, features: ["Temple route", "Market walk", "Viewpoint visit"] },
-  { title: "Bhutan Peaceful Journey", destination: "Bhutan", duration: "5 Days / 4 Nights", price: "Rs. 62,000", amount: 62000, image: "nature", group: false, features: ["Valley drives", "Monastery visits", "Culture walks"] },
-  { title: "Vietnam Discovery", destination: "Vietnam", duration: "6 Days / 5 Nights", price: "Rs. 66,000", amount: 66000, image: "culture", group: true, features: ["City route", "Bay cruise", "Food walks"] },
-  { title: "Malaysia Family Holiday", destination: "Malaysia", duration: "5 Days / 4 Nights", price: "Rs. 48,000", amount: 48000, image: "family", group: true, features: ["Kuala Lumpur", "Genting day trip", "Shopping support"] },
-];
+function setSharedSavedTrips(items) {
+  return setStorageItem(savedTripsKey, JSON.stringify(items));
+}
+
+function getLegacySavedDestinationNames() {
+  try {
+    const parsed = JSON.parse(getStorageItem(savedDestinationsKey)) || [];
+    return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function getDestinationNameFromSavedTrip(item) {
+  if (!item) {
+    return "";
+  }
+
+  if (item.type === "destination") {
+    return item.destination || item.name || "";
+  }
+
+  return "";
+}
+
+function getSavedDestinationNames() {
+  const sharedNames = getSharedSavedTrips()
+    .map(getDestinationNameFromSavedTrip)
+    .filter(Boolean);
+
+  return Array.from(new Set(sharedNames.concat(getLegacySavedDestinationNames())));
+}
+
+function isDestinationNameSaved(destinationName, savedNames) {
+  const normalizedName = normalizeSearchText(destinationName);
+
+  return (savedNames || getSavedDestinationNames()).some(function (savedName) {
+    return normalizeSearchText(savedName) === normalizedName;
+  });
+}
+
+function createSavedDestinationItem(card, destinationName) {
+  const priceNode = card.querySelector(".price");
+  const price = parseRupeeAmount(priceNode ? priceNode.textContent : "");
+
+  return {
+    id: `destination-${slugForSavedTrip(destinationName)}`,
+    type: "destination",
+    name: destinationName,
+    destination: destinationName,
+    packageName: destinationName,
+    price,
+    priceText: price ? `Rs. ${price.toLocaleString("en-IN")}` : "Custom quote",
+  };
+}
+
+const travelData = window.TRAVEL_DATA || {};
+const destinationImages = travelData.destinationImages || {};
+const baseDestinations = Array.isArray(travelData.baseDestinations) ? travelData.baseDestinations : [];
+const extraDestinations = Array.isArray(travelData.extraDestinations) ? travelData.extraDestinations : [];
+const allDestinations = Array.isArray(travelData.destinations)
+  ? travelData.destinations
+  : baseDestinations.concat(extraDestinations);
+const baseTravelPackages = Array.isArray(travelData.basePackages) ? travelData.basePackages : [];
+const extraTravelPackages = Array.isArray(travelData.extraPackages) ? travelData.extraPackages : [];
+const allTravelPackages = Array.isArray(travelData.packages)
+  ? travelData.packages
+  : baseTravelPackages.concat(extraTravelPackages);
+
+function unsplashVariant(src, width) {
+  if (!/images\.unsplash\.com/.test(String(src || ""))) {
+    return "";
+  }
+
+  if (/[?&]w=\d+/.test(src)) {
+    return src.replace(/([?&]w=)\d+/, `$1${width}`);
+  }
+
+  return `${src}${src.includes("?") ? "&" : "?"}w=${width}`;
+}
+
+function responsiveImageAttrs(src, sizes) {
+  const variants = [400, 800, 1200]
+    .map(function (width) {
+      const url = unsplashVariant(src, width);
+      return url ? `${url} ${width}w` : "";
+    })
+    .filter(Boolean);
+
+  if (!variants.length) {
+    return "";
+  }
+
+  return `srcset="${variants.join(", ")}" sizes="${sizes || "(max-width: 768px) 92vw, 33vw"}"`;
+}
 
 function createTagMarkup(tags) {
-  return tags
+  return (tags || [])
     .map(function (tag) {
       return `<span class="tag">${tag}</span>`;
     })
@@ -196,11 +208,29 @@ function createTagMarkup(tags) {
 }
 
 function createFeatureMarkup(features) {
-  return features
+  return (features || [])
     .map(function (feature) {
       return `<li>${feature}</li>`;
     })
     .join("");
+}
+
+function getResolvedImageSource(item) {
+  const image = item ? item.image : "";
+  return destinationImages[image] || image || destinationImages.city || "";
+}
+
+function getPackagePriceText(travelPackage) {
+  if (travelPackage.priceText) {
+    return travelPackage.priceText;
+  }
+
+  if (typeof travelPackage.price === "string") {
+    return travelPackage.price;
+  }
+
+  const amount = travelPackage.amount || travelPackage.price || 0;
+  return `Rs. ${Number(amount || 0).toLocaleString("en-IN")}`;
 }
 
 function renderExtraDestinations() {
@@ -210,18 +240,21 @@ function renderExtraDestinations() {
     return;
   }
 
-  extraDestinations.forEach(function (destination) {
+  destinationsGrid.innerHTML = "";
+
+  allDestinations.forEach(function (destination) {
     const article = document.createElement("article");
     const keywords = normalizeSearchText(
-      `${destination.name} ${destination.category} ${destination.desc} ${destination.tags.join(" ")}`
+      `${destination.name} ${destination.category} ${destination.desc} ${(destination.tags || []).join(" ")}`
     );
 
     article.className = "card destination-card";
     article.dataset.category = destination.category;
     article.dataset.destination = keywords;
     article.tabIndex = 0;
+    const imageSource = getResolvedImageSource(destination);
     article.innerHTML = `
-      <img src="${destinationImages[destination.image] || destinationImages.city}" alt="${destination.name} travel view" />
+      <img src="${imageSource}" alt="${destination.imageAlt || `${destination.name} travel view`}" loading="lazy" decoding="async" ${responsiveImageAttrs(imageSource)} />
       <div class="card-content">
         <div class="card-meta">
           <h2>${destination.name}</h2>
@@ -243,6 +276,10 @@ function renderExtraDestinations() {
   });
 
   destinationCards = document.querySelectorAll(".destination-card");
+
+  if (destinationLoading) {
+    destinationLoading.hidden = true;
+  }
 }
 
 function renderExtraPackages() {
@@ -252,19 +289,24 @@ function renderExtraPackages() {
     return;
   }
 
-  extraTravelPackages.forEach(function (travelPackage) {
+  packageGrid.innerHTML = "";
+
+  allTravelPackages.forEach(function (travelPackage) {
     const article = document.createElement("article");
     const bookingUrl = `contact.html?package=${encodeURIComponent(
       travelPackage.title
     )}&destination=${encodeURIComponent(travelPackage.destination)}#bookingForm`;
+    const features = travelPackage.features || travelPackage.inclusions || [];
+    const priceText = getPackagePriceText(travelPackage);
 
     article.className = "card package-card";
+    const imageSource = getResolvedImageSource(travelPackage);
     article.innerHTML = `
-      <img src="${destinationImages[travelPackage.image] || destinationImages.city}" alt="${travelPackage.title}" />
+      <img src="${imageSource}" alt="${travelPackage.imageAlt || `${travelPackage.title} package view`}" loading="lazy" decoding="async" ${responsiveImageAttrs(imageSource)} />
       <div class="card-content">
         <div class="card-meta">
           <h2>${travelPackage.title}</h2>
-          <span class="price">${travelPackage.price}</span>
+          <span class="price">${priceText}</span>
         </div>
         ${
           travelPackage.group
@@ -273,7 +315,7 @@ function renderExtraPackages() {
         }
         <p>${travelPackage.duration}</p>
         <ul class="feature-list">
-          ${createFeatureMarkup(travelPackage.features)}
+          ${createFeatureMarkup(features)}
         </ul>
         <a href="${bookingUrl}" class="btn">Book Now</a>
       </div>
@@ -286,21 +328,15 @@ function renderExtraPackages() {
 renderExtraDestinations();
 renderExtraPackages();
 
-function getSavedDestinations() {
-  try {
-    return JSON.parse(getStorageItem(savedDestinationsKey)) || [];
-  } catch (error) {
-    return [];
-  }
-}
-
-function setSavedDestinations(destinations) {
-  setStorageItem(savedDestinationsKey, JSON.stringify(destinations));
-}
-
 function updateSavedCount(savedDestinations) {
+  const count = savedDestinations ? savedDestinations.length : getSavedDestinationNames().length;
+
   if (savedCount) {
-    savedCount.textContent = `Saved destinations: ${savedDestinations.length}`;
+    savedCount.textContent = `Saved destinations: ${count}`;
+  }
+
+  if (savedFilterCount) {
+    savedFilterCount.textContent = `(${count})`;
   }
 }
 
@@ -309,7 +345,7 @@ function setupSavedDestinations() {
     return;
   }
 
-  let savedDestinations = getSavedDestinations();
+  let savedDestinations = getSavedDestinationNames();
   updateSavedCount(savedDestinations);
 
   destinationCards.forEach(function (card) {
@@ -331,28 +367,39 @@ function setupSavedDestinations() {
     card.querySelector(".card-content").appendChild(actionRow);
 
     function updateButton() {
-      const isSaved = savedDestinations.includes(destinationName);
+      savedDestinations = getSavedDestinationNames();
+      const isSaved = isDestinationNameSaved(destinationName, savedDestinations);
 
       card.classList.toggle("is-saved", isSaved);
       saveButton.classList.toggle("is-saved", isSaved);
       saveButton.textContent = isSaved ? "Saved" : "Save Destination";
       saveButton.setAttribute("aria-pressed", String(isSaved));
+      saveButton.setAttribute(
+        "aria-label",
+        isSaved ? `Remove ${destinationName} from saved destinations` : `Save ${destinationName}`
+      );
     }
 
     saveButton.addEventListener("click", function () {
-      const isSaved = savedDestinations.includes(destinationName);
+      const isSaved = isDestinationNameSaved(destinationName);
+      let savedTrips = getSharedSavedTrips();
 
       if (isSaved) {
-        savedDestinations = savedDestinations.filter(function (name) {
-          return name !== destinationName;
+        savedTrips = savedTrips.filter(function (item) {
+          return normalizeSearchText(getDestinationNameFromSavedTrip(item)) !== normalizeSearchText(destinationName);
         });
       } else {
-        savedDestinations.push(destinationName);
+        savedTrips.push(createSavedDestinationItem(card, destinationName));
       }
 
-      setSavedDestinations(savedDestinations);
+      setSharedSavedTrips(savedTrips);
+      savedDestinations = getSavedDestinationNames();
       updateSavedCount(savedDestinations);
       updateButton();
+
+      if (typeof applyDestinationFilters === "function") {
+        applyDestinationFilters();
+      }
     });
 
     updateButton();
@@ -360,8 +407,13 @@ function setupSavedDestinations() {
 
   if (clearSavedButton) {
     clearSavedButton.addEventListener("click", function () {
-      savedDestinations = [];
-      setSavedDestinations(savedDestinations);
+      const savedTrips = getSharedSavedTrips().filter(function (item) {
+        return item.type !== "destination";
+      });
+
+      setSharedSavedTrips(savedTrips);
+      setStorageItem(savedDestinationsKey, JSON.stringify([]));
+      savedDestinations = getSavedDestinationNames();
       updateSavedCount(savedDestinations);
 
       destinationCards.forEach(function (card) {
@@ -373,6 +425,10 @@ function setupSavedDestinations() {
           saveButton.setAttribute("aria-pressed", "false");
         }
       });
+
+      if (typeof applyDestinationFilters === "function") {
+        applyDestinationFilters();
+      }
     });
   }
 }
@@ -396,9 +452,13 @@ function applyDestinationFilters() {
   const seasonFilter = destinationSeasonFilter
     ? destinationSeasonFilter.value
     : "all";
+  const savedDestinationNames = getSavedDestinationNames();
   let visibleCount = 0;
 
   cards.forEach(function (card) {
+    const destinationName = card.querySelector("h2")
+      ? card.querySelector("h2").textContent.trim()
+      : "";
     const content = normalizeSearchText(card.textContent);
     const keywords = normalizeSearchText(card.dataset.destination);
     const categories = normalizeSearchText(card.dataset.category)
@@ -412,7 +472,10 @@ function applyDestinationFilters() {
     const matchesSearch =
       !searchText || haystack.includes(searchText);
     const matchesCategory =
-      activeDestinationFilter === "all" || categories.includes(activeDestinationFilter);
+      activeDestinationFilter === "all" ||
+      (activeDestinationFilter === "saved" &&
+        isDestinationNameSaved(destinationName, savedDestinationNames)) ||
+      categories.includes(activeDestinationFilter);
     const matchesBudget = !price || price <= maxBudget;
     const matchesSeason =
       seasonFilter === "all" || seasonTokens.includes(seasonFilter);
@@ -429,12 +492,18 @@ function applyDestinationFilters() {
 
   if (noDestinations) {
     noDestinations.hidden = visibleCount > 0;
+    noDestinations.textContent =
+      activeDestinationFilter === "saved"
+        ? "No saved destinations yet. Tap a heart on a destination to save it."
+        : "No destinations found. Try another search.";
   }
 
   if (filterStatus) {
     const filterLabel =
       activeDestinationFilter === "all"
         ? "all"
+        : activeDestinationFilter === "saved"
+          ? "saved"
         : activeDestinationFilter.charAt(0).toUpperCase() +
           activeDestinationFilter.slice(1);
     const searchLabel = searchText ? ` matching "${searchText}"` : "";
@@ -446,6 +515,8 @@ function applyDestinationFilters() {
   if (typeof window.refreshTravelResultRows === "function") {
     window.refreshTravelResultRows();
   }
+
+  updateSavedCount(savedDestinationNames);
 }
 
 function showVisibleDestinationCards() {
@@ -483,7 +554,29 @@ function resetDestinationControls() {
 
   filterChips.forEach(function (button) {
     button.classList.toggle("is-active", button.dataset.filter === "all");
+    button.setAttribute("aria-pressed", String(button.dataset.filter === "all"));
   });
+
+  updateSavedCount();
+}
+
+function applyDestinationQuerySearch() {
+  if (!document.body.classList.contains("destinations-page") || !destinationSearch) {
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const queryValue =
+    params.get("search") ||
+    params.get("destination") ||
+    params.get("place") ||
+    "";
+
+  if (!queryValue.trim()) {
+    return;
+  }
+
+  destinationSearch.value = queryValue.trim();
 }
 
 if (destinationSearch) {
@@ -503,6 +596,7 @@ if (filterChips.length) {
 
       filterChips.forEach(function (button) {
         button.classList.toggle("is-active", button === chip);
+        button.setAttribute("aria-pressed", String(button === chip));
       });
 
       applyDestinationFilters();
@@ -513,9 +607,17 @@ if (filterChips.length) {
 
 if (destinationSearch || filterChips.length) {
   resetDestinationControls();
+  applyDestinationQuerySearch();
   applyDestinationFilters();
   showVisibleDestinationCards();
 }
+
+window.applyDestinationFilters = applyDestinationFilters;
+window.resetDestinationControls = resetDestinationControls;
+window.updateSavedDestinationControls = function () {
+  updateSavedCount();
+  applyDestinationFilters();
+};
 
 const contactForm = document.getElementById("contactForm");
 const bookingForm = document.getElementById("bookingForm");
@@ -547,11 +649,11 @@ function populateBookingOptions() {
   const destinationSelect = bookingForm.elements.destination;
   const packageSelect = bookingForm.elements.package;
 
-  extraDestinations.forEach(function (destination) {
+  allDestinations.forEach(function (destination) {
     addUniqueSelectOption(destinationSelect, destination.name);
   });
 
-  extraTravelPackages.forEach(function (travelPackage) {
+  allTravelPackages.forEach(function (travelPackage) {
     addUniqueSelectOption(packageSelect, travelPackage.title);
   });
 }
@@ -574,32 +676,113 @@ function setSelectByText(select, text) {
   select.value = text;
 }
 
+function getCleanQueryParam(params, name) {
+  const value = params.get(name);
+  return value ? value.trim().slice(0, 140) : "";
+}
+
+function buildBookingContextText(destination, packageName) {
+  if (packageName && destination) {
+    return `Planning your ${packageName} trip to ${destination}.`;
+  }
+
+  if (packageName) {
+    return `Planning your ${packageName} trip.`;
+  }
+
+  if (destination) {
+    return `Planning your trip to ${destination}.`;
+  }
+
+  return "";
+}
+
+function updateContactWhatsAppLink(destination, packageName) {
+  if (!bookingForm) {
+    return;
+  }
+
+  const whatsappLink = document.querySelector(".whatsapp-float");
+
+  if (!whatsappLink) {
+    return;
+  }
+
+  const config = window.TRAVEL_SITE_CONFIG || {};
+  const whatsappNumber = config.whatsappNumber || "918179721034";
+  const messageParts = ["Hi, I want to plan a trip with Travel with Giridhar."];
+
+  if (packageName) {
+    messageParts.push(`Package: ${packageName}`);
+  }
+
+  if (destination) {
+    messageParts.push(`Destination: ${destination}`);
+  }
+
+  whatsappLink.href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(messageParts.join("\n"))}`;
+  whatsappLink.setAttribute(
+    "aria-label",
+    packageName || destination
+      ? "Book this selected trip via WhatsApp"
+      : "Book via WhatsApp"
+  );
+}
+
 function setupBookingPrefill() {
   if (!bookingForm) {
     return;
   }
 
   const params = new URLSearchParams(window.location.search);
-  const selectedDestination = params.get("destination");
-  const selectedPackage = params.get("package");
+  const selectedDestination = getCleanQueryParam(params, "destination");
+  const selectedPackage = getCleanQueryParam(params, "package");
   const bookingHint = document.getElementById("bookingHint");
+  const bookingPrefillNotice = document.getElementById("bookingPrefillNotice");
   const destinationSelect = bookingForm.elements.destination;
   const packageSelect = bookingForm.elements.package;
   const notesField = bookingForm.elements.bookingNotes;
+  const bookingContextText = buildBookingContextText(selectedDestination, selectedPackage);
 
   populateBookingOptions();
   setSelectByText(destinationSelect, selectedDestination);
   setSelectByText(packageSelect, selectedPackage);
+
+  function syncWhatsAppContext() {
+    updateContactWhatsAppLink(
+      getFormValue(bookingForm, "destination"),
+      getFormValue(bookingForm, "package")
+    );
+  }
 
   if (selectedPackage && notesField && !notesField.value) {
     notesField.value = `I am interested in the ${selectedPackage} package.`;
   }
 
   if (bookingHint && (selectedDestination || selectedPackage)) {
-    bookingHint.textContent = selectedPackage
-      ? `Selected package: ${selectedPackage}`
-      : `Selected destination: ${selectedDestination}`;
+    bookingHint.textContent = "Your earlier selection is ready. Review the details, then send the request.";
+  } else if (bookingHint) {
+    bookingHint.textContent = "Choose a destination and package to request a quick quote.";
   }
+
+  if (bookingPrefillNotice) {
+    bookingPrefillNotice.textContent = bookingContextText
+      ? `${bookingContextText} You can edit anything before sending.`
+      : "";
+    bookingPrefillNotice.hidden = !bookingContextText;
+  }
+
+  if (!bookingForm.dataset.whatsappContextReady) {
+    bookingForm.dataset.whatsappContextReady = "true";
+    if (destinationSelect) {
+      destinationSelect.addEventListener("change", syncWhatsAppContext);
+    }
+    if (packageSelect) {
+      packageSelect.addEventListener("change", syncWhatsAppContext);
+    }
+  }
+
+  syncWhatsAppContext();
 }
 
 setupBookingPrefill();
@@ -719,6 +902,7 @@ const surpriseTripButton = document.getElementById("surpriseTrip");
 const budgetRange = document.getElementById("budgetRange");
 const budgetOutput = document.getElementById("budgetOutput");
 const budgetAdvice = document.getElementById("budgetAdvice");
+const budgetCurrent = document.getElementById("budgetCurrent");
 const budgetComparisonIntro = document.getElementById("budgetComparisonIntro");
 const budgetComparisonCards = document.getElementById("budgetComparisonCards");
 
@@ -819,111 +1003,19 @@ function formatRupees(amount) {
   }).format(amount);
 }
 
-const packageBudgetOptions = [
-  {
-    name: "Goa Beach Escape",
-    destination: "Goa, India",
-    duration: "3 Days / 2 Nights",
-    price: 18000,
-    bestFor: "Budget beach trip",
-  },
-  {
-    name: "Manali Adventure Holiday",
-    destination: "Manali, India",
-    duration: "4 Days / 3 Nights",
-    price: 24000,
-    bestFor: "Adventure and family travel",
-  },
-  {
-    name: "Kerala Backwater Retreat",
-    destination: "Kerala, India",
-    duration: "4 Days / 3 Nights",
-    price: 26000,
-    bestFor: "Nature and houseboat stay",
-  },
-  {
-    name: "Rajasthan Royal Tour",
-    destination: "Rajasthan, India",
-    duration: "6 Days / 5 Nights",
-    price: 35000,
-    bestFor: "Heritage and culture",
-  },
-  {
-    name: "Premium Bali Tour",
-    destination: "Bali, Indonesia",
-    duration: "5 Days / 4 Nights",
-    price: 40000,
-    bestFor: "Couples and beaches",
-  },
-  {
-    name: "Singapore Family Fun",
-    destination: "Singapore",
-    duration: "4 Days / 3 Nights",
-    price: 50000,
-    bestFor: "Family attractions",
-  },
-  {
-    name: "Dubai Desert Luxury",
-    destination: "Dubai, UAE",
-    duration: "4 Days / 3 Nights",
-    price: 58000,
-    bestFor: "Shopping and city fun",
-  },
-  {
-    name: "Paris City Escape",
-    destination: "Paris, France",
-    duration: "4 Days / 3 Nights",
-    price: 62000,
-    bestFor: "Romantic city break",
-  },
-  {
-    name: "Rome Heritage Journey",
-    destination: "Rome, Italy",
-    duration: "5 Days / 4 Nights",
-    price: 70000,
-    bestFor: "History and food",
-  },
-  {
-    name: "Santorini Honeymoon Tour",
-    destination: "Santorini, Greece",
-    duration: "5 Days / 4 Nights",
-    price: 75000,
-    bestFor: "Honeymoon and sunsets",
-  },
-  {
-    name: "Tokyo Culture Tour",
-    destination: "Tokyo, Japan",
-    duration: "6 Days / 5 Nights",
-    price: 85000,
-    bestFor: "Culture and city life",
-  },
-  {
-    name: "Maldives Island Stay",
-    destination: "Maldives",
-    duration: "5 Days / 4 Nights",
-    price: 90000,
-    bestFor: "Luxury island stay",
-  },
-  {
-    name: "New York City Explorer",
-    destination: "New York, USA",
-    duration: "5 Days / 4 Nights",
-    price: 98000,
-    bestFor: "Landmarks and shopping",
-  },
-].concat(
-  extraTravelPackages.map(function (travelPackage) {
+const packageBudgetOptions = allTravelPackages
+  .map(function (travelPackage) {
     return {
-      name: travelPackage.title,
+      name: travelPackage.title || travelPackage.name,
       destination: travelPackage.destination,
       duration: travelPackage.duration,
-      price: travelPackage.amount,
-      bestFor: travelPackage.features[0],
+      price: travelPackage.amount || travelPackage.price,
+      bestFor: travelPackage.bestFor || (travelPackage.features || travelPackage.inclusions || [])[0] || "Flexible travel",
     };
   })
-).sort(function (first, second) {
-  return first.price - second.price;
-});
+  .sort(function (first, second) {
+    return first.price - second.price;
+  });
 
 function getNearestBudgetPackages(budget) {
   return packageBudgetOptions
@@ -955,7 +1047,7 @@ function getBudgetRelationText(price, budget) {
 
 function getBudgetTag(price, budget, index) {
   if (index === 0) {
-    return "Closest Match";
+    return price === budget ? "Exact Match" : "Closest Match";
   }
 
   return price <= budget ? "Under Budget" : "Near Budget";
@@ -966,10 +1058,24 @@ function renderBudgetComparison(matches, budget) {
     return;
   }
 
+  const closestDifference = matches.length ? matches[0].difference : 0;
+  const hasExactOrNearMatch = closestDifference <= 5000;
+
   if (budgetComparisonIntro) {
-    budgetComparisonIntro.textContent = `Showing packages closest to ${formatRupees(
-      budget
-    )}.`;
+    budgetComparisonIntro.textContent = hasExactOrNearMatch
+      ? `Showing packages closest to ${formatRupees(budget)}.`
+      : `No exact matches for ${formatRupees(budget)} - here are the closest options.`;
+  }
+
+  if (!matches.length) {
+    budgetComparisonCards.innerHTML = `
+      <article class="compare-card">
+        <span>No matches</span>
+        <h3>Try another budget</h3>
+        <p>Move the slider to compare nearby package options.</p>
+      </article>
+    `;
+    return;
   }
 
   budgetComparisonCards.innerHTML = matches
@@ -977,6 +1083,7 @@ function renderBudgetComparison(matches, budget) {
       const bookingUrl = `contact.html?package=${encodeURIComponent(
         travelPackage.name
       )}&destination=${encodeURIComponent(travelPackage.destination)}#bookingForm`;
+      const monthlyEmi = Math.ceil(travelPackage.price / 12);
 
       return `
         <article class="compare-card${index === 0 ? " is-best" : ""}">
@@ -990,6 +1097,7 @@ function renderBudgetComparison(matches, budget) {
             travelPackage.price,
             budget
           )}</small>
+          <small class="compare-emi">Approx. ${formatRupees(monthlyEmi)}/month for 12 months</small>
           <a href="${bookingUrl}" class="btn btn-small">Book Now</a>
         </article>
       `;
@@ -1007,15 +1115,64 @@ function updateBudgetEstimator() {
   const match = matches[0];
 
   budgetOutput.textContent = formatRupees(budget);
-  budgetAdvice.textContent = `${match.name} is the closest match. ${getBudgetRelationText(
-    match.price,
-    budget
-  )}.`;
+  if (budgetCurrent) {
+    budgetCurrent.textContent = formatRupees(budget);
+  }
+
+  budgetRange.setAttribute("aria-valuetext", formatRupees(budget));
+
+  if (!match) {
+    budgetAdvice.textContent = "Move the slider to compare nearby package options.";
+    renderBudgetComparison([], budget);
+    return;
+  }
+
+  const closestMessage =
+    match.difference <= 5000
+      ? `${match.name} is the closest match.`
+      : `No exact match - ${match.name} is the nearest option.`;
+
+  budgetAdvice.textContent = `${closestMessage} ${getBudgetRelationText(match.price, budget)}.`;
   renderBudgetComparison(matches, budget);
 }
 
+function handleBudgetRangeKeydown(event) {
+  if (!budgetRange) {
+    return;
+  }
+
+  const step = Number(budgetRange.step || 1000);
+  const min = Number(budgetRange.min || 0);
+  const max = Number(budgetRange.max || 150000);
+  const current = Number(budgetRange.value || min);
+  let next = current;
+
+  if (event.key === "ArrowRight" || event.key === "ArrowUp") {
+    next = current + step;
+  } else if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
+    next = current - step;
+  } else if (event.key === "PageUp") {
+    next = current + step * 10;
+  } else if (event.key === "PageDown") {
+    next = current - step * 10;
+  } else if (event.key === "Home") {
+    next = min;
+  } else if (event.key === "End") {
+    next = max;
+  } else {
+    return;
+  }
+
+  event.preventDefault();
+  budgetRange.value = String(Math.min(max, Math.max(min, next)));
+  updateBudgetEstimator();
+}
+
 if (budgetRange) {
-  budgetRange.addEventListener("input", updateBudgetEstimator);
+  const debouncedBudgetEstimator = debounce(updateBudgetEstimator, 120);
+  budgetRange.addEventListener("input", debouncedBudgetEstimator);
+  budgetRange.addEventListener("change", updateBudgetEstimator);
+  budgetRange.addEventListener("keydown", handleBudgetRangeKeydown);
   updateBudgetEstimator();
 }
 
@@ -1152,7 +1309,7 @@ function renderGeneratedTripPlan(planData, inputs) {
     })
     .join("");
   const bookingUrl = `contact.html?package=${encodeURIComponent(
-    "AI Trip Plan"
+    "Smart Trip Plan"
   )}&destination=${encodeURIComponent(planData.destination || "Custom Trip")}#bookingForm`;
   setAiPlannerShareData({
     destination: planData.destination || "Custom Trip",
@@ -1163,7 +1320,7 @@ function renderGeneratedTripPlan(planData, inputs) {
   });
 
   aiPlannerResult.innerHTML = `
-    <span class="ai-pill">Claude plan</span>
+    <span class="ai-pill">Smart match</span>
     <h3>${escapeHtml(planData.destination || "Custom Trip Plan")}</h3>
     <p>Estimated cost: ${escapeHtml(planData.estimatedCost || `Rs. ${Number(inputs.budget).toLocaleString("en-IN")}`)}</p>
     <div class="ai-result-meta">
@@ -1227,7 +1384,7 @@ async function generateClaudeTripPlan(inputs) {
   });
 
   if (!response.ok) {
-    throw new Error(data.error || "Claude planner request failed.");
+    throw new Error(data.error || "Smart planner request failed.");
   }
 
   return data;
@@ -1249,11 +1406,11 @@ if (aiPlannerForm) {
       const generatedPlan = await generateClaudeTripPlan(plannerInputs);
       renderGeneratedTripPlan(generatedPlan, plannerInputs);
     } catch (error) {
-      console.error("Claude planner failed:", error);
+      console.error("Smart planner request failed:", error);
       const trip = findSmartTrip(plannerInputs);
       renderSmartTrip(trip, days, travelType);
       showToast(
-        "Claude planner is not configured yet. Showing a local plan for now.",
+        "Showing a local smart match for now.",
         "error"
       );
     } finally {
@@ -1297,6 +1454,18 @@ function getFormValue(form, fieldName) {
   const field = form.elements[fieldName];
   return field ? String(field.value || "").trim() : "";
 }
+
+function formatTravelPhone(value) {
+  const phone = String(value || "").trim();
+
+  if (!phone) {
+    return "";
+  }
+
+  return phone.startsWith("+") ? phone : `+91 ${phone}`;
+}
+
+window.formatTravelPhone = formatTravelPhone;
 
 function isEmailJsValueConfigured(value) {
   return Boolean(value && !String(value).startsWith("YOUR_"));
@@ -1387,6 +1556,626 @@ function setFormLoading(form, isLoading) {
       : submitButton.dataset.defaultText;
   }
 }
+
+const formFieldLabels = {
+  bookingName: "Full name",
+  bookingEmail: "Email",
+  bookingPhone: "Phone number",
+  travelDate: "Travel date",
+  travelers: "Number of travelers",
+  travelersType: "Traveler type",
+  destination: "Destination",
+  package: "Package",
+  travelType: "Travel type",
+  emiNeeded: "EMI preference",
+  preferredContact: "Preferred contact",
+  name: "Name",
+  email: "Email",
+  feedbackType: "Feedback type",
+  message: "Message",
+};
+
+function getTodayIsoDate() {
+  const today = new Date();
+  return new Date(today.getTime() - today.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 10);
+}
+
+function getFieldLabel(field) {
+  return formFieldLabels[field.name] || "This field";
+}
+
+function getRadioGroup(form, fieldName) {
+  return Array.from(form.querySelectorAll('input[type="radio"]')).filter(function (radio) {
+    return radio.name === fieldName;
+  });
+}
+
+function getErrorTarget(field) {
+  if (field.type === "radio") {
+    return field.closest(".pill-group") || field.parentElement || field;
+  }
+
+  return field.closest(".traveler-stepper") || field;
+}
+
+function addDescribedBy(field, errorId) {
+  const ids = (field.getAttribute("aria-describedby") || "")
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (!ids.includes(errorId)) {
+    ids.push(errorId);
+    field.setAttribute("aria-describedby", ids.join(" "));
+  }
+}
+
+function ensureFieldError(field) {
+  const form = field.form || field.closest("form");
+  const fieldName = field.name || field.id || "field";
+  const errorId = `${form && form.id ? form.id : "travelForm"}-${fieldName}-error`;
+  let error = document.getElementById(errorId);
+
+  if (!error) {
+    error = document.createElement("p");
+    error.id = errorId;
+    error.className = "field-error";
+    error.setAttribute("aria-live", "polite");
+    getErrorTarget(field).insertAdjacentElement("afterend", error);
+  }
+
+  if (field.type === "radio" && form) {
+    getRadioGroup(form, field.name).forEach(function (radio) {
+      addDescribedBy(radio, errorId);
+    });
+  } else {
+    addDescribedBy(field, errorId);
+  }
+
+  return error;
+}
+
+function setFieldError(field, message) {
+  const error = ensureFieldError(field);
+  const form = field.form || field.closest("form");
+  error.textContent = message || "";
+
+  if (field.type === "radio" && form) {
+    getRadioGroup(form, field.name).forEach(function (radio) {
+      radio.setAttribute("aria-invalid", message ? "true" : "false");
+    });
+  } else {
+    field.setAttribute("aria-invalid", message ? "true" : "false");
+  }
+
+  getErrorTarget(field).classList.toggle("has-field-error", Boolean(message));
+}
+
+function clearFieldError(field) {
+  setFieldError(field, "");
+}
+
+function getFieldValidationMessage(field, form) {
+  const value = String(field.value || "").trim();
+  const label = getFieldLabel(field);
+
+  if (field.type === "radio") {
+    return field.required && !getFormValue(form, field.name)
+      ? `${label} is required.`
+      : "";
+  }
+
+  if (field.required && !value) {
+    return `${label} is required.`;
+  }
+
+  if (!value) {
+    return "";
+  }
+
+  if (field.type === "email" || field.name === "bookingEmail" || field.name === "email") {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+      ? ""
+      : "Enter a valid email address.";
+  }
+
+  if (field.name === "bookingPhone") {
+    const digits = value.replace(/\D/g, "");
+    return digits.length >= 7 && digits.length <= 15
+      ? ""
+      : "Enter a valid phone number with 7 to 15 digits.";
+  }
+
+  if (field.name === "travelDate") {
+    return value >= getTodayIsoDate()
+      ? ""
+      : "Travel date cannot be in the past.";
+  }
+
+  if (field.name === "travelers") {
+    const travelers = Number(value);
+    return Number.isInteger(travelers) && travelers > 0
+      ? ""
+      : "Traveler count must be a positive number.";
+  }
+
+  return "";
+}
+
+function validateTravelField(field, form) {
+  const message = getFieldValidationMessage(field, form);
+  setFieldError(field, message);
+  return !message;
+}
+
+function validateTravelFormFields(form, scope) {
+  if (!form) {
+    return true;
+  }
+
+  const validationRoot = scope || form;
+  const fields = Array.from(validationRoot.querySelectorAll("input, select, textarea")).filter(function (field) {
+    return (
+      !field.disabled &&
+      field.type !== "hidden" &&
+      field.type !== "button" &&
+      field.type !== "submit" &&
+      field.type !== "reset"
+    );
+  });
+  const radioGroupsChecked = new Set();
+  let firstInvalid = null;
+
+  fields.forEach(function (field) {
+    if (field.type === "radio") {
+      if (radioGroupsChecked.has(field.name)) {
+        return;
+      }
+
+      radioGroupsChecked.add(field.name);
+    }
+
+    if (!validateTravelField(field, form) && !firstInvalid) {
+      firstInvalid = field;
+    }
+  });
+
+  if (firstInvalid) {
+    window.setTimeout(function () {
+      firstInvalid.focus({ preventScroll: false });
+    }, 0);
+  }
+
+  return !firstInvalid;
+}
+
+function initInlineFormValidation(form) {
+  if (!form || form.dataset.inlineValidationReady === "true") {
+    return;
+  }
+
+  form.dataset.inlineValidationReady = "true";
+
+  Array.from(form.querySelectorAll("input, select, textarea")).forEach(function (field) {
+    if (
+      field.type === "hidden" ||
+      field.type === "button" ||
+      field.type === "submit" ||
+      field.type === "reset"
+    ) {
+      return;
+    }
+
+    ensureFieldError(field);
+
+    const eventName =
+      field.tagName === "SELECT" || field.type === "radio" || field.type === "date"
+        ? "change"
+        : "input";
+
+    field.addEventListener(eventName, function () {
+      validateTravelField(field, form);
+    });
+  });
+}
+
+function clearTravelFormErrors(form) {
+  if (!form) {
+    return;
+  }
+
+  form.querySelectorAll(".field-error").forEach(function (error) {
+    error.textContent = "";
+  });
+
+  form.querySelectorAll("[aria-invalid]").forEach(function (field) {
+    field.setAttribute("aria-invalid", "false");
+  });
+
+  form.querySelectorAll(".has-field-error").forEach(function (target) {
+    target.classList.remove("has-field-error");
+  });
+}
+
+function applyServerValidationErrors(form, details) {
+  if (!form || !details) {
+    return;
+  }
+
+  const serverToClientField = {
+    name: "bookingName",
+    email: "bookingEmail",
+    phone: "bookingPhone",
+    package: "package",
+    destination: "destination",
+    travelDate: "travelDate",
+    travelers: "travelers",
+    message: "bookingNotes",
+    emiNeeded: "emiNeeded",
+  };
+  let firstField = null;
+
+  Object.entries(details).forEach(function ([serverField, message]) {
+    const clientFieldName = serverToClientField[serverField] || serverField;
+    const field = form.elements[clientFieldName];
+    const targetField = field && field.length ? field[0] : field;
+
+    if (!targetField) {
+      return;
+    }
+
+    setFieldError(targetField, message);
+
+    if (!firstField) {
+      firstField = targetField;
+    }
+  });
+
+  if (firstField) {
+    firstField.focus({ preventScroll: false });
+  }
+}
+
+function isPlaceholderFormspreeForm(form) {
+  return isFormspreeForm(form) && form.action.includes("YOUR_");
+}
+
+function shouldUseClientOnlySubmission(form, templateId) {
+  if (isBookingApiForm(form)) {
+    return false;
+  }
+
+  if (form && form.dataset.submitEndpoint === "feedback-demo") {
+    return true;
+  }
+
+  if (isPlaceholderFormspreeForm(form)) {
+    return true;
+  }
+
+  return !isFormspreeForm(form) && !hasEmailJsCredentials(templateId);
+}
+
+function isBookingApiForm(form) {
+  return Boolean(form && form.dataset.submitEndpoint === "booking-api");
+}
+
+function getTravelApiBaseUrl() {
+  const config = window.TRAVEL_SITE_CONFIG || {};
+  const fallbackBase =
+    window.location.protocol === "file:" ||
+    ["localhost", "127.0.0.1"].includes(window.location.hostname)
+      ? "http://localhost:5000"
+      : "";
+
+  return String(config.apiBaseUrl || fallbackBase).replace(/\/$/, "");
+}
+
+function buildTravelApiUrl(path) {
+  const baseUrl = getTravelApiBaseUrl();
+  return `${baseUrl}${path}`;
+}
+
+function sendBookingApi(templateParams) {
+  const payload = {
+    name: templateParams.from_name,
+    email: templateParams.from_email,
+    phone: templateParams.phone,
+    package: templateParams.package_name,
+    destination: templateParams.destination,
+    travelDate: templateParams.travel_date,
+    travelers: Number(templateParams.travelers),
+    message: templateParams.travel_notes,
+    travelType: templateParams.travel_type,
+    approxBudget: templateParams.approx_budget,
+    emiNeeded: templateParams.emi_needed,
+    travelersType: templateParams.travelers_type,
+    preferredContact: templateParams.preferred_contact,
+  };
+
+  return fetch(buildTravelApiUrl("/api/bookings"), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(payload),
+  }).then(function (response) {
+    return response.json().catch(function () {
+      return {};
+    }).then(function (data) {
+      if (!response.ok) {
+        const error = new Error(
+          data.error || "Booking request failed. Please WhatsApp us directly."
+        );
+        error.details = data.errors || {};
+        error.bookingId = data.bookingId || "";
+        error.paymentRetryAvailable = Boolean(data.paymentRetryAvailable);
+        throw error;
+      }
+
+      return data;
+    });
+  });
+}
+
+function loadRazorpayCheckout() {
+  if (window.Razorpay) {
+    return Promise.resolve();
+  }
+
+  return new Promise(function (resolve, reject) {
+    const existingScript = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+
+    if (existingScript) {
+      existingScript.addEventListener("load", resolve, { once: true });
+      existingScript.addEventListener("error", reject, { once: true });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = resolve;
+    script.onerror = function () {
+      reject(new Error("Razorpay Checkout could not load. Please check your connection."));
+    };
+    document.body.appendChild(script);
+  });
+}
+
+function verifyRazorpayPayment(bookingId, response) {
+  return fetch(buildTravelApiUrl("/api/payments/verify"), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      bookingId,
+      razorpay_order_id: response.razorpay_order_id,
+      razorpay_payment_id: response.razorpay_payment_id,
+      razorpay_signature: response.razorpay_signature,
+    }),
+  }).then(function (verifyResponse) {
+    return verifyResponse.json().catch(function () {
+      return {};
+    }).then(function (data) {
+      if (!verifyResponse.ok) {
+        throw new Error(data.error || "Payment verification failed.");
+      }
+
+      return data;
+    });
+  });
+}
+
+function requestPaymentRetry(bookingId) {
+  return fetch(buildTravelApiUrl("/api/payments/retry"), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ bookingId }),
+  }).then(function (response) {
+    return response.json().catch(function () {
+      return {};
+    }).then(function (data) {
+      if (!response.ok) {
+        throw new Error(data.error || "Payment retry could not start.");
+      }
+
+      return data;
+    });
+  });
+}
+
+function getPaymentRetryUrl(bookingId) {
+  return `contact.html?bookingId=${encodeURIComponent(bookingId)}#bookingForm`;
+}
+
+function showPaymentRetryNotice(bookingId, message) {
+  showToast(
+    message || "Payment not completed. Your booking is saved, and you can retry payment.",
+    "error",
+    {
+      href: getPaymentRetryUrl(bookingId),
+      label: "Retry payment",
+    }
+  );
+}
+
+function openRazorpayCheckout(submissionData, templateParams) {
+  const payment = submissionData.payment || {};
+  const bookingId = submissionData.bookingId || payment.bookingId;
+
+  if (!bookingId || !payment.orderId || !payment.key) {
+    return Promise.resolve({
+      paymentPending: true,
+      bookingId,
+    });
+  }
+
+  return new Promise(function (resolve) {
+    let settled = false;
+
+    function finish(result) {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      resolve(result);
+    }
+
+    const checkout = new window.Razorpay({
+      key: payment.key,
+      amount: payment.amount,
+      currency: payment.currency || "INR",
+      name: "Travel with Giridhar",
+      description: `${payment.package || templateParams.package_name} - ${
+        payment.destination || templateParams.destination
+      }`,
+      order_id: payment.orderId,
+      prefill: {
+        name: templateParams.from_name || payment.customerName || "",
+        email: templateParams.from_email || payment.customerEmail || "",
+        contact: (templateParams.phone || payment.customerPhone || "").replace(/\D/g, ""),
+      },
+      notes: {
+        bookingId,
+        package: payment.package || templateParams.package_name,
+        destination: payment.destination || templateParams.destination,
+      },
+      theme: {
+        color: "#ff6b57",
+      },
+      handler: function (response) {
+        verifyRazorpayPayment(bookingId, response)
+          .then(function () {
+            finish({ paid: true, bookingId });
+          })
+          .catch(function (error) {
+            console.error("Payment verification failed:", error);
+            finish({ paymentPending: true, bookingId, error });
+          });
+      },
+      modal: {
+        ondismiss: function () {
+          finish({ paymentPending: true, bookingId });
+        },
+      },
+    });
+
+    checkout.on("payment.failed", function () {
+      finish({ paymentPending: true, bookingId });
+    });
+
+    checkout.open();
+  });
+}
+
+function handleBookingPayment(submissionData, templateParams) {
+  if (!submissionData || !submissionData.paymentRequired) {
+    return Promise.resolve({ paid: false });
+  }
+
+  return loadRazorpayCheckout()
+    .then(function () {
+      return openRazorpayCheckout(submissionData, templateParams);
+    })
+    .catch(function (error) {
+      console.error("Razorpay Checkout failed:", error);
+      return {
+        paymentPending: true,
+        bookingId: submissionData.bookingId,
+        error,
+      };
+    })
+    .then(function (result) {
+      if (result && result.paymentPending) {
+        showPaymentRetryNotice(result.bookingId);
+      }
+
+      return result;
+    });
+}
+
+function setupPaymentRetryFromUrl() {
+  if (!bookingForm) {
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const bookingId = params.get("bookingId");
+
+  if (!bookingId || document.querySelector(".payment-retry-panel")) {
+    return;
+  }
+
+  const retryPanel = document.createElement("div");
+  retryPanel.className = "panel payment-retry-panel";
+  retryPanel.innerHTML = `
+    <div>
+      <p class="eyebrow">Payment Pending</p>
+      <h2>Complete Your Booking Payment</h2>
+      <p>Your booking is saved. Click Pay Now to reopen Razorpay Checkout and complete payment.</p>
+    </div>
+    <button type="button" class="btn" data-retry-booking-payment>
+      <span class="btn-text">Pay Now</span>
+      <span class="btn-spinner" aria-hidden="true"></span>
+    </button>
+  `;
+
+  bookingForm.insertAdjacentElement("beforebegin", retryPanel);
+
+  const retryButton = retryPanel.querySelector("[data-retry-booking-payment]");
+  retryButton.addEventListener("click", function () {
+    retryButton.disabled = true;
+    retryButton.classList.add("is-loading");
+
+    requestPaymentRetry(bookingId)
+      .then(function (data) {
+        return handleBookingPayment(data, {
+          from_name: data.payment && data.payment.customerName,
+          from_email: data.payment && data.payment.customerEmail,
+          phone: data.payment && data.payment.customerPhone,
+          package_name: data.payment && data.payment.package,
+          destination: data.payment && data.payment.destination,
+        });
+      })
+      .then(function (result) {
+        if (result && result.paid) {
+          showToast("Payment verified! Your booking is confirmed.", "success");
+          retryPanel.remove();
+        }
+      })
+      .catch(function (error) {
+        showToast(error.message || "Payment retry failed. Please WhatsApp us directly.", "error", {
+          href: emailJsWhatsAppUrl,
+          label: "WhatsApp us",
+        });
+      })
+      .finally(function () {
+        retryButton.disabled = false;
+        retryButton.classList.remove("is-loading");
+      });
+  });
+}
+
+function sendClientOnlyForm(form) {
+  // TODO: wire to backend endpoint / email service - currently client-side only.
+  return new Promise(function (resolve) {
+    window.setTimeout(function () {
+      resolve(form);
+    }, 550);
+  });
+}
+
+window.validateTravelFormFields = validateTravelFormFields;
+window.initInlineFormValidation = initInlineFormValidation;
 
 function getEmailJsClient(templateId, formLabel) {
   if (!window.emailjs) {
@@ -1622,6 +2411,8 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
     return;
   }
 
+  initInlineFormValidation(form);
+
   form.addEventListener("submit", function (event) {
     event.preventDefault();
 
@@ -1629,29 +2420,60 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
       return;
     }
 
+    if (!validateTravelFormFields(form)) {
+      showToast("Please fix the highlighted fields before sending.", "error");
+      return;
+    }
+
     form.dataset.sending = "true";
     setFormLoading(form, true);
 
     const templateParams = buildParams(form);
+    let paymentResult = null;
 
     Promise.resolve()
       .then(function () {
+        if (shouldUseClientOnlySubmission(form, templateId)) {
+          return sendClientOnlyForm(form);
+        }
+
         return requestTwoFactorVerification(formLabel, templateParams);
       })
       .then(function () {
+        if (shouldUseClientOnlySubmission(form, templateId)) {
+          return Promise.resolve();
+        }
+
         if (isFormspreeForm(form)) {
           return sendFormspree(form, templateParams);
+        }
+
+        if (isBookingApiForm(form)) {
+          return sendBookingApi(templateParams).then(function (data) {
+            return handleBookingPayment(data, templateParams).then(function (result) {
+              paymentResult = result;
+              return data;
+            });
+          });
         }
 
         return sendEmailJs(templateId, templateParams, formLabel);
       })
       .then(function () {
-        return isFormspreeForm(form) ? Promise.resolve() : sendAutoReply(templateParams);
+        return isFormspreeForm(form) || isBookingApiForm(form) || shouldUseClientOnlySubmission(form, templateId)
+          ? Promise.resolve()
+          : sendAutoReply(templateParams);
       })
       .then(function () {
+        if (paymentResult && paymentResult.paymentPending) {
+          return;
+        }
+
         showToast(successMessage, "success");
         form.reset();
+        clearTravelFormErrors(form);
         setupBookingPrefill();
+        initInlineFormValidation(form);
       })
       .catch(function (error) {
         if (error && error.name === "TwoFactorCancelled") {
@@ -1660,6 +2482,12 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
         }
 
         console.error("Form send failed:", error);
+        applyServerValidationErrors(form, error.details);
+        if (error.paymentRetryAvailable && error.bookingId) {
+          showPaymentRetryNotice(error.bookingId);
+          return;
+        }
+
         showToast(getFormSendErrorMessage(error), "error", {
           href: emailJsWhatsAppUrl,
           label: "WhatsApp us",
@@ -1682,7 +2510,7 @@ attachEmailJsSubmit(
       to_email: emailJsConfig.ownerEmail,
       owner_email: emailJsConfig.ownerEmail,
       reply_to: getFormValue(form, "bookingEmail"),
-      phone: `+91 ${getFormValue(form, "bookingPhone")}`,
+      phone: formatTravelPhone(getFormValue(form, "bookingPhone")),
       destination: getFormValue(form, "destination"),
       package_name: getFormValue(form, "package"),
       travel_type: getFormValue(form, "travelType"),
@@ -1698,9 +2526,11 @@ attachEmailJsSubmit(
     };
   },
   emailJsConfig.bookingTemplateId,
-  "Your booking request was sent! We'll reply within 2 hours.",
+  "Payment verified! Your booking request was sent successfully.",
   "Booking"
 );
+
+setupPaymentRetryFromUrl();
 
 attachEmailJsSubmit(
   contactForm,

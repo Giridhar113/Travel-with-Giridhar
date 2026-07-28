@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bookings - Travel with Giridhar Admin</title>
+    <meta
+      name="description"
+      content="Manage Travel with Giridhar booking inquiries, payment status, and trip follow-ups."
+    />
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body class="admin-app-page" data-admin-page="bookings">
+    <div class="admin-shell">
+      <aside class="sidebar" id="adminSidebar" aria-label="Admin navigation">
+        <a class="brand-lockup sidebar-brand" href="../index.html">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path d="M3 11.2 21 4l-5.8 17-4.1-7.1L3 11.2Z" />
+            </svg>
+          </span>
+          <span>
+            <strong>Travel with Giridhar</strong>
+            <small>Admin Console</small>
+          </span>
+        </a>
+        <nav class="side-nav">
+          <a class="side-link" href="dashboard.html">
+            <span class="side-icon" aria-hidden="true">D</span>
+            Dashboard
+          </a>
+          <a class="side-link is-active" href="bookings.html">
+            <span class="side-icon" aria-hidden="true">B</span>
+            Bookings
+          </a>
+          <button class="side-link side-link-button" type="button" data-logout>
+            <span class="side-icon" aria-hidden="true">L</span>
+            Logout
+          </button>
+        </nav>
+        <div class="sidebar-user">
+          <span class="avatar" aria-hidden="true">TG</span>
+          <div>
+            <strong id="adminEmail">Admin</strong>
+            <small>Session secured in this tab</small>
+          </div>
+        </div>
+      </aside>
+
+      <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+      <main class="admin-main">
+        <header class="topbar">
+          <button class="menu-btn" type="button" id="menuToggle" aria-label="Open admin menu">
+            <span></span><span></span><span></span>
+          </button>
+          <div>
+            <p class="eyebrow">Lead Operations</p>
+            <h1>All Bookings</h1>
+          </div>
+          <button class="secondary-btn" type="button" id="refreshBookings">Refresh</button>
+        </header>
+
+        <section class="content-card filters-card">
+          <div class="search-control">
+            <label for="bookingSearch">Search by name, email, package, or destination</label>
+            <input id="bookingSearch" type="search" placeholder="Search bookings..." />
+          </div>
+          <div class="filter-block" aria-label="Booking status filters">
+            <span>Status</span>
+            <button class="filter-pill is-active" type="button" data-status-filter="">All</button>
+            <button class="filter-pill" type="button" data-status-filter="new">New</button>
+            <button class="filter-pill" type="button" data-status-filter="contacted">Contacted</button>
+            <button class="filter-pill" type="button" data-status-filter="confirmed">Confirmed</button>
+            <button class="filter-pill" type="button" data-status-filter="closed">Closed</button>
+          </div>
+          <div class="filter-block" aria-label="Payment status filters">
+            <span>Payment</span>
+            <button class="filter-pill is-active" type="button" data-payment-filter="">All</button>
+            <button class="filter-pill" type="button" data-payment-filter="pending">Pending</button>
+            <button class="filter-pill" type="button" data-payment-filter="paid">Paid</button>
+            <button class="filter-pill" type="button" data-payment-filter="failed">Failed</button>
+          </div>
+        </section>
+
+        <section class="content-card">
+          <div class="card-heading">
+            <div>
+              <p class="eyebrow">Bookings</p>
+              <h2 id="bookingsCount">Loading bookings...</h2>
+            </div>
+            <p class="muted">Click a row to open full details.</p>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table bookings-table">
+              <thead>
+                <tr>
+                  <th><button type="button" data-sort-key="name">Name</button></th>
+                  <th><button type="button" data-sort-key="email">Email</button></th>
+                  <th>Phone</th>
+                  <th><button type="button" data-sort-key="package">Package</button></th>
+                  <th><button type="button" data-sort-key="destination">Destination</button></th>
+                  <th><button type="button" data-sort-key="travelDate">Travel Date</button></th>
+                  <th>Travelers</th>
+                  <th>Status</th>
+                  <th>Payment</th>
+                  <th><button type="button" data-sort-key="createdAt">Submitted</button></th>
+                </tr>
+              </thead>
+              <tbody id="bookingsTableBody">
+                <tr class="skeleton-row"><td colspan="10"></td></tr>
+                <tr class="skeleton-row"><td colspan="10"></td></tr>
+                <tr class="skeleton-row"><td colspan="10"></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination-bar">
+            <p id="paginationLabel">Page 1</p>
+            <div>
+              <button class="secondary-btn" type="button" id="prevPage">Previous</button>
+              <button class="secondary-btn" type="button" id="nextPage">Next</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    <aside class="drawer" id="bookingDrawer" aria-hidden="true" aria-label="Booking details">
+      <div class="drawer-header">
+        <div>
+          <p class="eyebrow">Booking Details</p>
+          <h2 id="drawerTitle">Traveler</h2>
+        </div>
+        <button class="icon-btn" type="button" id="closeDrawer" aria-label="Close details">X</button>
+      </div>
+      <div class="drawer-body" id="drawerBody"></div>
+    </aside>
+
+    <script defer src="../site-config.js"></script>
+    <script defer src="admin.js"></script>
+  </body>
+</html>

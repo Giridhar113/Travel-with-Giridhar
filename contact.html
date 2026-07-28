@@ -38,7 +38,7 @@
       <nav class="navbar">
         <div class="logo">
           <a href="index.html" class="logo-link">
-            <i class="fas fa-plane-departure"></i>
+            <i class="fas fa-plane-departure" aria-hidden="true"></i>
             <div>
               <span class="logo-text">Travel with</span>
               <span class="logo-subtext">Giridhar</span>
@@ -69,7 +69,7 @@
       <section class="section contact-overview" aria-label="Contact options">
         <div class="contact-overview-grid">
           <article class="contact-info-card">
-            <span class="contact-icon"><i class="fas fa-calendar-check"></i></span>
+            <span class="contact-icon" aria-hidden="true"><i class="fas fa-calendar-check"></i></span>
             <h3>Quick Booking</h3>
             <p>
               Send your dates, travelers, and package choice. We will help you
@@ -77,7 +77,7 @@
             </p>
           </article>
           <article class="contact-info-card">
-            <span class="contact-icon"><i class="fab fa-whatsapp"></i></span>
+            <span class="contact-icon" aria-hidden="true"><i class="fab fa-whatsapp"></i></span>
             <h3>WhatsApp Support</h3>
             <p>
               Need a faster reply? Start a WhatsApp chat for destination and
@@ -85,7 +85,7 @@
             </p>
           </article>
           <article class="contact-info-card">
-            <span class="contact-icon"><i class="fas fa-route"></i></span>
+            <span class="contact-icon" aria-hidden="true"><i class="fas fa-route"></i></span>
             <h3>Custom Planning</h3>
             <p>
               Tell us your budget and travel style, and we will suggest a route
@@ -140,11 +140,14 @@
           </div>
         </aside>
 
+        <!-- Booking API setup: update apiBaseUrl in site-config.js after deploying the backend. -->
         <form
           class="panel contact-form booking-form contact-main-form booking-stepper-form"
           id="bookingForm"
-          action="https://formspree.io/f/YOUR_BOOKING_FORM_ID"
+          action="http://localhost:5000/api/bookings"
           method="POST"
+          data-submit-endpoint="booking-api"
+          novalidate
         >
           <input
             type="hidden"
@@ -172,6 +175,7 @@
               </div>
             </div>
             <p class="form-note" id="bookingHint">Choose a destination and package to request a quick quote.</p>
+            <p class="prefill-confirmation" id="bookingPrefillNotice" hidden aria-live="polite"></p>
             <div class="form-row">
               <label>
                 Destination
@@ -227,7 +231,7 @@
             <div class="form-row">
               <label>
                 Phone (+91)
-                <input type="tel" name="bookingPhone" placeholder="9876543210" pattern="[0-9]{10}" required />
+                <input type="tel" name="bookingPhone" placeholder="9876543210" required />
               </label>
               <label>
                 Travel Date
@@ -318,11 +322,13 @@
           </ul>
         </div>
 
+        <!-- Feedback form is client-side demo; booking requests are stored in the backend. -->
         <form
           class="panel contact-form contact-message-form"
           id="contactForm"
-          action="https://formspree.io/f/YOUR_CONTACT_FORM_ID"
           method="POST"
+          data-submit-endpoint="feedback-demo"
+          novalidate
         >
           <input
             type="hidden"
@@ -460,7 +466,7 @@
       rel="noreferrer"
       aria-label="Book via WhatsApp"
     >
-      <i class="fab fa-whatsapp"></i>
+      <i class="fab fa-whatsapp" aria-hidden="true"></i>
       <span>WhatsApp</span>
     </a>
 
@@ -493,6 +499,7 @@
       </div>
     </footer>
     <script defer src="site-config.js"></script>
+    <script defer src="data.js"></script>
 
     <script defer src="script.js"></script>
     <script defer src="v13.js"></script>

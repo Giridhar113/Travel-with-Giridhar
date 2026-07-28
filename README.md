@@ -2,7 +2,7 @@
 
 **Release:** Travel Website v1.5
 
-A travel startup-style website built with HTML, CSS, and vanilla JavaScript. The experience helps users discover destinations, compare packages, estimate budgets, generate Claude-powered trip plans, save/share trip ideas, and send booking inquiries through Formspree-ready forms.
+A travel startup-style website built with HTML, CSS, and vanilla JavaScript. The experience helps users discover destinations, compare packages, estimate budgets, generate Claude-powered trip plans, save/share trip ideas, send booking inquiries to a real Express/MongoDB backend, and complete payment through Razorpay.
 
 ## v1.5 Goal
 
@@ -53,47 +53,28 @@ Full release history is available in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 - `blog.html` - Travel tips and planning guides
 - `gallery.html` - Filterable masonry gallery with lightbox
 - `about.html` - Company story, mission, reasons to choose us, and developer profile
-- `contact.html` - 3-step booking form, Formspree-ready feedback form, and local testimonial form
+- `contact.html` - 3-step booking form connected to the backend API + Razorpay Checkout, client-side feedback demo, and local testimonial form
+- `admin/login.html` - Admin login for booking management
+- `admin/dashboard.html` - Admin stats, Chart.js booking visuals, and recent bookings
+- `admin/bookings.html` - Full booking table with lead status and payment status management
 - `404.html` - Branded not found page
 
-## Formspree Fields
+## Backend + Admin Dashboard
 
-Replace the placeholders in `contact.html`:
+Booking requests are stored through the Express/MongoDB backend in `server/`.
 
-- `https://formspree.io/f/YOUR_BOOKING_FORM_ID`
-- `https://formspree.io/f/YOUR_CONTACT_FORM_ID`
+- Public booking endpoint: `POST /api/bookings`
+- Payment verification endpoint: `POST /api/payments/verify`
+- Admin login: `admin/login.html`
+- Admin dashboard: `admin/dashboard.html`
+- Admin bookings: `admin/bookings.html`
+- Setup guide: [`SERVER_README.md`](SERVER_README.md)
 
-Booking form fields:
+Update `site-config.js` with your deployed backend URL after deploying the API:
 
-- `from_name`
-- `from_email`
-- `customer_email`
-- `to_email`
-- `owner_email`
-- `reply_to`
-- `phone`
-- `destination`
-- `package_name`
-- `travel_type`
-- `approx_budget`
-- `travel_date`
-- `travelers`
-- `travel_notes`
-- `emi_needed`
-- `preferred_contact`
-- `travelers_type`
-
-Contact form fields:
-
-- `from_name`
-- `from_email`
-- `customer_email`
-- `to_email`
-- `owner_email`
-- `reply_to`
-- `feedback_type`
-- `feedback_rating`
-- `message`
+```js
+apiBaseUrl: "https://your-travel-api.example.com"
+```
 
 ## Claude Planner Setup
 
@@ -105,7 +86,7 @@ The browser calls `/api/ai-planner`, and the serverless function calls Claude us
 
 ## Two-Step Verification
 
-Booking and contact submissions now require a 6-digit confirmation code before the form is sent. This is a front-end verification layer for the static site; production SMS/email OTP would need a backend provider.
+Booking submissions require a 6-digit confirmation code before the form is sent. This is a front-end verification layer; production SMS/email OTP would need a backend provider.
 
 ## Tech Stack
 
@@ -113,7 +94,10 @@ Booking and contact submissions now require a 6-digit confirmation code before t
 - CSS
 - Vanilla JavaScript
 - localStorage
-- Formspree
+- Node.js + Express backend
+- MongoDB + Mongoose
+- JWT admin auth
+- Razorpay payment flow
 - Anthropic Claude API via Vercel serverless function
 
 ## Shared Site Config
@@ -123,7 +107,12 @@ Brand/contact values are centralized in `site-config.js`:
 - Brand: `Travel with Giridhar`
 - WhatsApp: `918179721034`
 - GitHub: `https://github.com/Giridhar113/Travel-with-Giridhar`
+- API base URL for booking submissions/admin dashboard
 - Vercel deployment
+
+## Shared Travel Data
+
+Package, destination, budget-estimator, featured-trip, and trending-trip data are centralized in `data.js`. Update prices, durations, tags, images, and descriptions there first so homepage, destinations, packages, and booking dropdowns stay consistent.
 
 ## Developer
 

@@ -11,37 +11,9 @@
     siteConfig.whatsappMessage || "Hi, I want to plan a trip with Travel with Giridhar.";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(quoteText)}`;
 
-  const basePackages = [
-    { title: "Premium Bali Tour", destination: "Bali, Indonesia", price: 40000, duration: "5 Days / 4 Nights", days: 5, tags: ["Beach", "Romantic", "Luxury", "International"], image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=900&auto=format&fit=crop&q=75", inclusions: ["Hotel stay", "Airport transfers", "Temple and beach tour"], bestFor: "Couples and beach lovers", popularity: 92 },
-    { title: "Paris City Escape", destination: "Paris, France", price: 62000, duration: "4 Days / 3 Nights", days: 4, tags: ["Romantic", "Luxury", "International"], image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=900&auto=format&fit=crop&q=75", inclusions: ["Comfort hotel", "Landmark tour", "Museum route"], bestFor: "Romantic city travel", popularity: 86 },
-    { title: "Goa Beach Escape", destination: "Goa, India", price: 18000, duration: "3 Days / 2 Nights", days: 3, tags: ["Beach", "Budget", "Family"], image: "services1.jpg", inclusions: ["Beachside stay", "Local sightseeing", "Water sports help"], bestFor: "Budget beach trips", popularity: 96 },
-    { title: "Manali Adventure Holiday", destination: "Manali, India", price: 24000, duration: "4 Days / 3 Nights", days: 4, tags: ["Adventure", "Family", "Budget", "Hill Station"], image: "services2.jpg", inclusions: ["Mountain hotel", "Sightseeing", "Adventure assistance"], bestFor: "Friends and families", popularity: 90 },
-    { title: "Santorini Honeymoon Tour", destination: "Santorini, Greece", price: 75000, duration: "5 Days / 4 Nights", days: 5, tags: ["Honeymoon", "Romantic", "Luxury", "International", "Beach"], image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=900&auto=format&fit=crop&q=75", inclusions: ["Sea view stay", "Island tour", "Airport transfers"], bestFor: "Honeymoon travel", popularity: 82 },
-    { title: "Dubai Desert Luxury", destination: "Dubai, UAE", price: 58000, duration: "4 Days / 3 Nights", days: 4, tags: ["Luxury", "Family", "International", "Adventure"], image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=900&auto=format&fit=crop&q=75", inclusions: ["Premium hotel", "Desert safari", "City tour"], bestFor: "Families and shopping", popularity: 89 },
-    { title: "Singapore Family Fun", destination: "Singapore", price: 50000, duration: "4 Days / 3 Nights", days: 4, tags: ["Family", "International", "Luxury"], image: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=900&auto=format&fit=crop&q=75", inclusions: ["Family hotel", "Sentosa attractions", "Transfers"], bestFor: "Family city holidays", popularity: 84 },
-    { title: "Tokyo Culture Tour", destination: "Tokyo, Japan", price: 85000, duration: "6 Days / 5 Nights", days: 6, tags: ["Adventure", "Family", "International"], image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=900&auto=format&fit=crop&q=75", inclusions: ["City hotel", "Temple tours", "Transport support"], bestFor: "Culture and food", popularity: 80 },
-    { title: "New York City Explorer", destination: "New York, USA", price: 98000, duration: "5 Days / 4 Nights", days: 5, tags: ["Luxury", "Family", "International"], image: "https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?w=900&auto=format&fit=crop&q=75", inclusions: ["Central hotel", "Museum visits", "Landmark tour"], bestFor: "City explorers", popularity: 78 },
-    { title: "Rome Heritage Journey", destination: "Rome, Italy", price: 70000, duration: "5 Days / 4 Nights", days: 5, tags: ["Romantic", "International"], image: "https://images.unsplash.com/photo-1525874684015-58379d421a52?w=900&auto=format&fit=crop&q=75", inclusions: ["Historic hotel", "Food walk", "Airport transfers"], bestFor: "History and food", popularity: 81 },
-    { title: "Kerala Backwater Retreat", destination: "Kerala, India", price: 26000, duration: "4 Days / 3 Nights", days: 4, tags: ["Family", "Romantic", "Budget"], image: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=900&auto=format&fit=crop&q=75", inclusions: ["Houseboat stay", "Backwater cruise", "Meals"], bestFor: "Slow family travel", popularity: 87 },
-    { title: "Maldives Island Stay", destination: "Maldives", price: 90000, duration: "5 Days / 4 Nights", days: 5, tags: ["Beach", "Honeymoon", "Luxury", "International"], image: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=900&auto=format&fit=crop&q=75", inclusions: ["Beach resort", "Speedboat transfers", "Snorkeling"], bestFor: "Honeymoon and luxury", popularity: 88 },
-    { title: "Rajasthan Royal Tour", destination: "Rajasthan, India", price: 35000, duration: "6 Days / 5 Nights", days: 6, tags: ["Family", "Budget"], image: "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=900&auto=format&fit=crop&q=75", inclusions: ["Heritage hotels", "Fort tours", "Private transport"], bestFor: "Culture and heritage", popularity: 85 }
-  ];
-
-  const budgetDestinations = [
-    { name: "Bali, Indonesia", base: 22000, flight: 28000, international: true },
-    { name: "Paris, France", base: 34000, flight: 40000, international: true },
-    { name: "Goa, India", base: 9000, flight: 15000, international: false },
-    { name: "Manali, India", base: 12000, flight: 17000, international: false },
-    { name: "Santorini, Greece", base: 38000, flight: 40000, international: true },
-    { name: "Dubai, UAE", base: 28000, flight: 26000, international: true },
-    { name: "Singapore", base: 25000, flight: 24000, international: true },
-    { name: "Tokyo, Japan", base: 37000, flight: 39000, international: true },
-    { name: "New York, USA", base: 44000, flight: 40000, international: true },
-    { name: "Rome, Italy", base: 33000, flight: 39000, international: true },
-    { name: "Kerala, India", base: 13000, flight: 16000, international: false },
-    { name: "Maldives", base: 41000, flight: 30000, international: true },
-    { name: "Rajasthan, India", base: 16000, flight: 17000, international: false }
-  ];
+  const travelData = window.TRAVEL_DATA || {};
+  const basePackages = Array.isArray(travelData.basePackages) ? travelData.basePackages : [];
+  const budgetDestinations = Array.isArray(travelData.budgetDestinations) ? travelData.budgetDestinations : [];
 
   function ready(callback) {
     if (document.readyState === "loading") {
@@ -91,6 +63,20 @@
       .replace(/(^-|-$)/g, "");
   }
 
+  function debounce(callback, delay) {
+    let timer;
+
+    return function () {
+      const context = this;
+      const args = arguments;
+
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        callback.apply(context, args);
+      }, delay);
+    };
+  }
+
   function escapeHtml(value) {
     return String(value || "")
       .replace(/&/g, "&amp;")
@@ -98,6 +84,34 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+
+  function unsplashVariant(src, width) {
+    if (!/images\.unsplash\.com/.test(String(src || ""))) {
+      return "";
+    }
+
+    if (/[?&]w=\d+/.test(src)) {
+      return src.replace(/([?&]w=)\d+/, `$1${width}`);
+    }
+
+    return `${src}${src.includes("?") ? "&" : "?"}w=${width}`;
+  }
+
+  function responsiveImageAttrs(src, sizes) {
+    const widths = [400, 800, 1200];
+    const variants = widths
+      .map(function (width) {
+        const url = unsplashVariant(src, width);
+        return url ? `${escapeHtml(url)} ${width}w` : "";
+      })
+      .filter(Boolean);
+
+    if (!variants.length) {
+      return "";
+    }
+
+    return `srcset="${variants.join(", ")}" sizes="${escapeHtml(sizes || "(max-width: 768px) 92vw, 33vw")}"`;
   }
 
   function parseAmount(value) {
@@ -201,34 +215,11 @@
   window.refreshTravelResultRows = scheduleFlexibleResultRows;
 
   function getPackageCatalog() {
-    const extras = typeof extraTravelPackages !== "undefined" && Array.isArray(extraTravelPackages) ? extraTravelPackages : [];
-    const mappedExtras = extras.map(function (item, index) {
-      const price = Number(item.amount || parseAmount(item.price));
-      const tags = [];
-      const text = `${item.title} ${item.destination} ${item.image}`.toLowerCase();
-      if (text.includes("beach") || text.includes("island") || text.includes("lagoon")) tags.push("Beach");
-      if (text.includes("adventure") || text.includes("road") || text.includes("river")) tags.push("Adventure");
-      if (item.group || price < 55000) tags.push("Family");
-      if (text.includes("romantic") || text.includes("venice") || text.includes("udaipur")) tags.push("Romantic", "Honeymoon");
-      if (price < 30000) tags.push("Budget");
-      if (price >= 80000) tags.push("Luxury");
-      if (!String(item.destination).toLowerCase().includes("india")) tags.push("International");
-      if (text.includes("ooty") || text.includes("darjeeling") || text.includes("hill")) tags.push("Hill Station");
-      return {
-        title: item.title,
-        destination: item.destination,
-        price,
-        duration: item.duration,
-        days: parseDays(item.duration),
-        tags: Array.from(new Set(tags.length ? tags : ["Family"])),
-        image: typeof destinationImages !== "undefined" && destinationImages[item.image] ? destinationImages[item.image] : "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=900&auto=format&fit=crop&q=75",
-        inclusions: item.features || [],
-        bestFor: price < 30000 ? "Budget-friendly travel" : price >= 80000 ? "Premium holidays" : "Flexible travelers",
-        popularity: 70 + (index % 25)
-      };
-    });
+    const sharedPackages = Array.isArray(travelData.packages)
+      ? travelData.packages
+      : basePackages;
     const byTitle = new Map();
-    basePackages.concat(mappedExtras).forEach(function (item) {
+    sharedPackages.forEach(function (item) {
       byTitle.set(item.title.toLowerCase(), item);
     });
     return Array.from(byTitle.values());
@@ -241,7 +232,7 @@
   }
 
   function bookingUrl(item) {
-    return `contact.html?package=${encodeURIComponent(item.title || "Custom Trip")}&destination=${encodeURIComponent(item.destination || "") }#bookingForm`;
+    return `contact.html?package=${encodeURIComponent(item.title || "Custom Trip")}&destination=${encodeURIComponent(item.destination || "")}#bookingForm`;
   }
 
   function toast(message, type, action) {
@@ -293,11 +284,19 @@
 
   function updateWishlistUi() {
     const saved = getSavedTrips();
+    const savedDestinations = saved.filter(function (item) {
+      return item.type === "destination";
+    });
     document.querySelectorAll(".wishlist-count").forEach(function (node) {
       node.textContent = saved.length;
     });
     document.querySelectorAll("#savedCount").forEach(function (node) {
-      node.textContent = `Saved trips: ${saved.length}`;
+      node.textContent = document.body.classList.contains("destinations-page")
+        ? `Saved destinations: ${savedDestinations.length}`
+        : `Saved trips: ${saved.length}`;
+    });
+    document.querySelectorAll("#savedFilterCount").forEach(function (node) {
+      node.textContent = `(${savedDestinations.length})`;
     });
     document.querySelectorAll(".v13-save-btn").forEach(function (button) {
       const isSaved = saved.some(function (item) { return item.id === button.dataset.tripId; });
@@ -346,6 +345,9 @@
       if (remove) {
         setSavedTrips(getSavedTrips().filter(function (item) { return item.id !== remove.dataset.removeTrip; }));
         updateWishlistUi();
+        if (document.body.classList.contains("destinations-page") && typeof window.applyDestinationFilters === "function") {
+          window.applyDestinationFilters();
+        }
       }
     });
     document.body.appendChild(drawer);
@@ -429,6 +431,9 @@
           toast(`${item.name} saved to your wishlist!`, "success");
         }
         updateWishlistUi();
+        if (document.body.classList.contains("destinations-page") && typeof window.applyDestinationFilters === "function") {
+          window.applyDestinationFilters();
+        }
       });
       actionBox.appendChild(button);
     });
@@ -440,8 +445,15 @@
       if (button.dataset.v13WishlistReady) return;
       button.dataset.v13WishlistReady = "true";
       button.addEventListener("click", function () {
-        setSavedTrips([]);
+        if (document.body.classList.contains("destinations-page")) {
+          setSavedTrips(getSavedTrips().filter(function (item) { return item.type !== "destination"; }));
+        } else {
+          setSavedTrips([]);
+        }
         updateWishlistUi();
+        if (document.body.classList.contains("destinations-page") && typeof window.applyDestinationFilters === "function") {
+          window.applyDestinationFilters();
+        }
         toast("Wishlist cleared.", "success");
       });
     });
@@ -583,29 +595,41 @@
     const budgetReadout = form.querySelector("[data-budget-readout]");
     const travelerInput = form.elements.travelers;
     const params = new URLSearchParams(window.location.search);
+    const queryDestination = (params.get("destination") || "").trim().slice(0, 140);
+    const queryPackage = (params.get("package") || "").trim().slice(0, 140);
     let currentStep = 0;
 
     function fillDestinations() {
-      const names = Array.from(new Set(budgetDestinations.map(function (item) { return item.name; }).concat(getPackageCatalog().map(function (item) { return item.destination; })))).filter(Boolean);
+      const names = Array.from(new Set(
+        budgetDestinations
+          .map(function (item) { return item.name; })
+          .concat(getPackageCatalog().map(function (item) { return item.destination; }))
+          .concat(queryDestination ? [queryDestination] : [])
+      )).filter(Boolean);
       destinationSelect.innerHTML = '<option value="">Choose destination</option>' + names.map(function (name) {
-        return `<option value="${name}">${name}</option>`;
+        return `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`;
       }).join("");
     }
 
     function fillPackages() {
       const selectedDestination = destinationSelect.value;
-      const selectedPackage = packageSelect.dataset.selected || params.get("package") || packageSelect.value;
+      const selectedPackage = packageSelect.dataset.selected || queryPackage || packageSelect.value;
       const matches = getPackageCatalog().filter(function (item) {
         return !selectedDestination || item.destination === selectedDestination;
       });
       packageSelect.innerHTML = '<option value="">Choose package</option>' + matches.map(function (item) {
-        return `<option value="${item.title}">${item.title}</option>`;
+        return `<option value="${escapeHtml(item.title)}">${escapeHtml(item.title)}</option>`;
       }).join("") + '<option value="Custom Trip">Custom Trip</option>';
       if (selectedPackage) {
         const option = Array.from(packageSelect.options).find(function (item) {
           return item.value.toLowerCase() === selectedPackage.toLowerCase();
         });
-        if (option) packageSelect.value = option.value;
+        if (option) {
+          packageSelect.value = option.value;
+        } else {
+          packageSelect.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(selectedPackage)}">${escapeHtml(selectedPackage)}</option>`);
+          packageSelect.value = selectedPackage;
+        }
       }
     }
 
@@ -616,6 +640,7 @@
     function updateTraveler(delta) {
       const next = Math.max(1, Math.min(20, Number(travelerInput.value || 1) + delta));
       travelerInput.value = next;
+      travelerInput.dispatchEvent(new Event("input", { bubbles: true }));
     }
 
     function setDateMin() {
@@ -641,6 +666,15 @@
     function validateStep(index) {
       const step = steps[index];
       const error = step.querySelector(".step-error");
+
+      if (window.validateTravelFormFields) {
+        const isStepValid = window.validateTravelFormFields(form, step);
+        if (error) {
+          error.textContent = isStepValid ? "" : "Please fix the highlighted fields before continuing.";
+        }
+        return isStepValid;
+      }
+
       const fields = Array.from(step.querySelectorAll("input, select, textarea")).filter(function (field) {
         return !field.disabled && field.type !== "button" && field.type !== "submit";
       });
@@ -673,7 +707,7 @@
         ["Budget", money(Number(value("approxBudget") || 0))],
         ["Name", value("bookingName")],
         ["Email", value("bookingEmail")],
-        ["Phone", `+91 ${value("bookingPhone")}`],
+        ["Phone", window.formatTravelPhone ? window.formatTravelPhone(value("bookingPhone")) : `+91 ${value("bookingPhone")}`],
         ["Travel Date", value("travelDate")],
         ["Travelers", value("travelers")],
         ["Traveler Type", value("travelersType")],
@@ -687,9 +721,9 @@
     }
 
     fillDestinations();
-    if (params.get("destination")) destinationSelect.value = params.get("destination");
+    if (queryDestination) destinationSelect.value = queryDestination;
     fillPackages();
-    if (params.get("package")) packageSelect.value = params.get("package");
+    if (queryPackage) packageSelect.value = queryPackage;
     setDateMin();
     updateBudget();
     setStep(0);
@@ -723,10 +757,14 @@
       }, 0);
     });
     form.addEventListener("submit", function (event) {
-      if (currentStep !== 2 || !validateStep(2)) {
+      const firstInvalidStep = steps.findIndex(function (_, stepIndex) {
+        return !validateStep(stepIndex);
+      });
+
+      if (firstInvalidStep !== -1 || currentStep !== 2) {
         event.preventDefault();
         event.stopImmediatePropagation();
-        setStep(currentStep);
+        setStep(firstInvalidStep === -1 ? currentStep : firstInvalidStep);
         return;
       }
       form.dataset.readyToSubmit = "true";
@@ -750,7 +788,11 @@
             <input type="range" id="packageMinPrice" min="10000" max="150000" step="1000" value="10000" aria-label="Minimum package price" />
             <input type="range" id="packageMaxPrice" min="10000" max="150000" step="1000" value="150000" aria-label="Maximum package price" />
           </div>
-          <span class="v13-readout" id="packagePriceReadout">Rs. 10,000 - Rs. 1,50,000</span>
+          <div class="range-endpoints" aria-hidden="true">
+            <span>Rs. 10,000</span>
+            <span>Rs. 1,50,000</span>
+          </div>
+          <span class="v13-readout" id="packagePriceReadout" aria-live="polite">Rs. 10,000 - Rs. 1,50,000</span>
         </label>
         <label>Sort
           <select id="packageSort">
@@ -764,7 +806,7 @@
       </div>
       <div class="package-results-line">
         <div class="v13-filter-chips" aria-label="Package filters">
-          ${["All", "Beach", "Adventure", "Family", "Honeymoon", "Luxury", "Budget", "International"].map(function (tag) { return `<button type="button" class="v13-chip${tag === "All" ? " is-active" : ""}" data-package-filter="${tag.toLowerCase()}">${tag}</button>`; }).join("")}
+          ${["All", "Beach", "Adventure", "Family", "Honeymoon", "Luxury", "Budget", "International"].map(function (tag) { return `<button type="button" class="v13-chip${tag === "All" ? " is-active" : ""}" data-package-filter="${tag.toLowerCase()}" aria-pressed="${tag === "All" ? "true" : "false"}">${tag}</button>`; }).join("")}
         </div>
         <div class="result-line-actions">
           <span id="packageResultsCount">Showing packages</span>
@@ -843,6 +885,8 @@
         max = temp;
       }
       priceReadout.textContent = `${money(min)} - ${money(max)}`;
+      minRange.setAttribute("aria-valuetext", `Minimum ${money(min)}`);
+      maxRange.setAttribute("aria-valuetext", `Maximum ${money(max)}`);
       const query = String(search.value || "").toLowerCase();
       let visible = cards.filter(function (card) {
         const price = Number(card.dataset.packagePrice);
@@ -866,14 +910,55 @@
       scheduleFlexibleResultRows();
     }
 
+    function handleRangeKeydown(event) {
+      const control = event.currentTarget;
+      const step = Number(control.step || 1000);
+      const min = Number(control.min || 10000);
+      const max = Number(control.max || 150000);
+      const current = Number(control.value || min);
+      let next = current;
+
+      if (event.key === "ArrowRight" || event.key === "ArrowUp") {
+        next = current + step;
+      } else if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
+        next = current - step;
+      } else if (event.key === "PageUp") {
+        next = current + step * 10;
+      } else if (event.key === "PageDown") {
+        next = current - step * 10;
+      } else if (event.key === "Home") {
+        next = min;
+      } else if (event.key === "End") {
+        next = max;
+      } else {
+        return;
+      }
+
+      event.preventDefault();
+      control.value = String(Math.min(max, Math.max(min, next)));
+      apply();
+    }
+
     chips.forEach(function (chip) {
       chip.addEventListener("click", function () {
         active = chip.dataset.packageFilter;
-        chips.forEach(function (item) { item.classList.toggle("is-active", item === chip); });
+        chips.forEach(function (item) {
+          item.classList.toggle("is-active", item === chip);
+          item.setAttribute("aria-pressed", String(item === chip));
+        });
         apply();
       });
     });
-    [search, minRange, maxRange, sort].forEach(function (control) { control.addEventListener("input", apply); control.addEventListener("change", apply); });
+    const debouncedApply = debounce(apply, 120);
+    [search, minRange, maxRange].forEach(function (control) {
+      control.addEventListener("input", debouncedApply);
+      control.addEventListener("change", apply);
+    });
+    [minRange, maxRange].forEach(function (control) {
+      control.addEventListener("keydown", handleRangeKeydown);
+    });
+    sort.addEventListener("input", apply);
+    sort.addEventListener("change", apply);
     if (reset) {
       reset.addEventListener("click", function () {
         search.value = "";
@@ -881,7 +966,11 @@
         maxRange.value = "150000";
         sort.value = "default";
         active = "all";
-        chips.forEach(function (item) { item.classList.toggle("is-active", item.dataset.packageFilter === "all"); });
+        chips.forEach(function (item) {
+          const isActive = item.dataset.packageFilter === "all";
+          item.classList.toggle("is-active", isActive);
+          item.setAttribute("aria-pressed", String(isActive));
+        });
         apply();
         toast("Package filters reset.", "success");
       });
@@ -1021,7 +1110,53 @@
     const section = document.querySelector(".home-slider-section");
     if (!section || section.dataset.v13Ready) return;
     section.dataset.v13Ready = "true";
-    const trips = basePackages.slice(0, 6);
+    const featuredTitles = Array.isArray(travelData.featuredPackageTitles)
+      ? travelData.featuredPackageTitles
+      : [];
+    const trips = featuredTitles.map(packageByTitle).filter(Boolean);
+
+    function routePlannerMarkup() {
+      return `
+        <div class="featured-route-panel" id="routePreview" aria-label="Google Maps route planner from Hyderabad">
+          <div class="route-live-tools">
+            <label for="routeDestinationSelect">
+              Choose destination
+              <select id="routeDestinationSelect">
+                <option value="bali">Loading all destinations...</option>
+              </select>
+            </label>
+            <div class="route-live-actions">
+              <a
+                id="routeOpenMaps"
+                class="btn btn-small"
+                href="https://www.google.com/maps/dir/?api=1&origin=Hyderabad%2C%20India&destination=Bali%2C%20Indonesia"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open Google Maps
+              </a>
+              <a
+                id="routeBookTrip"
+                class="btn btn-outline btn-small"
+                href="contact.html?package=Premium%20Bali%20Tour&destination=Bali%2C%20Indonesia#bookingForm"
+              >
+                Book This Route
+              </a>
+            </div>
+          </div>
+          <div class="route-google-map">
+            <iframe
+              id="routeGoogleMap"
+              title="Google map showing Bali, Indonesia"
+              src="https://www.google.com/maps?q=Bali%2C%20Indonesia&output=embed"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+      `;
+    }
+
     section.innerHTML = `
       <div class="section-heading-left">
         <p class="hero-kicker">Featured Trips</p>
@@ -1032,15 +1167,16 @@
         ${["All", "Beach", "Adventure", "Family", "Romantic", "Luxury", "Budget", "Hill Station", "International"].map(function (tag) { return `<button type="button" class="v13-chip${tag === "All" ? " is-active" : ""}" data-featured-filter="${tag.toLowerCase()}">${tag}</button>`; }).join("")}
       </div>
       <div class="v13-featured-grid">
-        ${trips.map(function (trip) {
+        ${trips.map(function (trip, index) {
           return `
-            <article class="v13-featured-card" data-featured-tags="${trip.tags.join(" ").toLowerCase()}">
-              <img src="${trip.image}" alt="${trip.title}" loading="lazy" width="640" height="420" />
+            <article class="v13-featured-card${index === 0 ? " has-route-planner" : ""}" data-featured-tags="${trip.tags.join(" ").toLowerCase()}">
+              <img src="${trip.image}" alt="${escapeHtml(trip.title)} destination view" loading="lazy" width="640" height="420" ${responsiveImageAttrs(trip.image, "(max-width: 768px) 92vw, 31vw")} />
               <div class="v13-featured-content">
                 <div class="card-meta"><h3>${trip.title}</h3><span class="price">${money(trip.price)}</span></div>
                 <div class="tag-row">${trip.tags.slice(0, 4).map(function (tag) { return `<span class="tag">${tag}</span>`; }).join("")}</div>
                 <p>${trip.duration} - ${trip.bestFor}</p>
                 <a class="btn" href="${bookingUrl(trip)}">Book Now</a>
+                ${index === 0 ? routePlannerMarkup() : ""}
               </div>
             </article>
           `;
@@ -1064,16 +1200,29 @@
     const oldGrid = document.querySelector(".compact-trending-grid");
     if (!oldGrid || oldGrid.dataset.v13Ready) return;
     oldGrid.dataset.v13Ready = "true";
-    const trending = [
-      ["Goa Beach Escape", "Goa, India", 18000, "Beach-ready getaway", "Hot", "4.8", "services1.jpg"],
-      ["Premium Bali Tour", "Bali, Indonesia", 40000, "Couples and beach favorite", "Popular", "4.9", "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=900&auto=format&fit=crop&q=75"],
-      ["Manali Adventure Holiday", "Manali, India", 24000, "Mountain adventure pick", "Hot", "4.7", "services2.jpg"],
-      ["Dubai Desert Luxury", "Dubai, UAE", 58000, "Premium city escape", "Luxury", "4.8", "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=900&auto=format&fit=crop&q=75"],
-      ["Kerala Backwater Retreat", "Kerala, India", 26000, "Slow travel favorite", "New", "4.6", "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=900&auto=format&fit=crop&q=75"],
-      ["Maldives Island Stay", "Maldives", 90000, "Island resort escape", "Popular", "4.9", "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=900&auto=format&fit=crop&q=75"],
-      ["Rajasthan Royal Tour", "Rajasthan, India", 35000, "Heritage and culture route", "Culture", "4.7", "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=900&auto=format&fit=crop&q=75"],
-      ["Singapore Family Fun", "Singapore", 50000, "Family city break", "Family", "4.8", "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=900&auto=format&fit=crop&q=75"]
-    ];
+    const featuredTitles = Array.isArray(travelData.featuredPackageTitles)
+      ? travelData.featuredPackageTitles
+      : [];
+    const featuredDestinations = new Set(featuredTitles
+      .map(packageByTitle)
+      .filter(Boolean)
+      .map(function (item) {
+        return item.destination.toLowerCase();
+      }));
+    const trendingTitles = Array.isArray(travelData.trendingPackageTitles)
+      ? travelData.trendingPackageTitles
+      : [];
+    const trendingCandidates = trendingTitles
+      .map(packageByTitle)
+      .filter(Boolean)
+      .map(function (item, index) {
+        const badge = item.tags.includes("Luxury") ? "Luxury" : item.tags.includes("Family") ? "Family" : index === 0 ? "Hot" : "Popular";
+        const rating = (4.6 + ((item.popularity || 80) % 4) / 10).toFixed(1);
+        return [item.title, item.destination, item.price, item.bestFor, badge, rating, item.image];
+      });
+    const trending = trendingCandidates.filter(function (item) {
+      return !featuredDestinations.has(String(item[1]).toLowerCase());
+    });
     oldGrid.className = "v13-trending-wrap";
     oldGrid.innerHTML = `
       <div class="v13-slider-arrows">
@@ -1086,7 +1235,7 @@
           return `
             <article class="v13-trending-card">
               <span class="hot-badge">${item[4]}</span>
-              <img src="${item[6]}" alt="${item[0]}" loading="lazy" width="640" height="420" />
+              <img src="${item[6]}" alt="${escapeHtml(item[0])} destination view" loading="lazy" width="640" height="420" ${responsiveImageAttrs(item[6], "(max-width: 768px) 80vw, 28vw")} />
               <div class="v13-trending-content">
                 <h3>${item[0]}</h3>
                 <p>${item[1]}</p>
@@ -1316,7 +1465,7 @@
       <div class="ai-history-head">
         <div>
           <p class="hero-kicker">Plan History</p>
-          <h3>Saved AI Plans</h3>
+          <h3>Saved Trip Matches</h3>
         </div>
         <button type="button" class="btn btn-outline btn-small" data-clear-ai-history>Clear</button>
       </div>
@@ -1344,7 +1493,7 @@
       if (clear) {
         setAiPlanHistory([]);
         renderAiPlanHistory();
-        toast("AI plan history cleared.", "success");
+        toast("Trip match history cleared.", "success");
       }
     });
     result.insertAdjacentElement("afterend", panel);
@@ -1361,7 +1510,7 @@
     const history = getAiPlanHistory();
 
     if (!history.length) {
-      list.innerHTML = '<p class="v13-empty-state">No saved AI plans yet. Generate a plan to save it here.</p>';
+      list.innerHTML = '<p class="v13-empty-state">No saved trip matches yet. Generate a plan to save it here.</p>';
       return;
     }
 
@@ -1533,7 +1682,7 @@
             return `
               <article class="v13-review-card">
                 <div class="v13-review-person">
-                  <img class="v13-review-avatar" src="${review[5]}" alt="${review[0]}" loading="lazy" width="112" height="112" />
+                  <img class="v13-review-avatar" src="${review[5]}" alt="${escapeHtml(review[0])} traveler portrait" loading="lazy" width="112" height="112" ${responsiveImageAttrs(review[5], "56px")} />
                   <div><h3>${review[0]}</h3><p>${review[1]} - ${review[2]}</p><span class="verified-badge">Verified Traveler</span></div>
                 </div>
                 <span class="v13-stars" aria-label="${review[3]} star rating">${stars}</span>
@@ -1589,93 +1738,178 @@
     if (!gallery || gallery.dataset.v13Ready) return;
     gallery.dataset.v13Ready = "true";
     const items = [
-      ["Bali Temple Beach", "Beaches", "photo-1537996194471-e657df975ab4"],
-      ["Goa Golden Shore", "Beaches", "photo-1507525428034-b723cf961d3e"],
-      ["Maldives Lagoon", "Beaches", "photo-1573843981267-be1999ff37cd"],
-      ["Santorini Sunset", "Beaches", "photo-1570077188670-e3a8d69ac5ff"],
-      ["Manali Valley", "Mountains", "photo-1506905925346-21bda4d32df4"],
-      ["Swiss Alps", "Mountains", "photo-1531366936337-7c912a4589a7"],
-      ["Kashmir Lake", "Mountains", "photo-1500530855697-b586d89ba3ee"],
-      ["Darjeeling Hills", "Mountains", "photo-1501785888041-af3ef285b470"],
-      ["Dubai Skyline", "Cities", "photo-1512453979798-5ea266f8880c"],
-      ["Paris Landmark", "Cities", "photo-1502602898657-3e91760cbb34"],
-      ["Tokyo Nights", "Cities", "photo-1540959733332-eab4deabeeaf"],
-      ["New York Streets", "Cities", "photo-1485871981521-5b1fd3805eee"],
-      ["Rome Heritage", "Food & Culture", "photo-1525874684015-58379d421a52"],
-      ["Rajasthan Palace", "Food & Culture", "photo-1477587458883-47145ed94245"],
-      ["Istanbul Market", "Food & Culture", "photo-1541432901042-2d8bd64b4a9b"],
-      ["Vietnam Lanterns", "Food & Culture", "photo-1528127269322-539801943592"],
-      ["Ladakh Road", "Adventure", "photo-1464822759023-fed622ff2c3b"],
-      ["Rishikesh Rafting", "Adventure", "photo-1500534314209-a25ddb2bd429"],
-      ["Queenstown Lake", "Adventure", "photo-1500534314209-a25ddb2bd429"],
-      ["Cape Town Coast", "Adventure", "photo-1580060839134-75a5edca2e99"],
-      ["Kerala Backwaters", "Food & Culture", "photo-1602216056096-3b40cc0c9944"],
-      ["Singapore Marina", "Cities", "photo-1525625293386-3f8f99389edd"],
-      ["Phuket Islands", "Beaches", "photo-1506929562872-bb421503ef21"],
-      ["Ooty Tea Gardens", "Mountains", "photo-1519681393784-d120267933ba"]
+      { title: "Bali Temple Beach", category: "Beaches", photo: "photo-1537996194471-e657df975ab4", destination: "Bali, Indonesia", caption: "Temple coastlines, rice terraces, and warm beach evenings." },
+      { title: "Goa Golden Shore", category: "Beaches", photo: "photo-1507525428034-b723cf961d3e", destination: "Goa, India", caption: "Easy beach cafes, sunsets, and weekend-friendly coastal energy." },
+      { title: "Maldives Lagoon", category: "Beaches", photo: "photo-1573843981267-be1999ff37cd", destination: "Maldives", caption: "Clear lagoon water, resort stays, and slow island days." },
+      { title: "Santorini Sunset", category: "Beaches", photo: "photo-1570077188670-e3a8d69ac5ff", destination: "Santorini, Greece", caption: "White villages, blue domes, and premium sunset views." },
+      { title: "Manali Valley", category: "Mountains", photo: "photo-1506905925346-21bda4d32df4", destination: "Manali, India", caption: "Cool mountain weather, valley drives, and adventure stops." },
+      { title: "Swiss Alps", category: "Mountains", photo: "photo-1531366936337-7c912a4589a7", destination: "Swiss Alps, Switzerland", caption: "Snow peaks, scenic trains, and lake-side mountain towns." },
+      { title: "Kashmir Lake", category: "Mountains", photo: "photo-1500530855697-b586d89ba3ee", destination: "Kashmir, India", caption: "Houseboats, gardens, valleys, and calm mountain views." },
+      { title: "Darjeeling Hills", category: "Mountains", photo: "photo-1501785888041-af3ef285b470", destination: "Darjeeling, India", caption: "Tea gardens, misty viewpoints, and heritage hill charm." },
+      { title: "Dubai Skyline", category: "Cities", photo: "photo-1512453979798-5ea266f8880c", destination: "Dubai, UAE", caption: "Modern skyline, desert experiences, shopping, and luxury stays." },
+      { title: "Paris Landmark", category: "Cities", photo: "photo-1502602898657-3e91760cbb34", destination: "Paris, France", caption: "Landmarks, cafes, museums, and romantic city walks." },
+      { title: "Tokyo Nights", category: "Cities", photo: "photo-1540959733332-eab4deabeeaf", destination: "Tokyo, Japan", caption: "Neon streets, temples, food lanes, and modern culture." },
+      { title: "New York Streets", category: "Cities", photo: "photo-1485871981521-5b1fd3805eee", destination: "New York, USA", caption: "Skyline views, museums, shopping streets, and city lights." },
+      { title: "Rome Heritage", category: "Food & Culture", photo: "photo-1525874684015-58379d421a52", destination: "Rome, Italy", caption: "Historic streets, monuments, Italian food, and evening walks." },
+      { title: "Rajasthan Palace", category: "Food & Culture", photo: "photo-1477587458883-47145ed94245", destination: "Rajasthan, India", caption: "Palaces, forts, markets, and rich royal culture." },
+      { title: "Istanbul Market", category: "Food & Culture", photo: "photo-1541432901042-2d8bd64b4a9b", destination: "Istanbul, Turkey", caption: "Old city routes, bazaars, Bosphorus views, and local food." },
+      { title: "Vietnam Lanterns", category: "Food & Culture", photo: "photo-1528127269322-539801943592", destination: "Vietnam", caption: "Lantern streets, bay cruises, food walks, and layered history." },
+      { title: "Ladakh Road", category: "Adventure", photo: "photo-1464822759023-fed622ff2c3b", destination: "Ladakh, India", caption: "High-altitude roads, monasteries, lakes, and rugged landscapes." },
+      { title: "Rishikesh Rafting", category: "Adventure", photo: "photo-1500534314209-a25ddb2bd429", destination: "Rishikesh, India", caption: "River rafting, yoga cafes, temples, and mountain air." },
+      { title: "Queenstown Lake", category: "Adventure", photo: "photo-1500534314209-a25ddb2bd429", destination: "Queenstown, New Zealand", caption: "Lake views, adventure sports, and scenic drives." },
+      { title: "Cape Town Coast", category: "Adventure", photo: "photo-1580060839134-75a5edca2e99", destination: "Cape Town, South Africa", caption: "Table Mountain, beaches, coastal roads, and wildlife routes." },
+      { title: "Kerala Backwaters", category: "Food & Culture", photo: "photo-1602216056096-3b40cc0c9944", destination: "Kerala, India", caption: "Houseboats, greenery, calm resorts, and local meals." },
+      { title: "Singapore Marina", category: "Cities", photo: "photo-1525625293386-3f8f99389edd", destination: "Singapore", caption: "Family attractions, gardens, skyline views, and clean city breaks." },
+      { title: "Phuket Islands", category: "Beaches", photo: "photo-1506929562872-bb421503ef21", destination: "Phuket, Thailand", caption: "Island tours, beach viewpoints, nightlife, and water activities." },
+      { title: "Ooty Tea Gardens", category: "Mountains", photo: "photo-1519681393784-d120267933ba", destination: "Ooty, India", caption: "Tea estates, lakes, viewpoints, and cool-weather stays." }
     ];
     const wrapper = gallery.parentElement;
     const filters = document.createElement("div");
     filters.className = "v13-filter-chips v13-gallery-filter";
     filters.innerHTML = ["All", "Beaches", "Mountains", "Cities", "Food & Culture", "Adventure"].map(function (tag) {
-      return `<button type="button" class="v13-chip${tag === "All" ? " is-active" : ""}" data-gallery-filter="${tag.toLowerCase()}">${tag}</button>`;
+      return `<button type="button" class="v13-chip${tag === "All" ? " is-active" : ""}" data-gallery-filter="${tag.toLowerCase()}" aria-pressed="${tag === "All"}">${tag}</button>`;
     }).join("");
     wrapper.insertBefore(filters, gallery);
     gallery.className = "v13-gallery-grid";
     gallery.innerHTML = items.map(function (item, index) {
-      const src = `https://images.unsplash.com/${item[2]}?w=800&auto=format&fit=crop&q=75`;
+      const src = `https://images.unsplash.com/${item.photo}?w=800&auto=format&fit=crop&q=75`;
+      const link = `destinations.html?search=${encodeURIComponent(item.destination)}`;
       return `
-        <article class="gallery-item v13-gallery-item" data-gallery-category="${item[1].toLowerCase()}" data-gallery-index="${index}">
-          <img src="${src}" alt="${item[0]}" loading="lazy" width="800" height="${index % 3 === 0 ? 980 : 640}" />
-          <div class="v13-gallery-overlay"><h2>${item[0]}</h2><p>${item[1]}</p><span><i class="fas fa-search-plus"></i> View photo</span></div>
+        <article class="gallery-item v13-gallery-item" tabindex="0" role="button" aria-label="Open ${escapeHtml(item.title)} photo" data-gallery-category="${item.category.toLowerCase()}" data-gallery-category-label="${escapeHtml(item.category)}" data-gallery-index="${index}" data-gallery-title="${escapeHtml(item.title)}" data-gallery-destination="${escapeHtml(item.destination)}" data-gallery-link="${escapeHtml(link)}">
+          <img src="${src}" alt="${escapeHtml(item.title)} in ${escapeHtml(item.destination)}" loading="lazy" decoding="async" width="800" height="${index % 3 === 0 ? 980 : 640}" ${responsiveImageAttrs(src, "(max-width: 768px) 92vw, (max-width: 1100px) 45vw, 30vw")} />
+          <div class="v13-gallery-overlay">
+            <span class="v13-gallery-category">${escapeHtml(item.category)}</span>
+            <h2>${escapeHtml(item.title)}</h2>
+            <p>${escapeHtml(item.caption)}</p>
+            <a class="v13-gallery-destination-link" href="${escapeHtml(link)}" aria-label="View ${escapeHtml(item.destination)} on the destinations page">View destination</a>
+            <span class="v13-gallery-zoom"><i class="fas fa-search-plus"></i> Enlarge photo</span>
+          </div>
         </article>
       `;
     }).join("");
     const lightbox = document.createElement("div");
     lightbox.className = "v13-lightbox";
     lightbox.id = "galleryLightbox";
-    lightbox.innerHTML = '<button type="button" class="v13-lightbox-close" data-lightbox-close aria-label="Close gallery"><i class="fas fa-times"></i></button><button type="button" class="v13-lightbox-prev" data-lightbox-prev aria-label="Previous image"><i class="fas fa-chevron-left"></i></button><img alt="Expanded gallery image" /><button type="button" class="v13-lightbox-next" data-lightbox-next aria-label="Next image"><i class="fas fa-chevron-right"></i></button><div class="v13-lightbox-caption" id="lightboxCaption"></div>';
+    lightbox.setAttribute("role", "dialog");
+    lightbox.setAttribute("aria-modal", "true");
+    lightbox.setAttribute("aria-labelledby", "lightboxTitle");
+    lightbox.setAttribute("aria-describedby", "lightboxMeta");
+    lightbox.setAttribute("aria-hidden", "true");
+    lightbox.innerHTML = `
+      <button type="button" class="v13-lightbox-close" data-lightbox-close aria-label="Close gallery"><i class="fas fa-times"></i></button>
+      <button type="button" class="v13-lightbox-prev" data-lightbox-prev aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
+      <img alt="Expanded gallery image" />
+      <button type="button" class="v13-lightbox-next" data-lightbox-next aria-label="Next image"><i class="fas fa-chevron-right"></i></button>
+      <div class="v13-lightbox-caption" id="lightboxCaption">
+        <strong id="lightboxTitle"></strong>
+        <span id="lightboxMeta"></span>
+        <a href="destinations.html" data-lightbox-destination-link>View destination details</a>
+      </div>
+    `;
     document.body.appendChild(lightbox);
     let current = 0;
+    let lastGalleryTrigger = null;
+    const closeButton = lightbox.querySelector("[data-lightbox-close]");
+    const lightboxImage = lightbox.querySelector("img");
+    const lightboxTitle = lightbox.querySelector("#lightboxTitle");
+    const lightboxMeta = lightbox.querySelector("#lightboxMeta");
+    const lightboxLink = lightbox.querySelector("[data-lightbox-destination-link]");
     function visibleItems() { return Array.from(gallery.querySelectorAll(".v13-gallery-item:not(.is-v13-hidden)")); }
-    function open(index) {
+    function focusableLightboxItems() {
+      return Array.from(lightbox.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')).filter(function (item) {
+        return !item.hasAttribute("hidden") && item.getAttribute("aria-hidden") !== "true";
+      });
+    }
+    function closeLightbox() {
+      lightbox.classList.remove("is-open");
+      lightbox.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("gallery-lightbox-open");
+      if (lastGalleryTrigger && document.contains(lastGalleryTrigger)) {
+        lastGalleryTrigger.focus();
+      }
+    }
+    function open(index, trigger) {
       const visible = visibleItems();
       const item = gallery.querySelector(`[data-gallery-index="${index}"]`) || visible[0];
       if (!item) return;
       current = Number(item.dataset.galleryIndex);
-      lightbox.querySelector("img").src = item.querySelector("img").src.replace("w=800", "w=1400");
-      document.getElementById("lightboxCaption").textContent = item.querySelector("h2").textContent;
+      lastGalleryTrigger = trigger || item;
+      const thumb = item.querySelector("img");
+      lightboxImage.src = unsplashVariant(thumb.src, 1400) || thumb.src;
+      lightboxImage.alt = thumb.alt;
+      lightboxTitle.textContent = item.dataset.galleryTitle || "";
+      lightboxMeta.textContent = `${item.dataset.galleryDestination || ""} - ${item.dataset.galleryCategoryLabel || ""}`;
+      lightboxLink.href = item.dataset.galleryLink || "destinations.html";
       lightbox.classList.add("is-open");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.classList.add("gallery-lightbox-open");
+      closeButton.focus({ preventScroll: true });
+      window.setTimeout(function () {
+        closeButton.focus({ preventScroll: true });
+      }, 40);
     }
     function move(dir) {
       const visible = visibleItems();
       const pos = visible.findIndex(function (item) { return Number(item.dataset.galleryIndex) === current; });
-      const next = visible[(pos + dir + visible.length) % visible.length];
-      if (next) open(Number(next.dataset.galleryIndex));
+      const next = visible[((pos < 0 ? 0 : pos) + dir + visible.length) % visible.length];
+      if (next) open(Number(next.dataset.galleryIndex), lastGalleryTrigger);
     }
     filters.querySelectorAll("[data-gallery-filter]").forEach(function (button) {
       button.addEventListener("click", function () {
         const filter = button.dataset.galleryFilter;
-        filters.querySelectorAll(".v13-chip").forEach(function (chip) { chip.classList.toggle("is-active", chip === button); });
+        filters.querySelectorAll(".v13-chip").forEach(function (chip) {
+          chip.classList.toggle("is-active", chip === button);
+          chip.setAttribute("aria-pressed", String(chip === button));
+        });
         gallery.querySelectorAll(".v13-gallery-item").forEach(function (item) {
           item.classList.toggle("is-v13-hidden", filter !== "all" && item.dataset.galleryCategory !== filter);
         });
+        if (lightbox.classList.contains("is-open")) {
+          closeLightbox();
+        }
       });
     });
     gallery.addEventListener("click", function (event) {
+      if (event.target.closest("a")) return;
       const item = event.target.closest(".v13-gallery-item");
-      if (item) open(Number(item.dataset.galleryIndex));
+      if (item) open(Number(item.dataset.galleryIndex), item);
+    });
+    gallery.addEventListener("keydown", function (event) {
+      if (event.target.closest("a, button, input, select, textarea")) return;
+      const item = event.target.closest(".v13-gallery-item");
+      if (!item || (event.key !== "Enter" && event.key !== " ")) return;
+      event.preventDefault();
+      open(Number(item.dataset.galleryIndex), item);
     });
     lightbox.addEventListener("click", function (event) {
-      if (event.target === lightbox || event.target.closest("[data-lightbox-close]")) lightbox.classList.remove("is-open");
+      if (event.target === lightbox || event.target.closest("[data-lightbox-close]")) closeLightbox();
       if (event.target.closest("[data-lightbox-prev]")) move(-1);
       if (event.target.closest("[data-lightbox-next]")) move(1);
     });
     document.addEventListener("keydown", function (event) {
       if (!lightbox.classList.contains("is-open")) return;
-      if (event.key === "Escape") lightbox.classList.remove("is-open");
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeLightbox();
+      }
       if (event.key === "ArrowLeft") move(-1);
       if (event.key === "ArrowRight") move(1);
+      if (event.key === "Tab") {
+        const focusable = focusableLightboxItems();
+        if (!focusable.length) {
+          event.preventDefault();
+          return;
+        }
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
     });
   }
 

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Travel with Giridhar Admin</title>
+    <meta
+      name="description"
+      content="Travel with Giridhar admin dashboard for booking, payment, and inquiry insights."
+    />
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="admin.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body class="admin-app-page" data-admin-page="dashboard">
+    <div class="admin-shell">
+      <aside class="sidebar" id="adminSidebar" aria-label="Admin navigation">
+        <a class="brand-lockup sidebar-brand" href="../index.html">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path d="M3 11.2 21 4l-5.8 17-4.1-7.1L3 11.2Z" />
+            </svg>
+          </span>
+          <span>
+            <strong>Travel with Giridhar</strong>
+            <small>Admin Console</small>
+          </span>
+        </a>
+        <nav class="side-nav">
+          <a class="side-link is-active" href="dashboard.html">
+            <span class="side-icon" aria-hidden="true">D</span>
+            Dashboard
+          </a>
+          <a class="side-link" href="bookings.html">
+            <span class="side-icon" aria-hidden="true">B</span>
+            Bookings
+          </a>
+          <button class="side-link side-link-button" type="button" data-logout>
+            <span class="side-icon" aria-hidden="true">L</span>
+            Logout
+          </button>
+        </nav>
+        <div class="sidebar-user">
+          <span class="avatar" aria-hidden="true">TG</span>
+          <div>
+            <strong id="adminEmail">Admin</strong>
+            <small>Session secured in this tab</small>
+          </div>
+        </div>
+      </aside>
+
+      <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+      <main class="admin-main">
+        <header class="topbar">
+          <button class="menu-btn" type="button" id="menuToggle" aria-label="Open admin menu">
+            <span></span><span></span><span></span>
+          </button>
+          <div>
+            <p class="eyebrow">Overview</p>
+            <h1>Booking Dashboard</h1>
+          </div>
+          <a class="secondary-btn" href="bookings.html">View all bookings</a>
+        </header>
+
+        <section class="stats-grid" id="dashboardStats" aria-label="Booking statistics">
+          <article class="stat-card skeleton-card"></article>
+          <article class="stat-card skeleton-card"></article>
+          <article class="stat-card skeleton-card"></article>
+          <article class="stat-card skeleton-card"></article>
+        </section>
+
+        <section class="charts-grid">
+          <article class="content-card chart-card">
+            <div class="card-heading">
+              <div>
+                <p class="eyebrow">Trend</p>
+                <h2>Bookings Per Week</h2>
+              </div>
+            </div>
+            <canvas id="weeklyBookingsChart" height="130"></canvas>
+          </article>
+          <article class="content-card chart-card">
+            <div class="card-heading">
+              <div>
+                <p class="eyebrow">Pipeline</p>
+                <h2>Status Breakdown</h2>
+              </div>
+            </div>
+            <canvas id="statusBreakdownChart" height="130"></canvas>
+          </article>
+        </section>
+
+        <section class="content-card">
+          <div class="card-heading">
+            <div>
+              <p class="eyebrow">Latest Leads</p>
+              <h2>Recent Bookings</h2>
+            </div>
+            <a class="text-link" href="bookings.html">View all -></a>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Trip</th>
+                  <th>Payment</th>
+                  <th>Status</th>
+                  <th>Submitted</th>
+                </tr>
+              </thead>
+              <tbody id="recentBookingsBody">
+                <tr class="skeleton-row"><td colspan="5"></td></tr>
+                <tr class="skeleton-row"><td colspan="5"></td></tr>
+                <tr class="skeleton-row"><td colspan="5"></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script defer src="../site-config.js"></script>
+    <script defer src="admin.js"></script>
+  </body>
+</html>

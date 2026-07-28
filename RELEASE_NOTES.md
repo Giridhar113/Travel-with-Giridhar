@@ -2,7 +2,7 @@
 
 ## Travel Website v1.5
 
-**Release goal:** Make the travel website feel more product-ready with better planning continuity, shareable trip ideas, stronger filters, and client-side lead capture.
+**Release goal:** Make the travel website feel more product-ready with better planning continuity, shareable trip ideas, stronger filters, and a clearer booking lead flow.
 
 ### New Features
 
@@ -48,7 +48,7 @@ v1.5 turns the project into a stronger interactive travel product demo with save
 - Improved package page messaging from EMI-first to quote-first travel planning.
 - Improved booking form payload with phone, budget, travel type, and preferred contact method.
 - Fixed AI Planner email lead capture to use the configured feedback template.
-- Added Formspree-ready booking and contact form endpoints.
+- Prepared the booking/contact form structure for real lead capture.
 - Added a secure Claude planner API route for Vercel.
 - Removed visible footer version labels for cleaner brand presentation.
 - Updated WhatsApp and GitHub links.

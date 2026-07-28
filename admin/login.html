@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login - Travel with Giridhar</title>
+    <meta
+      name="description"
+      content="Secure admin login for managing Travel with Giridhar booking inquiries."
+    />
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body class="admin-auth-page" data-admin-page="login">
+    <main class="auth-shell">
+      <section class="auth-card" aria-labelledby="loginTitle">
+        <a class="brand-lockup" href="../index.html">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path d="M3 11.2 21 4l-5.8 17-4.1-7.1L3 11.2Z" />
+            </svg>
+          </span>
+          <span>
+            <strong>Travel with Giridhar</strong>
+            <small>Admin Console</small>
+          </span>
+        </a>
+        <p class="eyebrow">Booking Desk</p>
+        <h1 id="loginTitle">Welcome back</h1>
+        <p class="muted">
+          Sign in to manage booking requests, payment status, and traveler follow-ups.
+        </p>
+
+        <form class="auth-form" id="adminLoginForm" novalidate>
+          <label>
+            Email
+            <input type="email" name="email" autocomplete="email" required />
+            <span class="field-error" data-error-for="email" aria-live="polite"></span>
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" autocomplete="current-password" required />
+            <span class="field-error" data-error-for="password" aria-live="polite"></span>
+          </label>
+          <p class="form-error" id="loginError" aria-live="polite"></p>
+          <button type="submit" class="primary-btn">
+            <span class="btn-text">Login</span>
+            <span class="button-loader" aria-hidden="true"></span>
+          </button>
+        </form>
+      </section>
+    </main>
+
+    <script defer src="../site-config.js"></script>
+    <script defer src="admin.js"></script>
+  </body>
+</html>

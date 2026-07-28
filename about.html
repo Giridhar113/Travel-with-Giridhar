@@ -34,7 +34,7 @@
       <nav class="navbar">
         <div class="logo">
           <a href="index.html" class="logo-link">
-            <i class="fas fa-plane-departure"></i>
+            <i class="fas fa-plane-departure" aria-hidden="true"></i>
             <div>
               <span class="logo-text">Travel with</span>
               <span class="logo-subtext">Giridhar</span>
@@ -117,26 +117,36 @@
 
       <section class="section">
         <h2 class="section-title">Why Choose Us</h2>
-        <div class="grid">
-          <div class="panel">
-            <h3>Expert Planning</h3>
+        <p class="section-text">
+          Our planning flow is built around the questions travelers usually ask
+          before booking: where to go, what it may cost, what package fits, and
+          how quickly they can talk to someone.
+        </p>
+        <div class="grid about-feature-grid">
+          <div class="panel about-feature-card">
+            <i class="fas fa-route" aria-hidden="true"></i>
+            <h3>Smart Trip Matching</h3>
             <p>
-              Every itinerary is curated with destination knowledge, season
-              awareness, local experiences, and realistic day-wise planning.
+              The trip matcher helps travelers shortlist destinations by budget,
+              travel days, traveler count, and travel style before sending an
+              inquiry.
             </p>
           </div>
-          <div class="panel">
-            <h3>Comfort & Safety</h3>
+          <div class="panel about-feature-card">
+            <i class="fas fa-wallet" aria-hidden="true"></i>
+            <h3>Budget Clarity</h3>
             <p>
-              We prioritize reliable stays, smooth transport, safe activities,
-              and support before and during the trip.
+              Budget tools, package prices, comparison views, and payment notes
+              make it easier to understand the expected cost before choosing a
+              plan.
             </p>
           </div>
-          <div class="panel">
-            <h3>Affordable Trips</h3>
+          <div class="panel about-feature-card">
+            <i class="fab fa-whatsapp" aria-hidden="true"></i>
+            <h3>Quick Support</h3>
             <p>
-              Our packages are designed to give strong value with clear pricing,
-              budget guidance, EMI options, and group discount support.
+              Booking forms and WhatsApp actions give travelers a simple path to
+              ask questions, share trip details, and request a quote.
             </p>
           </div>
         </div>
@@ -179,10 +189,11 @@
             </p>
           </div>
           <div class="panel">
-            <h3>Package Guidance</h3>
+            <h3>Package Comparison</h3>
             <p>
-              We compare ready-made options, EMI-friendly packages, group
-              discounts, and custom itinerary needs.
+              We make package choices easier with filters, price ranges,
+              comparison cards, inclusions, group discount labels, and direct
+              booking links.
             </p>
           </div>
           <div class="panel">
@@ -195,26 +206,69 @@
         </div>
       </section>
 
-      <section class="section">
-        <div class="panel developer-profile brand-story" id="founder-story">
-          <h2 class="section-title">Founder & Brand Story</h2>
-          <h3>Travel with Giridhar</h3>
-          <p class="role">Practical planning for real holidays</p>
+      <section class="section split about-values-section">
+        <div class="panel">
+          <h2>Built Around Real Travel Decisions</h2>
           <p>
-            Travel with Giridhar is built around one promise: make travel
-            decisions easier for people who want clear pricing, realistic
-            itineraries, and quick human support before they book.
+            Travel with Giridhar focuses on the practical side of trip planning:
+            comparing destinations, understanding pricing, checking the best
+            time to visit, saving favorite trips, and sending a clear booking
+            request when the traveler is ready.
           </p>
           <p>
-            From beach breaks and mountain escapes to family holidays and
-            international city trips, every recommendation is shaped around the
-            traveler's budget, comfort level, season, and preferred experience.
+            The experience is intentionally simple. Travelers can explore
+            destinations, compare packages, estimate budgets, read travel tips,
+            view gallery photos, and then contact the brand from one consistent
+            place.
+          </p>
+        </div>
+        <div class="panel">
+          <h2>What Makes It Useful</h2>
+          <ul class="feature-list">
+            <li>Advanced destination search and category filters</li>
+            <li>Wishlist storage saved in this browser</li>
+            <li>Budget estimator and package comparison tools</li>
+            <li>Contact, booking, and WhatsApp inquiry options</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section about-project-section" aria-labelledby="aboutProjectTitle">
+        <div class="about-project-card">
+          <div>
+            <p class="hero-kicker">About This Project</p>
+            <h2 id="aboutProjectTitle">Built By Giridhar Reddy</h2>
+            <p class="role">Frontend Developer - HTML, CSS, JavaScript</p>
+          </div>
+          <p>
+            This section is separated from the travel-brand story so visitors can
+            read the service narrative above, while recruiters and clients can
+            clearly understand that the website was built as a polished frontend
+            project by Giridhar Reddy.
           </p>
           <ul class="skill-list">
-            <li>Clear trip guidance</li>
-            <li>Budget-first planning</li>
-            <li>Responsive booking support</li>
+            <li>Responsive UI</li>
+            <li>Vanilla JavaScript</li>
+            <li>LocalStorage features</li>
+            <li>Form interactions</li>
+            <li>Search and filters</li>
           </ul>
+          <div class="developer-actions">
+            <a
+              href="https://github.com/Giridhar113/Travel-with-Giridhar"
+              class="btn"
+              target="_blank"
+              rel="noreferrer"
+              >View GitHub Repo</a
+            >
+            <a
+              href="https://giridhar-portfolio-ten.vercel.app/"
+              class="btn btn-outline"
+              target="_blank"
+              rel="noreferrer"
+              >View Portfolio</a
+            >
+          </div>
         </div>
       </section>
     </main>
@@ -226,7 +280,7 @@
       rel="noreferrer"
       aria-label="Book via WhatsApp"
     >
-      <i class="fab fa-whatsapp"></i>
+      <i class="fab fa-whatsapp" aria-hidden="true"></i>
       <span>WhatsApp</span>
     </a>
 
@@ -259,6 +313,7 @@
       </div>
     </footer>
     <script defer src="site-config.js"></script>
+    <script defer src="data.js"></script>
     <script defer src="script.js"></script>
     <script defer src="v13.js"></script>
 </body>
