@@ -1169,19 +1169,19 @@
       <div class="v13-featured-grid">
         ${trips.map(function (trip, index) {
           return `
-            <article class="v13-featured-card${index === 0 ? " has-route-planner" : ""}" data-featured-tags="${trip.tags.join(" ").toLowerCase()}">
+            <article class="v13-featured-card" data-featured-tags="${trip.tags.join(" ").toLowerCase()}">
               <img src="${trip.image}" alt="${escapeHtml(trip.title)} destination view" loading="lazy" width="640" height="420" ${responsiveImageAttrs(trip.image, "(max-width: 768px) 92vw, 31vw")} />
               <div class="v13-featured-content">
                 <div class="card-meta"><h3>${trip.title}</h3><span class="price">${money(trip.price)}</span></div>
                 <div class="tag-row">${trip.tags.slice(0, 4).map(function (tag) { return `<span class="tag">${tag}</span>`; }).join("")}</div>
                 <p>${trip.duration} - ${trip.bestFor}</p>
                 <a class="btn" href="${bookingUrl(trip)}">Book Now</a>
-                ${index === 0 ? routePlannerMarkup() : ""}
               </div>
             </article>
           `;
         }).join("")}
       </div>
+      ${routePlannerMarkup()}
     `;
     const chips = Array.from(section.querySelectorAll("[data-featured-filter]"));
     const cards = Array.from(section.querySelectorAll(".v13-featured-card"));
@@ -2240,6 +2240,70 @@
     updateRoute();
   }
 
+  function removeFloatingWidgetClutter() {
+    const allowedSelectors = [
+      ".whatsapp-float",
+      ".sticky-booking-bar",
+      ".mobile-cta-bar",
+      ".mobile-bottom-nav",
+      ".compare-sticky-bar",
+      ".toast-container",
+      ".wishlist-drawer",
+      ".v13-modal",
+      ".v13-lightbox",
+      ".two-factor-backdrop",
+      ".drawer",
+      ".drawer-backdrop",
+      ".sidebar-backdrop"
+    ];
+
+    function isAllowed(element) {
+      return allowedSelectors.some(function (selector) {
+        return element.matches(selector) || element.closest(selector);
+      });
+    }
+
+    function clean() {
+      Array.from(document.body.children).forEach(function (element) {
+        if (isAllowed(element)) {
+          return;
+        }
+
+        const style = window.getComputedStyle(element);
+
+        if (style.position !== "fixed") {
+          return;
+        }
+
+        const rect = element.getBoundingClientRect();
+        const isSmallRightWidget =
+          rect.width >= 20 &&
+          rect.width <= 96 &&
+          rect.height >= 20 &&
+          rect.height <= 120 &&
+          rect.right >= window.innerWidth - 120;
+
+        if (isSmallRightWidget) {
+          element.dataset.floatingCleanupHidden = "true";
+          element.setAttribute("aria-hidden", "true");
+        }
+      });
+    }
+
+    clean();
+
+    const observer = new MutationObserver(function () {
+      window.requestAnimationFrame(clean);
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: false
+    });
+
+    window.addEventListener("resize", clean);
+  }
+
   function keepHomeAtHeroOnFreshLoad() {
     const page = location.pathname.split("/").pop() || "index.html";
     const hash = location.hash;
@@ -2298,6 +2362,7 @@
     initNewsletterSignup();
     initRouteMapPlanner();
     initFlexibleResultRows();
+    removeFloatingWidgetClutter();
     document.addEventListener("click", function (event) {
       if (event.target.closest(".v13-trending-card, .v13-featured-card")) {
         setTimeout(decorateSaveButtons, 0);
