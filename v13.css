@@ -2473,14 +2473,14 @@ main > .section {
 }
 
 .hero.hero-slider {
-  height: clamp(540px, 76vh, 720px);
-  min-height: 540px;
+  height: clamp(620px, 82vh, 760px);
+  min-height: 620px;
 }
 
 .hero-slider .hero-slide,
 .hero-slider .hero-slide.is-active {
-  padding-bottom: 86px;
-  padding-top: 72px;
+  padding-bottom: 132px;
+  padding-top: 54px;
 }
 
 .hero-slider .hero-content {
@@ -2491,11 +2491,15 @@ main > .section {
   border-left: 0 !important;
   border-radius: 28px;
   box-shadow: 0 26px 80px rgba(0, 0, 0, 0.34);
-  padding: clamp(26px, 4vw, 46px);
+  padding: clamp(24px, 3.2vw, 40px);
 }
 
 .hero-slider h1 {
-  font-size: clamp(2.8rem, 5.8vw, 4.8rem);
+  font-size: clamp(2.55rem, 4.9vw, 4.1rem);
+}
+
+.hero-slide-dubai h1 {
+  font-size: clamp(2.35rem, 4.6vw, 3.85rem);
 }
 
 .hero-slider .hero-actions .btn,
@@ -2503,6 +2507,51 @@ main > .section {
   min-height: 50px;
   min-width: 178px;
   padding: 0 26px;
+}
+
+.hero-slider .hero-content > p:not(.hero-kicker) {
+  line-height: 1.45;
+  margin-bottom: 14px;
+}
+
+.hero-slider .hero-actions {
+  margin-bottom: 14px;
+}
+
+.hero-slider .hero-badges {
+  gap: 10px;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 8;
+}
+
+.hero-slider .hero-badge {
+  font-size: 0.82rem;
+  min-height: 34px;
+  padding: 7px 12px;
+}
+
+/* Use compact slide dots so category controls never overlap the hero stat pills. */
+.hero-slider .hero-slider-dots {
+  bottom: 30px;
+  gap: 12px;
+  z-index: 9;
+}
+
+.hero-slider .hero-slider-dots button {
+  border-radius: 999px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+  font-size: 0;
+  height: 12px;
+  min-width: 12px;
+  overflow: hidden;
+  padding: 0;
+  text-indent: -999px;
+  width: 12px;
+}
+
+.hero-slider .hero-slider-dots button.is-active {
+  width: 34px;
 }
 
 .home-slider-section .v13-featured-grid {
@@ -2661,12 +2710,28 @@ main > .section {
 
 @media (max-width: 720px) {
   .hero.hero-slider {
-    min-height: 650px;
+    min-height: 720px;
+  }
+
+  .hero-slider .hero-slide,
+  .hero-slider .hero-slide.is-active {
+    padding-bottom: 138px;
+    padding-top: 48px;
   }
 
   .hero-slider .hero-content {
     border-radius: 22px;
     padding: 24px 18px;
+  }
+
+  .hero-slider h1,
+  .hero-slide-dubai h1 {
+    font-size: clamp(2.2rem, 10vw, 3rem);
+  }
+
+  .hero-slider .hero-slider-dots {
+    bottom: 22px;
+    width: min(92vw, 420px);
   }
 
   .home-slider-section .v13-featured-grid {
