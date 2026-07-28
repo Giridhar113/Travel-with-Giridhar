@@ -2204,6 +2204,76 @@ main > .section {
   }
 }
 
+/* Popular destinations panel fix */
+.home-dashboard-side {
+  align-items: start;
+  display: grid !important;
+  gap: 16px;
+  grid-template-columns: 1fr !important;
+  padding: clamp(20px, 3vw, 28px);
+}
+
+.home-dashboard-side .hero-kicker,
+.home-dashboard-side h2,
+.home-dashboard-side .mini-destination-list,
+.home-dashboard-side > .btn {
+  grid-column: auto !important;
+}
+
+.home-dashboard-side h2 {
+  font-size: clamp(1.55rem, 2.4vw, 2rem);
+  line-height: 1.15;
+  margin: 0;
+  max-width: 420px;
+}
+
+.home-dashboard-side .mini-destination-list {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  margin: 4px 0 2px;
+  width: 100%;
+}
+
+.home-dashboard-side .mini-destination {
+  align-items: center;
+  gap: 14px;
+  grid-template-columns: 78px minmax(0, 1fr);
+  min-height: 108px;
+  padding: 12px;
+}
+
+.home-dashboard-side .mini-destination img {
+  height: 72px;
+  width: 78px;
+}
+
+.home-dashboard-side .mini-destination span {
+  display: block;
+  min-width: 0;
+}
+
+.home-dashboard-side .mini-destination strong {
+  font-size: 0.96rem;
+  line-height: 1.25;
+}
+
+.home-dashboard-side .mini-destination {
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.home-dashboard-side > .btn {
+  justify-self: start !important;
+  margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .home-dashboard-side .mini-destination-list {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 /* Figma final overrides loaded after the feature layer */
 .package-tools {
   display: grid !important;
