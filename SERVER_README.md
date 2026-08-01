@@ -191,16 +191,21 @@ Admin tokens are stored in `sessionStorage` on the admin pages, not `localStorag
 Recommended setup:
 
 1. Keep the static website on Vercel.
-2. Deploy `/server` as a Node service on Render or Railway.
-3. Add all backend environment variables in the service dashboard.
-4. Set `CORS_ORIGIN` to your public frontend URL:
+2. Use `api/[...path].js` to run the Express API inside the same Vercel project.
+3. Add all backend environment variables in the Vercel project dashboard.
+4. Use a MongoDB Atlas `mongodb+srv://...` connection string for `MONGODB_URI`. Do not use `localhost` or `127.0.0.1` in production.
+5. Set `CORS_ORIGIN` to your public frontend URL:
 
 ```txt
 https://travel-with-giridhar.vercel.app
 ```
 
-5. Run `npm run seed:admin` once on the deployed backend.
-6. Update `site-config.js` with the backend URL.
-7. Add the Razorpay webhook URL in Razorpay Dashboard.
+6. Redeploy the Vercel project after changing environment variables.
+7. Open `/admin/login.html` and log in with `ADMIN_SEED_EMAIL` / `ADMIN_SEED_PASSWORD`. If no admin exists yet, the backend creates the first admin automatically.
+8. Add the Razorpay webhook URL in Razorpay Dashboard:
+
+```txt
+https://travel-with-giridhar.vercel.app/api/payments/webhook
+```
 
 Do not commit real `.env` files or real Razorpay/MongoDB/JWT secrets.

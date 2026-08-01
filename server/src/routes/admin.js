@@ -39,6 +39,29 @@ function buildAdminBookingQuery(query) {
   return filter;
 }
 
+async function createFirstAdminIfAllowed(email, password) {
+  const seedEmail = String(process.env.ADMIN_SEED_EMAIL || "").trim().toLowerCase();
+  const seedPassword = String(process.env.ADMIN_SEED_PASSWORD || "");
+
+  if (!seedEmail || !seedPassword || email !== seedEmail || password !== seedPassword) {
+    return null;
+  }
+
+  const existingAdminCount = await Admin.countDocuments();
+
+  if (existingAdminCount > 0) {
+    return null;
+  }
+
+  const passwordHash = await bcrypt.hash(password, 12);
+
+  return Admin.create({
+    email,
+    passwordHash,
+    role: "admin",
+  });
+}
+
 router.post("/login", async (req, res, next) => {
   try {
     const email = String(req.body.email || "").trim().toLowerCase();
@@ -51,7 +74,11 @@ router.post("/login", async (req, res, next) => {
       });
     }
 
-    const admin = await Admin.findOne({ email });
+    let admin = await Admin.findOne({ email });
+
+    if (!admin) {
+      admin = await createFirstAdminIfAllowed(email, password);
+    }
 
     if (!admin) {
       return res.status(401).json({
