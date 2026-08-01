@@ -20,59 +20,82 @@
   <body class="admin-auth-page" data-admin-page="login">
     <main class="auth-shell">
       <section class="auth-card" aria-labelledby="loginTitle">
-        <a class="brand-lockup" href="../index.html">
-          <span class="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" role="img">
-              <path d="M3 11.2 21 4l-5.8 17-4.1-7.1L3 11.2Z" />
-            </svg>
-          </span>
-          <span>
-            <strong>Travel with Giridhar</strong>
-            <small>Admin Console</small>
-          </span>
-        </a>
-        <p class="eyebrow">Booking Desk</p>
-        <h1 id="loginTitle">Welcome back</h1>
-        <p class="muted">
-          Sign in to manage booking requests, payment status, and traveler follow-ups.
-        </p>
-
-        <form class="auth-form" id="adminLoginForm" novalidate>
-          <label>
-            Email
-            <input
-              type="email"
-              name="email"
-              autocomplete="username"
-              autocapitalize="none"
-              spellcheck="false"
-              placeholder="Admin email"
-              value="admin@travelwithgiridhar.local"
-              required
-            />
-            <span class="field-error" data-error-for="email" aria-live="polite"></span>
-          </label>
-          <label>
-            Password
-            <input
-              type="password"
-              name="password"
-              autocomplete="current-password"
-              placeholder="Admin password"
-              required
-            />
-            <span class="field-error" data-error-for="password" aria-live="polite"></span>
-          </label>
-          <p class="credential-note">
-            Demo admin email is prefilled. Enter the private password from
-            <code>.env.local</code> once and save it in your browser password manager.
+        <div class="auth-content">
+          <a class="brand-lockup" href="../index.html">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img">
+                <path d="M3 11.2 21 4l-5.8 17-4.1-7.1L3 11.2Z" />
+              </svg>
+            </span>
+            <span>
+              <strong>Travel with Giridhar</strong>
+              <small>Admin Console</small>
+            </span>
+          </a>
+          <p class="eyebrow">Booking Desk</p>
+          <h1 id="loginTitle">Welcome back</h1>
+          <p class="muted">
+            Manage booking requests, payment status, and traveler follow-ups.
           </p>
-          <p class="form-error" id="loginError" aria-live="polite"></p>
-          <button type="submit" class="primary-btn">
-            <span class="btn-text">Login</span>
-            <span class="button-loader" aria-hidden="true"></span>
-          </button>
-        </form>
+
+          <form class="auth-form" id="adminLoginForm" novalidate>
+            <label>
+              Email
+              <input
+                type="email"
+                name="email"
+                autocomplete="username"
+                autocapitalize="none"
+                spellcheck="false"
+                placeholder="Admin email"
+                value="admin@travelwithgiridhar.local"
+                required
+              />
+              <span class="field-error" data-error-for="email" aria-live="polite"></span>
+            </label>
+            <label>
+              Password
+              <input
+                type="password"
+                name="password"
+                autocomplete="current-password"
+                placeholder="Enter password"
+                required
+              />
+              <span class="field-error" data-error-for="password" aria-live="polite"></span>
+            </label>
+            <p class="credential-note">
+              Demo email is prefilled. Use the private password from <code>.env.local</code>.
+            </p>
+            <p class="form-error" id="loginError" aria-live="polite"></p>
+            <button type="submit" class="primary-btn">
+              <span class="btn-text">Login</span>
+              <span class="button-loader" aria-hidden="true"></span>
+            </button>
+          </form>
+        </div>
+
+        <aside class="auth-visual" aria-label="Admin dashboard overview">
+          <div class="auth-visual-card">
+            <span>Today</span>
+            <strong>Booking desk</strong>
+            <p>Track inquiries, payment status, and follow-ups from one place.</p>
+          </div>
+          <div class="auth-mini-grid">
+            <div>
+              <strong>SQL</strong>
+              <span>Database ready</span>
+            </div>
+            <div>
+              <strong>JWT</strong>
+              <span>Secure session</span>
+            </div>
+            <div>
+              <strong>Live</strong>
+              <span>Admin console</span>
+            </div>
+          </div>
+        </aside>
       </section>
     </main>
 

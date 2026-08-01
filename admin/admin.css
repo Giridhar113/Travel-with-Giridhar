@@ -28,6 +28,13 @@ body {
   font-family: "Inter", system-ui, sans-serif;
 }
 
+body.admin-auth-page {
+  background:
+    radial-gradient(circle at 16% 8%, rgba(255, 107, 87, 0.22), transparent 30%),
+    radial-gradient(circle at 84% 18%, rgba(34, 211, 197, 0.22), transparent 32%),
+    linear-gradient(135deg, #08111f 0%, #111827 48%, #f5f7fb 48%, #eef3f9 100%);
+}
+
 button,
 input,
 select {
@@ -49,18 +56,103 @@ select:focus-visible {
 
 .auth-shell {
   display: grid;
-  min-height: 100vh;
+  min-height: 100svh;
   place-items: center;
-  padding: 28px;
+  padding: 24px;
 }
 
 .auth-card {
-  width: min(460px, 100%);
+  display: grid;
+  width: min(880px, 100%);
+  grid-template-columns: minmax(0, 1.02fr) minmax(290px, 0.78fr);
+  overflow: hidden;
   border: 1px solid var(--admin-line);
-  border-radius: 32px;
+  border-radius: 30px;
   background: var(--admin-panel);
   box-shadow: var(--admin-shadow);
-  padding: 36px;
+}
+
+.auth-content {
+  padding: 34px;
+}
+
+.auth-visual {
+  position: relative;
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px;
+  background:
+    linear-gradient(rgba(11, 18, 32, 0.08), rgba(11, 18, 32, 0.72)),
+    url("https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=900&auto=format&fit=crop&q=80")
+      center/cover;
+  color: #ffffff;
+}
+
+.auth-visual::before {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 197, 0.36), transparent 36%),
+    linear-gradient(135deg, rgba(255, 107, 87, 0.34), transparent 42%);
+  content: "";
+}
+
+.auth-visual > * {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-visual-card {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  background: rgba(7, 13, 24, 0.58);
+  padding: 22px;
+  backdrop-filter: blur(14px);
+}
+
+.auth-visual-card span,
+.auth-mini-grid span {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.auth-visual-card strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.auth-visual-card p {
+  margin: 14px 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 650;
+  line-height: 1.6;
+}
+
+.auth-mini-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.auth-mini-grid div {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  background: rgba(7, 13, 24, 0.58);
+  padding: 14px 16px;
+  backdrop-filter: blur(12px);
+}
+
+.auth-mini-grid strong {
+  display: block;
+  color: var(--admin-accent);
+  font-size: 1.15rem;
+  line-height: 1.1;
 }
 
 .brand-lockup {
@@ -103,7 +195,7 @@ select:focus-visible {
   font-size: 0.78rem;
   font-weight: 900;
   letter-spacing: 0.16em;
-  margin: 0 0 8px;
+  margin: 24px 0 8px;
   text-transform: uppercase;
 }
 
@@ -114,7 +206,7 @@ p {
 }
 
 h1 {
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(2.15rem, 4vw, 3rem);
   line-height: 1.05;
   margin-bottom: 10px;
 }
@@ -131,8 +223,12 @@ h2 {
 
 .auth-form {
   display: grid;
-  gap: 18px;
-  margin-top: 28px;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.auth-form .primary-btn {
+  width: 100%;
 }
 
 .auth-form label,
@@ -163,8 +259,13 @@ h2 {
   font-weight: 700;
 }
 
+.field-error:empty,
+.form-error:empty {
+  display: none;
+}
+
 .credential-note {
-  margin: -4px 0 2px;
+  margin: -2px 0 0;
   color: var(--admin-muted);
   font-size: 0.84rem;
   font-weight: 650;
@@ -724,8 +825,81 @@ h2 {
 }
 
 @media (max-width: 680px) {
+  .auth-shell {
+    align-items: start;
+    padding: 14px;
+  }
+
   .auth-card {
-    padding: 24px;
+    display: block;
+    width: min(420px, 100%);
+    border-radius: 24px;
+  }
+
+  .auth-content {
+    padding: 22px;
+  }
+
+  .auth-visual {
+    display: none;
+  }
+
+  .brand-lockup {
+    gap: 10px;
+  }
+
+  .brand-lockup strong {
+    font-size: 0.96rem;
+  }
+
+  .brand-lockup small {
+    font-size: 0.68rem;
+  }
+
+  .brand-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+  }
+
+  .brand-mark svg {
+    width: 23px;
+    height: 23px;
+  }
+
+  .eyebrow {
+    margin-top: 18px;
+    font-size: 0.7rem;
+  }
+
+  h1 {
+    margin-bottom: 8px;
+    font-size: 2.15rem;
+  }
+
+  .muted {
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  .auth-form {
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .auth-form label {
+    gap: 6px;
+    font-size: 0.86rem;
+  }
+
+  .auth-form input {
+    min-height: 48px;
+    border-radius: 14px;
+  }
+
+  .credential-note {
+    font-size: 0.76rem;
+    line-height: 1.42;
   }
 
   .topbar,
