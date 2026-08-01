@@ -10,7 +10,7 @@ const { ensureDatabase } = require("../server/src/config/db");
 let databasePromise = null;
 
 function isSetupError(error) {
-  return /DATABASE_URL|POSTGRES|SQL|Razorpay keys|RAZORPAY|JWT_SECRET/i.test(
+  return /DATABASE_URL|POSTGRES|SQL|JWT_SECRET/i.test(
     error && error.message ? error.message : ""
   );
 }
@@ -44,7 +44,7 @@ module.exports = async function handler(req, res) {
       return createSetupResponse(
         res,
         process.env.NODE_ENV === "production"
-          ? "Booking backend needs DATABASE_URL, JWT, and Razorpay environment variables in Vercel."
+          ? "Booking backend needs DATABASE_URL and JWT environment variables in Vercel."
           : error.message || "Travel API setup is incomplete."
       );
     }

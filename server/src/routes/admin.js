@@ -16,6 +16,7 @@ const {
 } = require("../models/Booking");
 const requireAdminAuth = require("../middleware/auth");
 const { allowedStatuses, validateStatus } = require("../utils/validators");
+const { sendBookingStatusEmail } = require("../utils/mailer");
 
 const router = express.Router();
 
@@ -88,11 +89,9 @@ function getDemoBookings() {
       travelers: 2,
       message: "Looking for a beach honeymoon plan with airport transfers.",
       status: "new",
-      paymentStatus: "pending",
+      paymentStatus: "whatsapp",
       amount: 40000,
       amountSource: "demo",
-      razorpayOrderId: "demo_order_bali",
-      razorpayPaymentId: "",
       createdAt: dateOffset(-1),
       updatedAt: dateOffset(-1),
     },
@@ -108,11 +107,9 @@ function getDemoBookings() {
       travelers: 4,
       message: "Friends trip. Need budget hotel and local sightseeing.",
       status: "contacted",
-      paymentStatus: "paid",
+      paymentStatus: "whatsapp",
       amount: 18000,
       amountSource: "demo",
-      razorpayOrderId: "demo_order_goa",
-      razorpayPaymentId: "demo_paid_goa",
       createdAt: dateOffset(-3),
       updatedAt: dateOffset(-2),
     },
@@ -128,11 +125,9 @@ function getDemoBookings() {
       travelers: 3,
       message: "Family mountain holiday with safe transport and guided activities.",
       status: "confirmed",
-      paymentStatus: "paid",
+      paymentStatus: "whatsapp",
       amount: 24000,
       amountSource: "demo",
-      razorpayOrderId: "demo_order_manali",
-      razorpayPaymentId: "demo_paid_manali",
       createdAt: dateOffset(-8),
       updatedAt: dateOffset(-5),
     },
@@ -148,11 +143,9 @@ function getDemoBookings() {
       travelers: 5,
       message: "Luxury family package with desert safari and city tour.",
       status: "closed",
-      paymentStatus: "failed",
+      paymentStatus: "whatsapp",
       amount: 58000,
       amountSource: "demo",
-      razorpayOrderId: "demo_order_dubai",
-      razorpayPaymentId: "",
       createdAt: dateOffset(-15),
       updatedAt: dateOffset(-12),
     },
@@ -184,12 +177,12 @@ function buildDemoStats(bookings) {
     thisWeek: bookings.filter((booking) => new Date(booking.createdAt) >= weekAgo).length,
     paidThisWeek: bookings.filter(
       (booking) =>
-        booking.paymentStatus === "paid" && new Date(booking.createdAt) >= weekAgo
+        booking.paymentStatus === "whatsapp" && new Date(booking.createdAt) >= weekAgo
     ).length,
     revenueThisMonth: bookings
       .filter(
         (booking) =>
-          booking.paymentStatus === "paid" && new Date(booking.createdAt) >= monthStart
+          booking.paymentStatus === "whatsapp" && new Date(booking.createdAt) >= monthStart
       )
       .reduce((sum, booking) => sum + Number(booking.amount || 0), 0),
   };
@@ -204,7 +197,7 @@ function buildAdminBookingQuery(query) {
     filter.status = status;
   }
 
-  if (["pending", "paid", "failed"].includes(paymentStatus)) {
+  if (["whatsapp", "pending", "paid", "failed"].includes(paymentStatus)) {
     filter.paymentStatus = paymentStatus;
   }
 
@@ -308,7 +301,7 @@ router.get("/bookings", requireAdminAuth, async (req, res, next) => {
         bookings,
         stats: buildDemoStats(getDemoBookings()),
         statuses: allowedStatuses,
-        paymentStatuses: ["pending", "paid", "failed"],
+        paymentStatuses: ["whatsapp"],
       });
     }
 
@@ -337,7 +330,7 @@ router.get("/bookings", requireAdminAuth, async (req, res, next) => {
       bookings,
       stats,
       statuses: allowedStatuses,
-      paymentStatuses: ["pending", "paid", "failed"],
+        paymentStatuses: ["whatsapp"],
     });
   } catch (error) {
     return next(error);
@@ -380,9 +373,31 @@ router.patch("/bookings/:id", requireAdminAuth, async (req, res, next) => {
       });
     }
 
+    let emailNotification = {
+      sent: false,
+      configured: false,
+      reason: "Status email was not attempted.",
+    };
+
+    try {
+      emailNotification = await sendBookingStatusEmail(booking, status);
+    } catch (emailError) {
+      console.error("Booking status email failed:", {
+        bookingId: booking._id,
+        status,
+        message: emailError && emailError.message,
+      });
+      emailNotification = {
+        sent: false,
+        configured: true,
+        reason: "Status changed, but email could not be sent.",
+      };
+    }
+
     return res.json({
       success: true,
       booking,
+      emailNotification,
     });
   } catch (error) {
     return next(error);

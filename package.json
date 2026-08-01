@@ -8,6 +8,7 @@
     "seed:admin": "node server/scripts/seedAdmin.js"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -15,7 +16,6 @@
     "express-rate-limit": "^7.5.0",
     "helmet": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
-    "@neondatabase/serverless": "^1.0.2",
-    "razorpay": "^2.9.6"
+    "nodemailer": "^6.9.16"
   }
 }

@@ -1,10 +1,8 @@
 const express = require("express");
 const rateLimit = require("express-rate-limit");
-const { createBooking, updateBooking } = require("../models/Booking");
+const { createBooking } = require("../models/Booking");
 const { validateBookingInput } = require("../utils/validators");
 const { resolveBookingAmount } = require("../utils/packagePricing");
-const { createRazorpayOrder, isRazorpayAuthError } = require("../utils/razorpay");
-const { paymentResponse } = require("./payments");
 
 const router = express.Router();
 
@@ -18,6 +16,27 @@ const bookingLimiter = rateLimit({
     error: "Too many booking requests. Please wait a few minutes and try again.",
   },
 });
+
+function buildWhatsAppBookingMessage(booking) {
+  return [
+    "Hi Travel with Giridhar, I submitted a booking request.",
+    "",
+    `Booking ID: ${booking._id}`,
+    `Name: ${booking.name}`,
+    `Destination: ${booking.destination}`,
+    `Package: ${booking.package}`,
+    `Travel date: ${booking.travelDate}`,
+    `Travelers: ${booking.travelers}`,
+    `Preferred contact: ${booking.preferredContact || "WhatsApp"}`,
+    "",
+    "Please confirm availability and next steps.",
+  ].join("\n");
+}
+
+function buildWhatsAppUrl(message) {
+  const number = process.env.WHATSAPP_NUMBER || "918179721034";
+  return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+}
 
 router.post("/", bookingLimiter, async (req, res, next) => {
   try {
@@ -47,44 +66,19 @@ router.post("/", bookingLimiter, async (req, res, next) => {
       ...value,
       amount: pricing.amount,
       amountSource: pricing.source,
-      paymentStatus: "pending",
+      paymentStatus: "whatsapp",
     });
 
-    let payment;
-
-    try {
-      payment = await createRazorpayOrder(booking);
-      booking = await updateBooking(booking._id, {
-        razorpayOrderId: payment.orderId,
-        paymentStatus: "pending",
-      });
-    } catch (paymentError) {
-      const paymentSetupRequired = isRazorpayAuthError(paymentError);
-
-      console.error("Razorpay order creation failed:", {
-        statusCode: paymentError && paymentError.statusCode,
-        code: paymentError && paymentError.error && paymentError.error.code,
-        description: paymentError && paymentError.error && paymentError.error.description,
-      });
-
-      booking = await updateBooking(booking._id, {
-        paymentStatus: paymentSetupRequired ? "pending" : "failed",
-      });
-
-      return res.status(paymentSetupRequired ? 503 : 502).json({
-        success: false,
-        error: paymentSetupRequired
-          ? "Booking was saved, but the payment gateway needs a valid Razorpay key pair. Please WhatsApp us to complete payment."
-          : "Booking was saved, but payment could not start. Please retry payment.",
-        bookingId: booking && booking._id,
-        paymentRetryAvailable: !paymentSetupRequired,
-        paymentSetupRequired,
-      });
-    }
+    const whatsappMessage = buildWhatsAppBookingMessage(booking);
 
     return res.status(201).json({
+      success: true,
       message: "Booking request received.",
-      ...paymentResponse(booking, payment),
+      bookingId: booking._id,
+      booking,
+      whatsappRequired: true,
+      whatsappUrl: buildWhatsAppUrl(whatsappMessage),
+      whatsappMessage,
     });
   } catch (error) {
     return next(error);

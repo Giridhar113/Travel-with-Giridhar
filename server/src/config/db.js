@@ -62,8 +62,6 @@ async function ensureDatabase() {
             payment_status TEXT NOT NULL DEFAULT 'pending',
             amount INTEGER NOT NULL DEFAULT 0,
             amount_source TEXT NOT NULL DEFAULT '',
-            razorpay_order_id TEXT NOT NULL DEFAULT '',
-            razorpay_payment_id TEXT NOT NULL DEFAULT '',
             status TEXT NOT NULL DEFAULT 'new',
             created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
             updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -73,7 +71,6 @@ async function ensureDatabase() {
         await sql`CREATE INDEX IF NOT EXISTS idx_bookings_created_at ON bookings (created_at DESC)`;
         await sql`CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings (status)`;
         await sql`CREATE INDEX IF NOT EXISTS idx_bookings_payment_status ON bookings (payment_status)`;
-        await sql`CREATE INDEX IF NOT EXISTS idx_bookings_razorpay_order_id ON bookings (razorpay_order_id)`;
       })
       .catch(function (error) {
         schemaPromise = null;

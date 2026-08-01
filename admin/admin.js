@@ -296,14 +296,13 @@
 
   function renderDashboardStats(bookings, stats) {
     const statsGrid = document.getElementById("dashboardStats");
-    const paidThisWeek = stats.paidThisWeek || getThisWeekBookings(bookings, "paid").length;
-    const revenueThisMonth = stats.revenueThisMonth || getMonthRevenue(bookings);
+    const whatsAppLeads = bookings.filter((booking) => booking.paymentStatus === "whatsapp").length;
 
     statsGrid.innerHTML = [
       ["Total Bookings", stats.total || bookings.length, "All stored inquiries"],
       ["New Leads", stats.new || bookings.filter((booking) => booking.status === "new").length, "Need first response"],
       ["This Week", stats.thisWeek || getThisWeekBookings(bookings).length, "Recent booking demand"],
-      ["Paid This Week", paidThisWeek, `${formatRupees(revenueThisMonth)} revenue this month`],
+      ["WhatsApp Leads", whatsAppLeads, "Bookings routed to WhatsApp"],
     ]
       .map(function ([title, value, helper]) {
         return `
@@ -548,9 +547,7 @@
         ${detailTile("Travel Date", formatDate(booking.travelDate))}
         ${detailTile("Travelers", booking.travelers)}
         ${detailTile("Amount", formatRupees(booking.amount))}
-        ${detailTile("Payment", paymentBadge(booking.paymentStatus), true)}
-        ${detailTile("Razorpay Order", booking.razorpayOrderId || "Not created")}
-        ${detailTile("Razorpay Payment", booking.razorpayPaymentId || "Not paid")}
+        ${detailTile("Contact Channel", paymentBadge(booking.paymentStatus), true)}
       </div>
       <label class="search-control">
         Update lead status
@@ -609,10 +606,18 @@
     }
 
     try {
-      await apiFetch(`/api/admin/bookings/${encodeURIComponent(bookingId)}`, {
+      const result = await apiFetch(`/api/admin/bookings/${encodeURIComponent(bookingId)}`, {
         method: "PATCH",
         body: JSON.stringify({ status: nextStatus }),
       });
+
+      if (result.emailNotification && result.emailNotification.sent) {
+        window.alert("Status updated and customer email sent.");
+      } else if (result.emailNotification && result.emailNotification.configured === false) {
+        window.alert("Status updated. Email was skipped because SMTP is not configured.");
+      } else if (result.emailNotification && result.emailNotification.sent === false) {
+        window.alert(result.emailNotification.reason || "Status updated, but email was not sent.");
+      }
     } catch (error) {
       if (booking) {
         booking.status = previousStatus;

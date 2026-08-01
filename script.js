@@ -1977,8 +1977,6 @@ function sendBookingApi(templateParams) {
         );
         error.details = data.errors || {};
         error.bookingId = data.bookingId || "";
-        error.paymentRetryAvailable = Boolean(data.paymentRetryAvailable);
-        error.paymentSetupRequired = Boolean(data.paymentSetupRequired);
         error.setupRequired = Boolean(data.setupRequired);
         error.status = response.status;
         throw error;
@@ -1989,251 +1987,18 @@ function sendBookingApi(templateParams) {
   });
 }
 
-function loadRazorpayCheckout() {
-  if (window.Razorpay) {
-    return Promise.resolve();
-  }
+function handleBookingWhatsAppSubmission(submissionData, templateParams) {
+  const whatsappUrl =
+    submissionData && submissionData.whatsappUrl
+      ? submissionData.whatsappUrl
+      : buildTravelWhatsappUrl(buildBookingWhatsAppMessage(templateParams));
+  const openedWindow = window.open(whatsappUrl, "_blank", "noopener,noreferrer");
 
-  return new Promise(function (resolve, reject) {
-    const existingScript = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
-
-    if (existingScript) {
-      existingScript.addEventListener("load", resolve, { once: true });
-      existingScript.addEventListener("error", reject, { once: true });
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    script.onload = resolve;
-    script.onerror = function () {
-      reject(new Error("Razorpay Checkout could not load. Please check your connection."));
-    };
-    document.body.appendChild(script);
-  });
-}
-
-function verifyRazorpayPayment(bookingId, response) {
-  return fetch(buildTravelApiUrl("/api/payments/verify"), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({
-      bookingId,
-      razorpay_order_id: response.razorpay_order_id,
-      razorpay_payment_id: response.razorpay_payment_id,
-      razorpay_signature: response.razorpay_signature,
-    }),
-  }).then(function (verifyResponse) {
-    return verifyResponse.json().catch(function () {
-      return {};
-    }).then(function (data) {
-      if (!verifyResponse.ok) {
-        throw new Error(data.error || "Payment verification failed.");
-      }
-
-      return data;
-    });
-  });
-}
-
-function requestPaymentRetry(bookingId) {
-  return fetch(buildTravelApiUrl("/api/payments/retry"), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({ bookingId }),
-  }).then(function (response) {
-    return response.json().catch(function () {
-      return {};
-    }).then(function (data) {
-      if (!response.ok) {
-        const error = new Error(data.error || "Payment retry could not start.");
-        error.bookingId = data.bookingId || bookingId;
-        error.paymentSetupRequired = Boolean(data.paymentSetupRequired);
-        throw error;
-      }
-
-      return data;
-    });
-  });
-}
-
-function getPaymentRetryUrl(bookingId) {
-  return `contact.html?bookingId=${encodeURIComponent(bookingId)}#bookingForm`;
-}
-
-function showPaymentRetryNotice(bookingId, message) {
-  showToast(
-    message || "Payment not completed. Your booking is saved, and you can retry payment.",
-    "error",
-    {
-      href: getPaymentRetryUrl(bookingId),
-      label: "Retry payment",
-    }
-  );
-}
-
-function openRazorpayCheckout(submissionData, templateParams) {
-  const payment = submissionData.payment || {};
-  const bookingId = submissionData.bookingId || payment.bookingId;
-
-  if (!bookingId || !payment.orderId || !payment.key) {
-    return Promise.resolve({
-      paymentPending: true,
-      bookingId,
-    });
-  }
-
-  return new Promise(function (resolve) {
-    let settled = false;
-
-    function finish(result) {
-      if (settled) {
-        return;
-      }
-
-      settled = true;
-      resolve(result);
-    }
-
-    const checkout = new window.Razorpay({
-      key: payment.key,
-      amount: payment.amount,
-      currency: payment.currency || "INR",
-      name: "Travel with Giridhar",
-      description: `${payment.package || templateParams.package_name} - ${
-        payment.destination || templateParams.destination
-      }`,
-      order_id: payment.orderId,
-      prefill: {
-        name: templateParams.from_name || payment.customerName || "",
-        email: templateParams.from_email || payment.customerEmail || "",
-        contact: (templateParams.phone || payment.customerPhone || "").replace(/\D/g, ""),
-      },
-      notes: {
-        bookingId,
-        package: payment.package || templateParams.package_name,
-        destination: payment.destination || templateParams.destination,
-      },
-      theme: {
-        color: "#ff6b57",
-      },
-      handler: function (response) {
-        verifyRazorpayPayment(bookingId, response)
-          .then(function () {
-            finish({ paid: true, bookingId });
-          })
-          .catch(function (error) {
-            console.error("Payment verification failed:", error);
-            finish({ paymentPending: true, bookingId, error });
-          });
-      },
-      modal: {
-        ondismiss: function () {
-          finish({ paymentPending: true, bookingId });
-        },
-      },
-    });
-
-    checkout.on("payment.failed", function () {
-      finish({ paymentPending: true, bookingId });
-    });
-
-    checkout.open();
-  });
-}
-
-function handleBookingPayment(submissionData, templateParams) {
-  if (!submissionData || !submissionData.paymentRequired) {
-    return Promise.resolve({ paid: false });
-  }
-
-  return loadRazorpayCheckout()
-    .then(function () {
-      return openRazorpayCheckout(submissionData, templateParams);
-    })
-    .catch(function (error) {
-      console.error("Razorpay Checkout failed:", error);
-      return {
-        paymentPending: true,
-        bookingId: submissionData.bookingId,
-        error,
-      };
-    })
-    .then(function (result) {
-      if (result && result.paymentPending) {
-        showPaymentRetryNotice(result.bookingId);
-      }
-
-      return result;
-    });
-}
-
-function setupPaymentRetryFromUrl() {
-  if (!bookingForm) {
-    return;
-  }
-
-  const params = new URLSearchParams(window.location.search);
-  const bookingId = params.get("bookingId");
-
-  if (!bookingId || document.querySelector(".payment-retry-panel")) {
-    return;
-  }
-
-  const retryPanel = document.createElement("div");
-  retryPanel.className = "panel payment-retry-panel";
-  retryPanel.innerHTML = `
-    <div>
-      <p class="eyebrow">Payment Pending</p>
-      <h2>Complete Your Booking Payment</h2>
-      <p>Your booking is saved. Click Pay Now to reopen Razorpay Checkout and complete payment.</p>
-    </div>
-    <button type="button" class="btn" data-retry-booking-payment>
-      <span class="btn-text">Pay Now</span>
-      <span class="btn-spinner" aria-hidden="true"></span>
-    </button>
-  `;
-
-  bookingForm.insertAdjacentElement("beforebegin", retryPanel);
-
-  const retryButton = retryPanel.querySelector("[data-retry-booking-payment]");
-  retryButton.addEventListener("click", function () {
-    retryButton.disabled = true;
-    retryButton.classList.add("is-loading");
-
-    requestPaymentRetry(bookingId)
-      .then(function (data) {
-        return handleBookingPayment(data, {
-          from_name: data.payment && data.payment.customerName,
-          from_email: data.payment && data.payment.customerEmail,
-          phone: data.payment && data.payment.customerPhone,
-          package_name: data.payment && data.payment.package,
-          destination: data.payment && data.payment.destination,
-        });
-      })
-      .then(function (result) {
-        if (result && result.paid) {
-          showToast("Payment verified! Your booking is confirmed.", "success");
-          retryPanel.remove();
-        }
-      })
-      .catch(function (error) {
-        showToast(error.message || "Payment retry failed. Please WhatsApp us directly.", "error", {
-          href: emailJsWhatsAppUrl,
-          label: "WhatsApp us",
-        });
-      })
-      .finally(function () {
-        retryButton.disabled = false;
-        retryButton.classList.remove("is-loading");
-      });
+  return Promise.resolve({
+    whatsappFallback: true,
+    whatsappUrl,
+    popupBlocked: !openedWindow,
+    bookingId: submissionData && submissionData.bookingId,
   });
 }
 
@@ -2308,10 +2073,6 @@ function shouldFallbackBookingToWhatsApp(error) {
   }
 
   if (error && error.setupRequired) {
-    return true;
-  }
-
-  if (error && error.paymentSetupRequired) {
     return true;
   }
 
@@ -2571,7 +2332,7 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
 
         if (isBookingApiForm(form)) {
           return sendBookingApi(templateParams).then(function (data) {
-            return handleBookingPayment(data, templateParams).then(function (result) {
+            return handleBookingWhatsAppSubmission(data, templateParams).then(function (result) {
               paymentResult = result;
               return data;
             });
@@ -2586,15 +2347,11 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
           : sendAutoReply(templateParams);
       })
       .then(function () {
-        if (paymentResult && paymentResult.paymentPending) {
-          return;
-        }
-
         if (paymentResult && paymentResult.whatsappFallback) {
           showToast(
             paymentResult.popupBlocked
-              ? "Booking details are ready. Open WhatsApp to send the request."
-              : "WhatsApp opened with your booking details. Please press Send to complete the request.",
+              ? "Booking saved in admin. Open WhatsApp to send the final message."
+              : "Booking saved in admin. WhatsApp opened; press Send to continue.",
             paymentResult.popupBlocked ? "info" : "success",
             {
               href: paymentResult.whatsappUrl,
@@ -2626,11 +2383,9 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
         if (isBookingApiForm(form) && shouldFallbackBookingToWhatsApp(error)) {
           sendBookingViaWhatsAppFallback(templateParams).then(function (fallbackResult) {
             showToast(
-              error.paymentSetupRequired
-                ? "Booking saved, but Razorpay setup needs a valid key pair. Please complete payment on WhatsApp."
-                : fallbackResult.popupBlocked
-                  ? "Backend setup is not complete yet. Open WhatsApp to send this booking."
-                  : "Backend setup is not complete yet, so WhatsApp opened with your booking details.",
+              fallbackResult.popupBlocked
+                ? "Backend setup is not complete yet. Open WhatsApp to send this booking."
+                : "Backend setup is not complete yet, so WhatsApp opened with your booking details.",
               fallbackResult.popupBlocked ? "info" : "success",
               {
                 href: fallbackResult.whatsappUrl,
@@ -2638,11 +2393,6 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
               }
             );
           });
-          return;
-        }
-
-        if (error.paymentRetryAvailable && error.bookingId) {
-          showPaymentRetryNotice(error.bookingId);
           return;
         }
 
@@ -2684,11 +2434,10 @@ attachEmailJsSubmit(
     };
   },
   emailJsConfig.bookingTemplateId,
-  "Payment verified! Your booking request was sent successfully.",
+  "Booking request saved successfully.",
   "Booking"
 );
 
-setupPaymentRetryFromUrl();
 
 attachEmailJsSubmit(
   contactForm,

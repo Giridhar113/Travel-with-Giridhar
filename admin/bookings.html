@@ -6,7 +6,7 @@
     <title>Bookings - Travel with Giridhar Admin</title>
     <meta
       name="description"
-      content="Manage Travel with Giridhar booking inquiries, payment status, and trip follow-ups."
+      content="Manage Travel with Giridhar booking inquiries, WhatsApp leads, and trip follow-ups."
     />
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -81,12 +81,10 @@
             <button class="filter-pill" type="button" data-status-filter="confirmed">Confirmed</button>
             <button class="filter-pill" type="button" data-status-filter="closed">Closed</button>
           </div>
-          <div class="filter-block" aria-label="Payment status filters">
-            <span>Payment</span>
+          <div class="filter-block" aria-label="Contact channel filters">
+            <span>Channel</span>
             <button class="filter-pill is-active" type="button" data-payment-filter="">All</button>
-            <button class="filter-pill" type="button" data-payment-filter="pending">Pending</button>
-            <button class="filter-pill" type="button" data-payment-filter="paid">Paid</button>
-            <button class="filter-pill" type="button" data-payment-filter="failed">Failed</button>
+            <button class="filter-pill" type="button" data-payment-filter="whatsapp">WhatsApp</button>
           </div>
         </section>
 
@@ -111,7 +109,7 @@
                   <th><button type="button" data-sort-key="travelDate">Travel Date</button></th>
                   <th>Travelers</th>
                   <th>Status</th>
-                  <th>Payment</th>
+                  <th>Channel</th>
                   <th><button type="button" data-sort-key="createdAt">Submitted</button></th>
                 </tr>
               </thead>

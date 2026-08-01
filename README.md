@@ -2,7 +2,7 @@
 
 **Release:** Travel Website v1.5
 
-A travel startup-style website built with HTML, CSS, and vanilla JavaScript. The experience helps users discover destinations, compare packages, estimate budgets, generate Claude-powered trip plans, save/share trip ideas, send booking inquiries to a real Express/SQL backend, and complete payment through Razorpay.
+A travel startup-style website built with HTML, CSS, and vanilla JavaScript. The experience helps users discover destinations, compare packages, estimate budgets, generate Claude-powered trip plans, save/share trip ideas, and send booking inquiries to a real Express/SQL backend with WhatsApp follow-up.
 
 ## v1.5 Goal
 
@@ -53,10 +53,10 @@ Full release history is available in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 - `blog.html` - Travel tips and planning guides
 - `gallery.html` - Filterable masonry gallery with lightbox
 - `about.html` - Company story, mission, reasons to choose us, and developer profile
-- `contact.html` - 3-step booking form connected to the backend API + Razorpay Checkout, client-side feedback demo, and local testimonial form
+- `contact.html` - 3-step booking form connected to the backend API, WhatsApp handoff, client-side feedback demo, and local testimonial form
 - `admin/login.html` - Admin login for booking management
 - `admin/dashboard.html` - Admin stats, Chart.js booking visuals, and recent bookings
-- `admin/bookings.html` - Full booking table with lead status and payment status management
+- `admin/bookings.html` - Full booking table with lead status and WhatsApp lead management
 - `404.html` - Branded not found page
 
 ## Backend + Admin Dashboard
@@ -64,7 +64,6 @@ Full release history is available in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 Booking requests are stored through the Express/Postgres SQL backend in `server/`.
 
 - Public booking endpoint: `POST /api/bookings`
-- Payment verification endpoint: `POST /api/payments/verify`
 - Admin login: `admin/login.html`
 - Admin dashboard: `admin/dashboard.html`
 - Admin bookings: `admin/bookings.html`
@@ -73,21 +72,24 @@ Booking requests are stored through the Express/Postgres SQL backend in `server/
 Production booking flow now uses the same Vercel project API:
 
 ```txt
-Website form -> /api/bookings -> SQL database -> Razorpay payment -> Admin dashboard
+Website form -> /api/bookings -> SQL database -> WhatsApp handoff -> Admin dashboard
 ```
 
-Add the backend environment variables in Vercel before using live booking/payment:
+Add the backend environment variables in Vercel before using live booking/admin:
 
 - `DATABASE_URL`
 - `JWT_SECRET`
 - `ADMIN_SEED_EMAIL`
 - `ADMIN_SEED_PASSWORD`
 - `CORS_ORIGIN`
-- `RAZORPAY_KEY_ID`
-- `RAZORPAY_KEY_SECRET`
-- `RAZORPAY_WEBHOOK_SECRET`
+- `WHATSAPP_NUMBER`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM`
 
-Until those values are configured, the booking form falls back to WhatsApp instead of dropping the request.
+If SMTP is not configured, bookings still save and open WhatsApp; admin status emails are skipped safely.
 
 ## Claude Planner Setup
 
@@ -110,7 +112,8 @@ Booking submissions require a 6-digit confirmation code before the form is sent.
 - Node.js + Express backend
 - PostgreSQL/Neon SQL
 - JWT admin auth
-- Razorpay payment flow
+- WhatsApp booking handoff
+- SMTP status email notifications
 - Anthropic Claude API via Vercel serverless function
 
 ## Shared Site Config

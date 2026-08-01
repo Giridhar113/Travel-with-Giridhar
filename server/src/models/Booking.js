@@ -37,8 +37,6 @@ function mapBooking(row) {
     paymentStatus: row.payment_status || "pending",
     amount: Number(row.amount || 0),
     amountSource: row.amount_source || "",
-    razorpayOrderId: row.razorpay_order_id || "",
-    razorpayPaymentId: row.razorpay_payment_id || "",
     status: row.status || "new",
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -66,8 +64,6 @@ async function createBooking(value) {
       payment_status,
       amount,
       amount_source,
-      razorpay_order_id,
-      razorpay_payment_id,
       status
     )
     VALUES (
@@ -88,8 +84,6 @@ async function createBooking(value) {
       ${value.paymentStatus || "pending"},
       ${Number(value.amount || 0)},
       ${value.amountSource || ""},
-      ${value.razorpayOrderId || ""},
-      ${value.razorpayPaymentId || ""},
       ${value.status || "new"}
     )
     RETURNING *
@@ -109,17 +103,6 @@ async function findBookingById(id) {
   return mapBooking(rows[0]);
 }
 
-async function findBookingByRazorpayOrderId(orderId) {
-  const rows = await query`
-    SELECT *
-    FROM bookings
-    WHERE razorpay_order_id = ${orderId}
-    LIMIT 1
-  `;
-
-  return mapBooking(rows[0]);
-}
-
 async function updateBooking(id, patch) {
   const current = await findBookingById(id);
 
@@ -131,12 +114,6 @@ async function updateBooking(id, patch) {
     status: patch.status !== undefined ? patch.status : current.status,
     paymentStatus:
       patch.paymentStatus !== undefined ? patch.paymentStatus : current.paymentStatus,
-    razorpayOrderId:
-      patch.razorpayOrderId !== undefined ? patch.razorpayOrderId : current.razorpayOrderId,
-    razorpayPaymentId:
-      patch.razorpayPaymentId !== undefined
-        ? patch.razorpayPaymentId
-        : current.razorpayPaymentId,
   };
 
   const rows = await query`
@@ -144,8 +121,6 @@ async function updateBooking(id, patch) {
     SET
       status = ${next.status},
       payment_status = ${next.paymentStatus},
-      razorpay_order_id = ${next.razorpayOrderId || ""},
-      razorpay_payment_id = ${next.razorpayPaymentId || ""},
       updated_at = NOW()
     WHERE id = ${id}
     RETURNING *
@@ -280,7 +255,6 @@ module.exports = {
   createBooking,
   deleteBooking,
   findBookingById,
-  findBookingByRazorpayOrderId,
   listBookings,
   mapBooking,
   revenueSince,

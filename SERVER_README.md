@@ -1,22 +1,21 @@
 # Travel with Giridhar Backend + Admin
 
-This project keeps the public travel website as static HTML/CSS/JS and adds a separate Express API for booking storage, Razorpay payments, and admin management.
+This project keeps the public travel website as static HTML/CSS/JS and adds an Express API for booking storage, WhatsApp handoff, admin management, and optional customer status emails.
 
 ## Architecture
 
 ```txt
 public static site/
-  contact.html -> fetch POST /api/bookings -> Razorpay Checkout
+  contact.html -> fetch POST /api/bookings -> SQL database -> WhatsApp handoff
 
 server/
   src/
     models/Booking.js
     models/Admin.js
     routes/bookings.js
-    routes/payments.js
     routes/admin.js
     utils/packagePricing.js
-    utils/razorpay.js
+    utils/mailer.js
 
 admin/
   login.html
@@ -34,7 +33,7 @@ The admin dashboard is vanilla HTML/CSS/JS. It uses Chart.js from CDN, so there 
 - PostgreSQL/Neon SQL
 - JWT admin auth
 - bcrypt password hashing
-- Razorpay Orders + payment signature verification
+- Nodemailer SMTP status emails
 - express-rate-limit on public booking submissions
 
 ## Environment Variables
@@ -46,18 +45,19 @@ PORT=5000
 DATABASE_URL=your_postgres_connection_string
 JWT_SECRET=your_long_random_secret
 ADMIN_SEED_EMAIL=your_admin_email
-ADMIN_SEED_PASSWORD=your_admin_password
+ADMIN_SEED_PASSWORD=your_admin_pin
 CORS_ORIGIN=http://localhost:5500,http://127.0.0.1:5500,https://travel-with-giridhar.vercel.app
-RAZORPAY_KEY_ID=rzp_test_your_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_secret
-RAZORPAY_WEBHOOK_SECRET=your_razorpay_webhook_secret
+WHATSAPP_NUMBER=918179721034
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@example.com
+SMTP_PASS=your_email_app_password
+SMTP_FROM="Travel with Giridhar <your-email@example.com>"
 ```
 
-Use Razorpay test-mode keys locally. For live payments, replace them with live keys in the deployed backend environment only. Never expose `RAZORPAY_KEY_SECRET`.
+SMTP is optional. If SMTP is missing, status changes still save in SQL, but customer email notifications are skipped.
 
 ## Run Locally
-
-Install and start the API:
 
 ```bash
 cd server
@@ -81,25 +81,6 @@ http://localhost:5500/admin/bookings.html
 ```
 
 The static pages read the API base URL from `site-config.js`.
-For local file/localhost previews it uses:
-
-```js
-apiBaseUrl: "http://localhost:5000"
-```
-
-On the live Vercel site it now uses the same origin:
-
-```js
-apiBaseUrl: window.location.origin
-```
-
-That means production bookings call:
-
-```txt
-https://travel-with-giridhar.vercel.app/api/bookings
-```
-
-The wrapper for the Express API lives in `api/[...path].js`. Add the required SQL database, JWT, and Razorpay environment variables in Vercel before expecting the full payment flow to work. If they are missing, the frontend falls back to a pre-filled WhatsApp booking message.
 
 ## Booking Flow
 
@@ -113,46 +94,12 @@ The server:
 
 1. Validates required fields.
 2. Looks up the selected package amount from shared `data.js`.
-3. Saves a booking with `paymentStatus: pending`.
-4. Creates a Razorpay Order.
-5. Returns public checkout data: `bookingId`, `orderId`, `amount`, `currency`, and Razorpay public key.
+3. Saves a booking in SQL with contact channel `whatsapp`.
+4. Returns `bookingId`, `booking`, and a prefilled `whatsappUrl`.
 
-The browser opens Razorpay Checkout. After payment success, it calls:
+The browser opens WhatsApp with the booking details. The user presses Send to continue the conversation.
 
-```txt
-POST /api/payments/verify
-```
-
-The backend verifies the Razorpay signature before marking the booking as `paid`.
-
-If checkout is dismissed, the booking stays saved and users can retry with:
-
-```txt
-contact.html?bookingId=BOOKING_ID#bookingForm
-```
-
-That page calls:
-
-```txt
-POST /api/payments/retry
-```
-
-## Payment Webhook
-
-Configure this URL in Razorpay Dashboard after deploying the backend:
-
-```txt
-POST https://YOUR_API_DOMAIN/api/payments/webhook
-```
-
-Enable at least:
-
-- `payment.captured`
-- `payment.failed`
-
-The webhook verifies `x-razorpay-signature` using `RAZORPAY_WEBHOOK_SECRET`.
-
-## Admin API
+## Admin Flow
 
 Login:
 
@@ -163,7 +110,7 @@ POST /api/admin/login
 List bookings:
 
 ```txt
-GET /api/admin/bookings?status=new&paymentStatus=paid&sort=desc
+GET /api/admin/bookings?status=new&paymentStatus=whatsapp&sort=desc
 ```
 
 Update lead status:
@@ -178,6 +125,18 @@ Body:
 { "status": "contacted" }
 ```
 
+When status changes, the backend attempts to send a customer email through SMTP. The response includes:
+
+```json
+{
+  "success": true,
+  "emailNotification": {
+    "sent": true,
+    "configured": true
+  }
+}
+```
+
 Delete spam/test booking:
 
 ```txt
@@ -188,12 +147,10 @@ Admin tokens are stored in `sessionStorage` on the admin pages, not `localStorag
 
 ## Deploy
 
-Recommended setup:
-
 1. Keep the static website on Vercel.
-2. Use `api/[...path].js` to run the Express API inside the same Vercel project.
+2. Use the `api/` wrappers to run the Express API inside the same Vercel project.
 3. Add all backend environment variables in the Vercel project dashboard.
-4. Use a Neon/Postgres SQL connection string for `DATABASE_URL`. Do not use `localhost` or `127.0.0.1` in production.
+4. Use a Neon/Postgres SQL connection string for `DATABASE_URL`.
 5. Set `CORS_ORIGIN` to your public frontend URL:
 
 ```txt
@@ -201,11 +158,15 @@ https://travel-with-giridhar.vercel.app
 ```
 
 6. Redeploy the Vercel project after changing environment variables.
-7. Open `/admin/login.html` and log in with `ADMIN_SEED_EMAIL` / `ADMIN_SEED_PASSWORD`. If no admin exists yet, the backend creates the first admin automatically.
-8. Add the Razorpay webhook URL in Razorpay Dashboard:
+7. Open `/admin/login.html`.
+
+The public demo login uses:
 
 ```txt
-https://travel-with-giridhar.vercel.app/api/payments/webhook
+admin@travelwithgiridhar.local
+PIN: 123456
 ```
 
-Do not commit real `.env` files or real Razorpay/SQL/JWT secrets.
+Demo mode is read-only and shows sample bookings. Use `ADMIN_SEED_EMAIL` and `ADMIN_SEED_PASSWORD` for full access.
+
+Do not commit real `.env` files or real SQL/JWT/SMTP secrets.

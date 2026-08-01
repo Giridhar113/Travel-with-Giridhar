@@ -3,7 +3,6 @@ const cors = require("cors");
 const helmet = require("helmet");
 const bookingsRouter = require("./routes/bookings");
 const adminRouter = require("./routes/admin");
-const payments = require("./routes/payments");
 
 const app = express();
 
@@ -44,8 +43,6 @@ app.use(
   })
 );
 
-app.post("/api/payments/webhook", express.raw({ type: "application/json" }), payments.handleWebhook);
-
 app.use(express.json({ limit: "30kb" }));
 
 app.get("/api/health", (req, res) => {
@@ -58,7 +55,6 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/bookings", bookingsRouter);
 app.use("/api/admin", adminRouter);
-app.use("/api/payments", payments.router);
 
 app.use((req, res) => {
   res.status(404).json({
