@@ -40,14 +40,32 @@
         <form class="auth-form" id="adminLoginForm" novalidate>
           <label>
             Email
-            <input type="email" name="email" autocomplete="email" required />
+            <input
+              type="email"
+              name="email"
+              autocomplete="username"
+              autocapitalize="none"
+              spellcheck="false"
+              placeholder="Admin email"
+              required
+            />
             <span class="field-error" data-error-for="email" aria-live="polite"></span>
           </label>
           <label>
             Password
-            <input type="password" name="password" autocomplete="current-password" required />
+            <input
+              type="password"
+              name="password"
+              autocomplete="current-password"
+              placeholder="Admin password"
+              required
+            />
             <span class="field-error" data-error-for="password" aria-live="polite"></span>
           </label>
+          <p class="credential-note">
+            Use the admin credentials from your private <code>.env.local</code> file.
+            Save them in your browser password manager for auto-fill.
+          </p>
           <p class="form-error" id="loginError" aria-live="polite"></p>
           <button type="submit" class="primary-btn">
             <span class="btn-text">Login</span>
