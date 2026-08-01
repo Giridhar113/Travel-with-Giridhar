@@ -7,6 +7,8 @@ const payments = require("./routes/payments");
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 function parseAllowedOrigins() {
   return String(
     process.env.CORS_ORIGIN ||
