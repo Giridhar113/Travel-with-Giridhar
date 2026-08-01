@@ -446,10 +446,15 @@ h2 {
   align-items: center;
   gap: 12px;
   margin-top: auto;
+  min-width: 0;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 22px;
   background: var(--admin-sidebar-soft);
   padding: 14px;
+}
+
+.sidebar-user-meta {
+  min-width: 0;
 }
 
 .sidebar-user small,
@@ -457,12 +462,21 @@ h2 {
   display: block;
 }
 
+.sidebar-user strong {
+  max-width: 178px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .sidebar-user small {
   color: #94a3b8;
   font-size: 0.78rem;
+  line-height: 1.25;
 }
 
 .avatar {
+  flex: 0 0 auto;
   display: grid;
   width: 42px;
   height: 42px;

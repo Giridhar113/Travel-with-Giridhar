@@ -225,7 +225,9 @@
     const backdrop = document.getElementById("sidebarBackdrop");
 
     if (adminEmail && admin.email) {
-      adminEmail.textContent = admin.email;
+      const displayEmail = admin.role === "demo" ? "Demo Admin" : admin.email;
+      adminEmail.textContent = displayEmail;
+      adminEmail.title = admin.email;
     }
 
     document.querySelectorAll("[data-logout]").forEach(function (button) {
