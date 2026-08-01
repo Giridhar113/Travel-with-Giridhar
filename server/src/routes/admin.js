@@ -33,6 +33,22 @@ function signAdminToken(admin) {
   );
 }
 
+function resolveLoginEmail(email) {
+  const normalizedEmail = String(email || "").trim().toLowerCase();
+  const seedEmail = String(process.env.ADMIN_SEED_EMAIL || "").trim().toLowerCase();
+  const demoEmail = String(
+    process.env.ADMIN_DEMO_EMAIL || "admin@travelwithgiridhar.local"
+  )
+    .trim()
+    .toLowerCase();
+
+  if (seedEmail && normalizedEmail === demoEmail) {
+    return seedEmail;
+  }
+
+  return normalizedEmail;
+}
+
 function buildAdminBookingQuery(query) {
   const filter = {};
   const status = validateStatus(query.status);
@@ -74,10 +90,11 @@ async function createFirstAdminIfAllowed(email, password) {
 
 router.post("/login", async (req, res, next) => {
   try {
-    const email = String(req.body.email || "").trim().toLowerCase();
+    const submittedEmail = String(req.body.email || "").trim().toLowerCase();
+    const email = resolveLoginEmail(submittedEmail);
     const password = String(req.body.password || "");
 
-    if (!email || !password) {
+    if (!submittedEmail || !password) {
       return res.status(400).json({
         success: false,
         error: "Email and password are required.",
