@@ -3,7 +3,7 @@ const rateLimit = require("express-rate-limit");
 const { createBooking, updateBooking } = require("../models/Booking");
 const { validateBookingInput } = require("../utils/validators");
 const { resolveBookingAmount } = require("../utils/packagePricing");
-const { createRazorpayOrder } = require("../utils/razorpay");
+const { createRazorpayOrder, isRazorpayAuthError } = require("../utils/razorpay");
 const { paymentResponse } = require("./payments");
 
 const router = express.Router();
@@ -59,15 +59,26 @@ router.post("/", bookingLimiter, async (req, res, next) => {
         paymentStatus: "pending",
       });
     } catch (paymentError) {
-      booking = await updateBooking(booking._id, {
-        paymentStatus: "failed",
+      const paymentSetupRequired = isRazorpayAuthError(paymentError);
+
+      console.error("Razorpay order creation failed:", {
+        statusCode: paymentError && paymentError.statusCode,
+        code: paymentError && paymentError.error && paymentError.error.code,
+        description: paymentError && paymentError.error && paymentError.error.description,
       });
 
-      return res.status(502).json({
+      booking = await updateBooking(booking._id, {
+        paymentStatus: paymentSetupRequired ? "pending" : "failed",
+      });
+
+      return res.status(paymentSetupRequired ? 503 : 502).json({
         success: false,
-        error: "Booking was saved, but payment could not start. Please retry payment.",
+        error: paymentSetupRequired
+          ? "Booking was saved, but the payment gateway needs a valid Razorpay key pair. Please WhatsApp us to complete payment."
+          : "Booking was saved, but payment could not start. Please retry payment.",
         bookingId: booking && booking._id,
-        paymentRetryAvailable: true,
+        paymentRetryAvailable: !paymentSetupRequired,
+        paymentSetupRequired,
       });
     }
 

@@ -6,6 +6,7 @@ const {
 } = require("../models/Booking");
 const {
   createRazorpayOrder,
+  isRazorpayAuthError,
   verifyPaymentSignature,
   verifyWebhookSignature,
 } = require("../utils/razorpay");
@@ -56,7 +57,30 @@ router.post("/retry", async (req, res, next) => {
       });
     }
 
-    const payment = await createRazorpayOrder(booking);
+    let payment;
+
+    try {
+      payment = await createRazorpayOrder(booking);
+    } catch (paymentError) {
+      if (isRazorpayAuthError(paymentError)) {
+        console.error("Razorpay retry failed:", {
+          statusCode: paymentError && paymentError.statusCode,
+          code: paymentError && paymentError.error && paymentError.error.code,
+          description: paymentError && paymentError.error && paymentError.error.description,
+        });
+
+        return res.status(503).json({
+          success: false,
+          error:
+            "Payment gateway needs a valid Razorpay key pair. Please WhatsApp us to complete payment.",
+          bookingId: booking._id,
+          paymentSetupRequired: true,
+        });
+      }
+
+      throw paymentError;
+    }
+
     const updatedBooking = await updateBooking(booking._id, {
       razorpayOrderId: payment.orderId,
       paymentStatus: "pending",

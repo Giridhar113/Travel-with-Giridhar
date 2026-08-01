@@ -1978,6 +1978,7 @@ function sendBookingApi(templateParams) {
         error.details = data.errors || {};
         error.bookingId = data.bookingId || "";
         error.paymentRetryAvailable = Boolean(data.paymentRetryAvailable);
+        error.paymentSetupRequired = Boolean(data.paymentSetupRequired);
         error.setupRequired = Boolean(data.setupRequired);
         error.status = response.status;
         throw error;
@@ -2052,7 +2053,10 @@ function requestPaymentRetry(bookingId) {
       return {};
     }).then(function (data) {
       if (!response.ok) {
-        throw new Error(data.error || "Payment retry could not start.");
+        const error = new Error(data.error || "Payment retry could not start.");
+        error.bookingId = data.bookingId || bookingId;
+        error.paymentSetupRequired = Boolean(data.paymentSetupRequired);
+        throw error;
       }
 
       return data;
@@ -2304,6 +2308,10 @@ function shouldFallbackBookingToWhatsApp(error) {
   }
 
   if (error && error.setupRequired) {
+    return true;
+  }
+
+  if (error && error.paymentSetupRequired) {
     return true;
   }
 
@@ -2618,9 +2626,11 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
         if (isBookingApiForm(form) && shouldFallbackBookingToWhatsApp(error)) {
           sendBookingViaWhatsAppFallback(templateParams).then(function (fallbackResult) {
             showToast(
-              fallbackResult.popupBlocked
-                ? "Backend setup is not complete yet. Open WhatsApp to send this booking."
-                : "Backend setup is not complete yet, so WhatsApp opened with your booking details.",
+              error.paymentSetupRequired
+                ? "Booking saved, but Razorpay setup needs a valid key pair. Please complete payment on WhatsApp."
+                : fallbackResult.popupBlocked
+                  ? "Backend setup is not complete yet. Open WhatsApp to send this booking."
+                  : "Backend setup is not complete yet, so WhatsApp opened with your booking details.",
               fallbackResult.popupBlocked ? "info" : "success",
               {
                 href: fallbackResult.whatsappUrl,

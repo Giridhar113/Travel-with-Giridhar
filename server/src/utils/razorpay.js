@@ -86,9 +86,19 @@ async function createRazorpayOrder(booking) {
   };
 }
 
+function isRazorpayAuthError(error) {
+  const description =
+    error && error.error && error.error.description
+      ? String(error.error.description)
+      : String(error && error.message ? error.message : "");
+
+  return Number(error && error.statusCode) === 401 || /authentication failed/i.test(description);
+}
+
 module.exports = {
   createRazorpayOrder,
   getRazorpayKeyId,
+  isRazorpayAuthError,
   verifyPaymentSignature,
   verifyWebhookSignature,
 };
