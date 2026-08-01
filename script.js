@@ -1978,6 +1978,8 @@ function sendBookingApi(templateParams) {
         error.details = data.errors || {};
         error.bookingId = data.bookingId || "";
         error.paymentRetryAvailable = Boolean(data.paymentRetryAvailable);
+        error.setupRequired = Boolean(data.setupRequired);
+        error.status = response.status;
         throw error;
       }
 
@@ -2296,6 +2298,22 @@ function getFormSendErrorMessage(error) {
   return "Something went wrong. Please WhatsApp us directly.";
 }
 
+function shouldFallbackBookingToWhatsApp(error) {
+  if (error && error.code === "TRAVEL_API_NOT_CONFIGURED") {
+    return true;
+  }
+
+  if (error && error.setupRequired) {
+    return true;
+  }
+
+  if (error && error.message && /failed to fetch|networkerror|load failed/i.test(error.message)) {
+    return true;
+  }
+
+  return false;
+}
+
 function sendAutoReply(templateParams) {
   if (!isEmailJsValueConfigured(emailJsConfig.autoReplyTemplateId)) {
     return Promise.resolve();
@@ -2596,6 +2614,23 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
 
         console.error("Form send failed:", error);
         applyServerValidationErrors(form, error.details);
+
+        if (isBookingApiForm(form) && shouldFallbackBookingToWhatsApp(error)) {
+          sendBookingViaWhatsAppFallback(templateParams).then(function (fallbackResult) {
+            showToast(
+              fallbackResult.popupBlocked
+                ? "Backend setup is not complete yet. Open WhatsApp to send this booking."
+                : "Backend setup is not complete yet, so WhatsApp opened with your booking details.",
+              fallbackResult.popupBlocked ? "info" : "success",
+              {
+                href: fallbackResult.whatsappUrl,
+                label: "Open WhatsApp",
+              }
+            );
+          });
+          return;
+        }
+
         if (error.paymentRetryAvailable && error.bookingId) {
           showPaymentRetryNotice(error.bookingId);
           return;

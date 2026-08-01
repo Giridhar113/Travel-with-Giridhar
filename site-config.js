@@ -9,7 +9,7 @@
       window.location.protocol === "file:" ||
       ["localhost", "127.0.0.1"].includes(window.location.hostname)
         ? "http://localhost:5000"
-        : "https://your-travel-api.example.com",
+        : window.location.origin,
   };
 
   window.TRAVEL_SITE_CONFIG = siteConfig;

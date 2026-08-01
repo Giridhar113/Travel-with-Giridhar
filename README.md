@@ -70,11 +70,24 @@ Booking requests are stored through the Express/MongoDB backend in `server/`.
 - Admin bookings: `admin/bookings.html`
 - Setup guide: [`SERVER_README.md`](SERVER_README.md)
 
-Update `site-config.js` with your deployed backend URL after deploying the API:
+Production booking flow now uses the same Vercel project API:
 
-```js
-apiBaseUrl: "https://your-travel-api.example.com"
+```txt
+Website form -> /api/bookings -> MongoDB -> Razorpay payment -> Admin dashboard
 ```
+
+Add the backend environment variables in Vercel before using live booking/payment:
+
+- `MONGODB_URI`
+- `JWT_SECRET`
+- `ADMIN_SEED_EMAIL`
+- `ADMIN_SEED_PASSWORD`
+- `CORS_ORIGIN`
+- `RAZORPAY_KEY_ID`
+- `RAZORPAY_KEY_SECRET`
+- `RAZORPAY_WEBHOOK_SECRET`
+
+Until those values are configured, the booking form falls back to WhatsApp instead of dropping the request.
 
 ## Claude Planner Setup
 

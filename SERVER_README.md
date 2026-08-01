@@ -80,13 +80,26 @@ http://localhost:5500/admin/dashboard.html
 http://localhost:5500/admin/bookings.html
 ```
 
-The static pages read the API base URL from `site-config.js`:
+The static pages read the API base URL from `site-config.js`.
+For local file/localhost previews it uses:
 
 ```js
 apiBaseUrl: "http://localhost:5000"
 ```
 
-After backend deployment, replace the production fallback value in `site-config.js` with the deployed API URL.
+On the live Vercel site it now uses the same origin:
+
+```js
+apiBaseUrl: window.location.origin
+```
+
+That means production bookings call:
+
+```txt
+https://travel-with-giridhar.vercel.app/api/bookings
+```
+
+The wrapper for the Express API lives in `api/[...path].js`. Add the required MongoDB, JWT, and Razorpay environment variables in Vercel before expecting the full payment flow to work. If they are missing, the frontend falls back to a pre-filled WhatsApp booking message.
 
 ## Booking Flow
 

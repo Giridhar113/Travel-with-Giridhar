@@ -1,0 +1,21 @@
+{
+  "name": "travel-with-giridhar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static travel website with Vercel API booking backend.",
+  "scripts": {
+    "start:api": "node server/src/server.js",
+    "seed:admin": "node server/scripts/seedAdmin.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.18.3",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.5",
+    "razorpay": "^2.9.6"
+  }
+}
