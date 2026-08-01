@@ -61,12 +61,14 @@
                 class="pin-input"
                 autocomplete="current-password"
                 placeholder="Enter admin PIN"
+                value="123456"
                 required
               />
               <span class="field-error" data-error-for="pin" aria-live="polite"></span>
             </label>
             <p class="credential-note">
-              Demo email is prefilled. Use your private admin PIN from <code>.env.local</code>.
+              Demo email and PIN are prefilled for portfolio preview. Use your private
+              PIN from <code>.env.local</code> for full admin access.
             </p>
             <p class="form-error" id="loginError" aria-live="polite"></p>
             <button type="submit" class="primary-btn">

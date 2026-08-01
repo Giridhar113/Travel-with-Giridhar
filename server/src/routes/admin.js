@@ -33,13 +33,28 @@ function signAdminToken(admin) {
   );
 }
 
+function getPublicDemoEmail() {
+  return "admin@travelwithgiridhar.local";
+}
+
+function getPublicDemoPin() {
+  return String(process.env.ADMIN_DEMO_PIN || "123456");
+}
+
+function isPublicDemoLogin(email, pin) {
+  return (
+    String(email || "").trim().toLowerCase() === getPublicDemoEmail() &&
+    String(pin || "") === getPublicDemoPin()
+  );
+}
+
 function resolveLoginEmail(email) {
   const normalizedEmail = String(email || "").trim().toLowerCase();
   const seedEmail = String(process.env.ADMIN_SEED_EMAIL || "").trim().toLowerCase();
   const configuredDemoEmail = String(process.env.ADMIN_DEMO_EMAIL || "")
     .trim()
     .toLowerCase();
-  const publicDemoEmail = "admin@travelwithgiridhar.local";
+  const publicDemoEmail = getPublicDemoEmail();
 
   if (
     seedEmail &&
@@ -49,6 +64,135 @@ function resolveLoginEmail(email) {
   }
 
   return normalizedEmail;
+}
+
+function getDemoBookings() {
+  const now = new Date();
+
+  function dateOffset(days) {
+    const date = new Date(now);
+    date.setDate(now.getDate() + days);
+    return date.toISOString();
+  }
+
+  return [
+    {
+      _id: "demo-booking-001",
+      id: "demo-booking-001",
+      name: "Ananya Rao",
+      email: "ananya.demo@example.com",
+      phone: "+91 98••••1234",
+      package: "Premium Bali Tour",
+      destination: "Bali, Indonesia",
+      travelDate: dateOffset(32),
+      travelers: 2,
+      message: "Looking for a beach honeymoon plan with airport transfers.",
+      status: "new",
+      paymentStatus: "pending",
+      amount: 40000,
+      amountSource: "demo",
+      razorpayOrderId: "demo_order_bali",
+      razorpayPaymentId: "",
+      createdAt: dateOffset(-1),
+      updatedAt: dateOffset(-1),
+    },
+    {
+      _id: "demo-booking-002",
+      id: "demo-booking-002",
+      name: "Vikram Kumar",
+      email: "vikram.demo@example.com",
+      phone: "+91 97••••4321",
+      package: "Goa Beach Escape",
+      destination: "Goa, India",
+      travelDate: dateOffset(18),
+      travelers: 4,
+      message: "Friends trip. Need budget hotel and local sightseeing.",
+      status: "contacted",
+      paymentStatus: "paid",
+      amount: 18000,
+      amountSource: "demo",
+      razorpayOrderId: "demo_order_goa",
+      razorpayPaymentId: "demo_paid_goa",
+      createdAt: dateOffset(-3),
+      updatedAt: dateOffset(-2),
+    },
+    {
+      _id: "demo-booking-003",
+      id: "demo-booking-003",
+      name: "Priya Mehta",
+      email: "priya.demo@example.com",
+      phone: "+91 96••••6789",
+      package: "Manali Adventure Holiday",
+      destination: "Manali, India",
+      travelDate: dateOffset(44),
+      travelers: 3,
+      message: "Family mountain holiday with safe transport and guided activities.",
+      status: "confirmed",
+      paymentStatus: "paid",
+      amount: 24000,
+      amountSource: "demo",
+      razorpayOrderId: "demo_order_manali",
+      razorpayPaymentId: "demo_paid_manali",
+      createdAt: dateOffset(-8),
+      updatedAt: dateOffset(-5),
+    },
+    {
+      _id: "demo-booking-004",
+      id: "demo-booking-004",
+      name: "Rahul Sharma",
+      email: "rahul.demo@example.com",
+      phone: "+91 95••••2468",
+      package: "Dubai Desert Luxury",
+      destination: "Dubai, UAE",
+      travelDate: dateOffset(60),
+      travelers: 5,
+      message: "Luxury family package with desert safari and city tour.",
+      status: "closed",
+      paymentStatus: "failed",
+      amount: 58000,
+      amountSource: "demo",
+      razorpayOrderId: "demo_order_dubai",
+      razorpayPaymentId: "",
+      createdAt: dateOffset(-15),
+      updatedAt: dateOffset(-12),
+    },
+  ];
+}
+
+function filterDemoBookings(bookings, query) {
+  const filter = buildAdminBookingQuery(query || {});
+  return bookings.filter(function (booking) {
+    const matchesStatus = !filter.status || booking.status === filter.status;
+    const matchesPayment =
+      !filter.paymentStatus || booking.paymentStatus === filter.paymentStatus;
+
+    return matchesStatus && matchesPayment;
+  });
+}
+
+function buildDemoStats(bookings) {
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  const monthStart = new Date();
+  monthStart.setDate(1);
+  monthStart.setHours(0, 0, 0, 0);
+
+  return {
+    total: bookings.length,
+    new: bookings.filter((booking) => booking.status === "new").length,
+    confirmed: bookings.filter((booking) => booking.status === "confirmed").length,
+    thisWeek: bookings.filter((booking) => new Date(booking.createdAt) >= weekAgo).length,
+    paidThisWeek: bookings.filter(
+      (booking) =>
+        booking.paymentStatus === "paid" && new Date(booking.createdAt) >= weekAgo
+    ).length,
+    revenueThisMonth: bookings
+      .filter(
+        (booking) =>
+          booking.paymentStatus === "paid" && new Date(booking.createdAt) >= monthStart
+      )
+      .reduce((sum, booking) => sum + Number(booking.amount || 0), 0),
+  };
 }
 
 function buildAdminBookingQuery(query) {
@@ -99,7 +243,22 @@ router.post("/login", async (req, res, next) => {
     if (!submittedEmail || !password) {
       return res.status(400).json({
         success: false,
-        error: "Email and password are required.",
+        error: "Email and admin PIN are required.",
+      });
+    }
+
+    if (isPublicDemoLogin(submittedEmail, password)) {
+      return res.json({
+        success: true,
+        token: signAdminToken({
+          _id: "demo-admin",
+          email: getPublicDemoEmail(),
+          role: "demo",
+        }),
+        admin: {
+          email: getPublicDemoEmail(),
+          role: "demo",
+        },
       });
     }
 
@@ -140,6 +299,19 @@ router.post("/login", async (req, res, next) => {
 
 router.get("/bookings", requireAdminAuth, async (req, res, next) => {
   try {
+    if (req.admin && req.admin.role === "demo") {
+      const bookings = filterDemoBookings(getDemoBookings(), req.query);
+
+      return res.json({
+        success: true,
+        demoMode: true,
+        bookings,
+        stats: buildDemoStats(getDemoBookings()),
+        statuses: allowedStatuses,
+        paymentStatuses: ["pending", "paid", "failed"],
+      });
+    }
+
     const sortDirection = req.query.sort === "asc" ? "asc" : "desc";
     const bookings = await listBookings({
       ...buildAdminBookingQuery(req.query),
@@ -174,6 +346,13 @@ router.get("/bookings", requireAdminAuth, async (req, res, next) => {
 
 router.patch("/bookings/:id", requireAdminAuth, async (req, res, next) => {
   try {
+    if (req.admin && req.admin.role === "demo") {
+      return res.status(403).json({
+        success: false,
+        error: "Demo mode is read-only. Use your private admin PIN for full access.",
+      });
+    }
+
     const status = validateStatus(req.body.status);
 
     if (!status) {
@@ -212,6 +391,13 @@ router.patch("/bookings/:id", requireAdminAuth, async (req, res, next) => {
 
 router.delete("/bookings/:id", requireAdminAuth, async (req, res, next) => {
   try {
+    if (req.admin && req.admin.role === "demo") {
+      return res.status(403).json({
+        success: false,
+        error: "Demo mode is read-only. Use your private admin PIN for full access.",
+      });
+    }
+
     const booking = await deleteBooking(req.params.id);
 
     if (!booking) {

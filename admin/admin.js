@@ -147,6 +147,14 @@
       return;
     }
 
+    form.elements.email.value = "admin@travelwithgiridhar.local";
+    form.elements.pin.value = "123456";
+    window.setTimeout(function () {
+      if (!form.elements.pin.matches(":focus")) {
+        form.elements.pin.value = "123456";
+      }
+    }, 250);
+
     form.addEventListener("submit", async function (event) {
       event.preventDefault();
       const submitButton = form.querySelector('button[type="submit"]');
