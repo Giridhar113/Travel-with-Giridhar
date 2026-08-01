@@ -36,13 +36,15 @@ function signAdminToken(admin) {
 function resolveLoginEmail(email) {
   const normalizedEmail = String(email || "").trim().toLowerCase();
   const seedEmail = String(process.env.ADMIN_SEED_EMAIL || "").trim().toLowerCase();
-  const demoEmail = String(
-    process.env.ADMIN_DEMO_EMAIL || "admin@travelwithgiridhar.local"
-  )
+  const configuredDemoEmail = String(process.env.ADMIN_DEMO_EMAIL || "")
     .trim()
     .toLowerCase();
+  const publicDemoEmail = "admin@travelwithgiridhar.local";
 
-  if (seedEmail && normalizedEmail === demoEmail) {
+  if (
+    seedEmail &&
+    (normalizedEmail === publicDemoEmail || normalizedEmail === configuredDemoEmail)
+  ) {
     return seedEmail;
   }
 
