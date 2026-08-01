@@ -94,7 +94,7 @@ router.post("/login", async (req, res, next) => {
   try {
     const submittedEmail = String(req.body.email || "").trim().toLowerCase();
     const email = resolveLoginEmail(submittedEmail);
-    const password = String(req.body.password || "");
+    const password = String(req.body.password || req.body.pin || "");
 
     if (!submittedEmail || !password) {
       return res.status(400).json({

@@ -70,6 +70,7 @@ select:focus-visible {
   border-radius: 30px;
   background: var(--admin-panel);
   box-shadow: var(--admin-shadow);
+  animation: authCardIn 0.58s ease both;
 }
 
 .auth-content {
@@ -251,6 +252,16 @@ h2 {
   padding: 0 16px;
 }
 
+.pin-input {
+  font-weight: 900;
+  letter-spacing: 0.22em;
+}
+
+.pin-input::placeholder {
+  font-weight: 750;
+  letter-spacing: 0;
+}
+
 .field-error,
 .form-error {
   min-height: 1.25em;
@@ -291,6 +302,8 @@ h2 {
 }
 
 .primary-btn {
+  position: relative;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -300,6 +313,15 @@ h2 {
   color: #ffffff;
   padding: 0 22px;
   box-shadow: 0 18px 34px rgba(255, 107, 87, 0.26);
+}
+
+.primary-btn::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+  content: "";
+  opacity: 0;
+  transform: translateX(-120%);
 }
 
 .primary-btn:hover {
@@ -327,6 +349,35 @@ h2 {
 .primary-btn.is-loading .btn-text,
 .primary-btn.is-loading .button-loader {
   opacity: 0.7;
+}
+
+.primary-btn.is-loading::after {
+  opacity: 1;
+  animation: buttonSweep 1s ease infinite;
+}
+
+.login-approved {
+  animation: loginApproved 0.7s ease both;
+}
+
+.auth-success .auth-visual-card,
+.auth-success .auth-mini-grid div {
+  animation: successPulse 0.72s ease both;
+}
+
+.button-loader {
+  display: none;
+  width: 18px;
+  height: 18px;
+  margin-left: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.primary-btn.is-loading .button-loader {
+  display: inline-block;
 }
 
 .admin-shell {
@@ -793,6 +844,58 @@ h2 {
 
   to {
     transform: translateX(40%);
+  }
+}
+
+@keyframes authCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes buttonSweep {
+  to {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes loginApproved {
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.018);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes successPulse {
+  0% {
+    box-shadow: 0 0 0 rgba(34, 211, 197, 0);
+  }
+
+  55% {
+    box-shadow: 0 0 0 6px rgba(34, 211, 197, 0.18);
+  }
+
+  100% {
+    box-shadow: 0 0 0 rgba(34, 211, 197, 0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

@@ -150,12 +150,13 @@
     form.addEventListener("submit", async function (event) {
       event.preventDefault();
       const submitButton = form.querySelector('button[type="submit"]');
+      const buttonText = submitButton && submitButton.querySelector(".btn-text");
       const email = form.elements.email.value.trim();
-      const password = form.elements.password.value;
+      const pin = form.elements.pin.value;
       let valid = true;
 
       form.querySelector('[data-error-for="email"]').textContent = "";
-      form.querySelector('[data-error-for="password"]').textContent = "";
+      form.querySelector('[data-error-for="pin"]').textContent = "";
       loginError.textContent = "";
 
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -163,8 +164,8 @@
         valid = false;
       }
 
-      if (!password) {
-        form.querySelector('[data-error-for="password"]').textContent = "Password is required.";
+      if (!pin) {
+        form.querySelector('[data-error-for="pin"]').textContent = "Admin PIN is required.";
         valid = false;
       }
 
@@ -173,19 +174,34 @@
       }
 
       setButtonLoading(submitButton, true);
+      if (buttonText) {
+        buttonText.textContent = "Verifying PIN...";
+      }
 
       try {
         const data = await apiFetch("/api/admin/login", {
           method: "POST",
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email, pin, password: pin }),
         });
         sessionStorage.setItem(tokenKey, data.token);
         sessionStorage.setItem(adminKey, JSON.stringify(data.admin || { email }));
-        window.location.href = "dashboard.html";
+        document.body.classList.add("auth-success");
+        form.classList.add("login-approved");
+        if (buttonText) {
+          buttonText.textContent = "Opening dashboard...";
+        }
+        window.setTimeout(function () {
+          window.location.href = "dashboard.html";
+        }, 720);
       } catch (error) {
         loginError.textContent = error.message;
+        if (buttonText) {
+          buttonText.textContent = "Login";
+        }
       } finally {
-        setButtonLoading(submitButton, false);
+        if (!form.classList.contains("login-approved")) {
+          setButtonLoading(submitButton, false);
+        }
       }
     });
   }
