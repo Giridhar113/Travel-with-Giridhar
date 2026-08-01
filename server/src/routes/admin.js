@@ -1,9 +1,19 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
-const Admin = require("../models/Admin");
-const Booking = require("../models/Booking");
+const {
+  countAdmins,
+  createAdmin,
+  findAdminByEmail,
+} = require("../models/Admin");
+const {
+  countBookings,
+  deleteBooking,
+  findBookingById,
+  listBookings,
+  revenueSince,
+  updateBooking,
+} = require("../models/Booking");
 const requireAdminAuth = require("../middleware/auth");
 const { allowedStatuses, validateStatus } = require("../utils/validators");
 
@@ -47,7 +57,7 @@ async function createFirstAdminIfAllowed(email, password) {
     return null;
   }
 
-  const existingAdminCount = await Admin.countDocuments();
+  const existingAdminCount = await countAdmins();
 
   if (existingAdminCount > 0) {
     return null;
@@ -55,7 +65,7 @@ async function createFirstAdminIfAllowed(email, password) {
 
   const passwordHash = await bcrypt.hash(password, 12);
 
-  return Admin.create({
+  return createAdmin({
     email,
     passwordHash,
     role: "admin",
@@ -74,7 +84,7 @@ router.post("/login", async (req, res, next) => {
       });
     }
 
-    let admin = await Admin.findOne({ email });
+    let admin = await findAdminByEmail(email);
 
     if (!admin) {
       admin = await createFirstAdminIfAllowed(email, password);
@@ -111,41 +121,24 @@ router.post("/login", async (req, res, next) => {
 
 router.get("/bookings", requireAdminAuth, async (req, res, next) => {
   try {
-    const sortDirection = req.query.sort === "asc" ? 1 : -1;
-    const bookings = await Booking.find(buildAdminBookingQuery(req.query))
-      .sort({ createdAt: sortDirection })
-      .lean();
+    const sortDirection = req.query.sort === "asc" ? "asc" : "desc";
+    const bookings = await listBookings({
+      ...buildAdminBookingQuery(req.query),
+      sortDirection,
+    });
 
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
     const monthStart = new Date();
     monthStart.setDate(1);
     monthStart.setHours(0, 0, 0, 0);
-    const revenue = await Booking.aggregate([
-      {
-        $match: {
-          paymentStatus: "paid",
-          createdAt: { $gte: monthStart },
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$amount" },
-        },
-      },
-    ]);
-
     const stats = {
-      total: await Booking.countDocuments(),
-      new: await Booking.countDocuments({ status: "new" }),
-      confirmed: await Booking.countDocuments({ status: "confirmed" }),
-      thisWeek: await Booking.countDocuments({ createdAt: { $gte: weekAgo } }),
-      paidThisWeek: await Booking.countDocuments({
-        paymentStatus: "paid",
-        createdAt: { $gte: weekAgo },
-      }),
-      revenueThisMonth: revenue[0] ? revenue[0].total : 0,
+      total: await countBookings(),
+      new: await countBookings({ status: "new" }),
+      confirmed: await countBookings({ status: "confirmed" }),
+      thisWeek: await countBookings({ since: weekAgo }),
+      paidThisWeek: await countBookings({ paymentStatus: "paid", since: weekAgo }),
+      revenueThisMonth: await revenueSince(monthStart),
     };
 
     return res.json({
@@ -162,13 +155,6 @@ router.get("/bookings", requireAdminAuth, async (req, res, next) => {
 
 router.patch("/bookings/:id", requireAdminAuth, async (req, res, next) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid booking ID.",
-      });
-    }
-
     const status = validateStatus(req.body.status);
 
     if (!status) {
@@ -178,11 +164,16 @@ router.patch("/bookings/:id", requireAdminAuth, async (req, res, next) => {
       });
     }
 
-    const booking = await Booking.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true, runValidators: true }
-    ).lean();
+    const existingBooking = await findBookingById(req.params.id);
+
+    if (!existingBooking) {
+      return res.status(404).json({
+        success: false,
+        error: "Booking not found.",
+      });
+    }
+
+    const booking = await updateBooking(req.params.id, { status });
 
     if (!booking) {
       return res.status(404).json({
@@ -202,14 +193,7 @@ router.patch("/bookings/:id", requireAdminAuth, async (req, res, next) => {
 
 router.delete("/bookings/:id", requireAdminAuth, async (req, res, next) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid booking ID.",
-      });
-    }
-
-    const booking = await Booking.findByIdAndDelete(req.params.id).lean();
+    const booking = await deleteBooking(req.params.id);
 
     if (!booking) {
       return res.status(404).json({

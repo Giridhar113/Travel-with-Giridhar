@@ -2,7 +2,7 @@
 
 **Release:** Travel Website v1.5
 
-A travel startup-style website built with HTML, CSS, and vanilla JavaScript. The experience helps users discover destinations, compare packages, estimate budgets, generate Claude-powered trip plans, save/share trip ideas, send booking inquiries to a real Express/MongoDB backend, and complete payment through Razorpay.
+A travel startup-style website built with HTML, CSS, and vanilla JavaScript. The experience helps users discover destinations, compare packages, estimate budgets, generate Claude-powered trip plans, save/share trip ideas, send booking inquiries to a real Express/SQL backend, and complete payment through Razorpay.
 
 ## v1.5 Goal
 
@@ -61,7 +61,7 @@ Full release history is available in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 
 ## Backend + Admin Dashboard
 
-Booking requests are stored through the Express/MongoDB backend in `server/`.
+Booking requests are stored through the Express/Postgres SQL backend in `server/`.
 
 - Public booking endpoint: `POST /api/bookings`
 - Payment verification endpoint: `POST /api/payments/verify`
@@ -73,12 +73,12 @@ Booking requests are stored through the Express/MongoDB backend in `server/`.
 Production booking flow now uses the same Vercel project API:
 
 ```txt
-Website form -> /api/bookings -> MongoDB -> Razorpay payment -> Admin dashboard
+Website form -> /api/bookings -> SQL database -> Razorpay payment -> Admin dashboard
 ```
 
 Add the backend environment variables in Vercel before using live booking/payment:
 
-- `MONGODB_URI`
+- `DATABASE_URL`
 - `JWT_SECRET`
 - `ADMIN_SEED_EMAIL`
 - `ADMIN_SEED_PASSWORD`
@@ -108,7 +108,7 @@ Booking submissions require a 6-digit confirmation code before the form is sent.
 - Vanilla JavaScript
 - localStorage
 - Node.js + Express backend
-- MongoDB + Mongoose
+- PostgreSQL/Neon SQL
 - JWT admin auth
 - Razorpay payment flow
 - Anthropic Claude API via Vercel serverless function

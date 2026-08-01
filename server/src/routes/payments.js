@@ -1,6 +1,9 @@
 const express = require("express");
-const mongoose = require("mongoose");
-const Booking = require("../models/Booking");
+const {
+  findBookingById,
+  findBookingByRazorpayOrderId,
+  updateBooking,
+} = require("../models/Booking");
 const {
   createRazorpayOrder,
   verifyPaymentSignature,
@@ -28,11 +31,11 @@ function paymentResponse(booking, payment) {
 }
 
 async function findBookingForPayment(bookingId) {
-  if (!mongoose.Types.ObjectId.isValid(bookingId)) {
+  if (!bookingId) {
     return null;
   }
 
-  return Booking.findById(bookingId);
+  return findBookingById(bookingId);
 }
 
 router.post("/retry", async (req, res, next) => {
@@ -54,7 +57,11 @@ router.post("/retry", async (req, res, next) => {
     }
 
     const payment = await createRazorpayOrder(booking);
-    return res.json(paymentResponse(booking, payment));
+    const updatedBooking = await updateBooking(booking._id, {
+      razorpayOrderId: payment.orderId,
+      paymentStatus: "pending",
+    });
+    return res.json(paymentResponse(updatedBooking || booking, payment));
   } catch (error) {
     return next(error);
   }
@@ -71,7 +78,7 @@ router.post("/verify", async (req, res, next) => {
 
     const booking =
       (bookingId && (await findBookingForPayment(bookingId))) ||
-      (razorpayOrderId && (await Booking.findOne({ razorpayOrderId })));
+      (razorpayOrderId && (await findBookingByRazorpayOrderId(razorpayOrderId)));
 
     if (!booking) {
       return res.status(404).json({
@@ -81,8 +88,7 @@ router.post("/verify", async (req, res, next) => {
     }
 
     if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
-      booking.paymentStatus = "failed";
-      await booking.save();
+      await updateBooking(booking._id, { paymentStatus: "failed" });
 
       return res.status(400).json({
         success: false,
@@ -95,8 +101,7 @@ router.post("/verify", async (req, res, next) => {
       orderMatches && verifyPaymentSignature(razorpayOrderId, razorpayPaymentId, razorpaySignature);
 
     if (!signatureValid) {
-      booking.paymentStatus = "failed";
-      await booking.save();
+      await updateBooking(booking._id, { paymentStatus: "failed" });
 
       return res.status(400).json({
         success: false,
@@ -104,15 +109,16 @@ router.post("/verify", async (req, res, next) => {
       });
     }
 
-    booking.paymentStatus = "paid";
-    booking.razorpayPaymentId = razorpayPaymentId;
-    await booking.save();
+    const updatedBooking = await updateBooking(booking._id, {
+      paymentStatus: "paid",
+      razorpayPaymentId,
+    });
 
     return res.json({
       success: true,
       message: "Payment verified.",
       bookingId: booking._id,
-      paymentStatus: booking.paymentStatus,
+      paymentStatus: updatedBooking ? updatedBooking.paymentStatus : "paid",
     });
   } catch (error) {
     return next(error);
@@ -138,22 +144,24 @@ async function handleWebhook(req, res, next) {
       return res.json({ success: true, received: true });
     }
 
-    const booking = await Booking.findOne({ razorpayOrderId: payment.order_id });
+    const booking = await findBookingByRazorpayOrderId(payment.order_id);
 
     if (!booking) {
       return res.json({ success: true, received: true });
     }
 
     if (event.event === "payment.captured") {
-      booking.paymentStatus = "paid";
-      booking.razorpayPaymentId = payment.id;
-      await booking.save();
+      await updateBooking(booking._id, {
+        paymentStatus: "paid",
+        razorpayPaymentId: payment.id,
+      });
     }
 
     if (event.event === "payment.failed") {
-      booking.paymentStatus = "failed";
-      booking.razorpayPaymentId = payment.id || booking.razorpayPaymentId;
-      await booking.save();
+      await updateBooking(booking._id, {
+        paymentStatus: "failed",
+        razorpayPaymentId: payment.id || booking.razorpayPaymentId,
+      });
     }
 
     return res.json({ success: true, received: true });

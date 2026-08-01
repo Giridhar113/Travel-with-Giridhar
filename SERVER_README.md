@@ -31,7 +31,7 @@ The admin dashboard is vanilla HTML/CSS/JS. It uses Chart.js from CDN, so there 
 ## Backend Stack
 
 - Node.js + Express
-- MongoDB + Mongoose
+- PostgreSQL/Neon SQL
 - JWT admin auth
 - bcrypt password hashing
 - Razorpay Orders + payment signature verification
@@ -43,7 +43,7 @@ Copy either root `.env.example` or `server/.env.example` to `server/.env`:
 
 ```txt
 PORT=5000
-MONGODB_URI=your_mongodb_connection_string
+DATABASE_URL=your_postgres_connection_string
 JWT_SECRET=your_long_random_secret
 ADMIN_SEED_EMAIL=your_admin_email
 ADMIN_SEED_PASSWORD=your_admin_password
@@ -99,7 +99,7 @@ That means production bookings call:
 https://travel-with-giridhar.vercel.app/api/bookings
 ```
 
-The wrapper for the Express API lives in `api/[...path].js`. Add the required MongoDB, JWT, and Razorpay environment variables in Vercel before expecting the full payment flow to work. If they are missing, the frontend falls back to a pre-filled WhatsApp booking message.
+The wrapper for the Express API lives in `api/[...path].js`. Add the required SQL database, JWT, and Razorpay environment variables in Vercel before expecting the full payment flow to work. If they are missing, the frontend falls back to a pre-filled WhatsApp booking message.
 
 ## Booking Flow
 
@@ -193,7 +193,7 @@ Recommended setup:
 1. Keep the static website on Vercel.
 2. Use `api/[...path].js` to run the Express API inside the same Vercel project.
 3. Add all backend environment variables in the Vercel project dashboard.
-4. Use a MongoDB Atlas `mongodb+srv://...` connection string for `MONGODB_URI`. Do not use `localhost` or `127.0.0.1` in production.
+4. Use a Neon/Postgres SQL connection string for `DATABASE_URL`. Do not use `localhost` or `127.0.0.1` in production.
 5. Set `CORS_ORIGIN` to your public frontend URL:
 
 ```txt
@@ -208,4 +208,4 @@ https://travel-with-giridhar.vercel.app
 https://travel-with-giridhar.vercel.app/api/payments/webhook
 ```
 
-Do not commit real `.env` files or real Razorpay/MongoDB/JWT secrets.
+Do not commit real `.env` files or real Razorpay/SQL/JWT secrets.

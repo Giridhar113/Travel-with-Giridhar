@@ -1,28 +1,68 @@
-const mongoose = require("mongoose");
+const crypto = require("crypto");
+const { query } = require("../config/db");
 
-const adminSchema = new mongoose.Schema(
-  {
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-      maxlength: 160,
-    },
-    passwordHash: {
-      type: String,
-      required: true,
-    },
-    role: {
-      type: String,
-      enum: ["admin", "manager"],
-      default: "admin",
-    },
-  },
-  {
-    timestamps: true,
+function mapAdmin(row) {
+  if (!row) {
+    return null;
   }
-);
 
-module.exports = mongoose.model("Admin", adminSchema);
+  return {
+    _id: row.id,
+    id: row.id,
+    email: row.email,
+    passwordHash: row.password_hash,
+    role: row.role,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+async function findAdminByEmail(email) {
+  const rows = await query`
+    SELECT *
+    FROM admins
+    WHERE email = ${email}
+    LIMIT 1
+  `;
+
+  return mapAdmin(rows[0]);
+}
+
+async function countAdmins() {
+  const rows = await query`SELECT COUNT(*)::int AS count FROM admins`;
+  return Number(rows[0] ? rows[0].count : 0);
+}
+
+async function createAdmin({ email, passwordHash, role = "admin" }) {
+  const id = crypto.randomUUID();
+  const rows = await query`
+    INSERT INTO admins (id, email, password_hash, role)
+    VALUES (${id}, ${email}, ${passwordHash}, ${role})
+    RETURNING *
+  `;
+
+  return mapAdmin(rows[0]);
+}
+
+async function upsertAdmin({ email, passwordHash, role = "admin" }) {
+  const id = crypto.randomUUID();
+  const rows = await query`
+    INSERT INTO admins (id, email, password_hash, role)
+    VALUES (${id}, ${email}, ${passwordHash}, ${role})
+    ON CONFLICT (email)
+    DO UPDATE SET
+      password_hash = EXCLUDED.password_hash,
+      role = EXCLUDED.role,
+      updated_at = NOW()
+    RETURNING *
+  `;
+
+  return mapAdmin(rows[0]);
+}
+
+module.exports = {
+  countAdmins,
+  createAdmin,
+  findAdminByEmail,
+  upsertAdmin,
+};

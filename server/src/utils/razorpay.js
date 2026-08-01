@@ -78,10 +78,6 @@ async function createRazorpayOrder(booking) {
     },
   });
 
-  booking.razorpayOrderId = order.id;
-  booking.paymentStatus = "pending";
-  await booking.save();
-
   return {
     key: getRazorpayKeyId(),
     orderId: order.id,

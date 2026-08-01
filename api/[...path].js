@@ -5,19 +5,13 @@ require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 require("dotenv").config();
 
 const app = require("../server/src/app");
-const connectDatabase = require("../server/src/config/db");
+const { ensureDatabase: ensureSqlDatabase } = require("../server/src/config/db");
 
 let databasePromise = null;
 
 function isSetupError(error) {
-  return /MONGODB_URI|Razorpay keys|RAZORPAY|JWT_SECRET/i.test(
+  return /DATABASE_URL|POSTGRES|SQL|Razorpay keys|RAZORPAY|JWT_SECRET/i.test(
     error && error.message ? error.message : ""
-  );
-}
-
-function hasLocalOnlyMongoUri() {
-  return /^mongodb:\/\/(localhost|127\.0\.0\.1)(:|\/)/i.test(
-    String(process.env.MONGODB_URI || "")
   );
 }
 
@@ -29,9 +23,9 @@ function createSetupResponse(res, message) {
   });
 }
 
-async function ensureDatabase() {
+async function ensureApiDatabase() {
   if (!databasePromise) {
-    databasePromise = connectDatabase().catch(function (error) {
+    databasePromise = ensureSqlDatabase().catch(function (error) {
       databasePromise = null;
       throw error;
     });
@@ -42,14 +36,7 @@ async function ensureDatabase() {
 
 module.exports = async function handler(req, res) {
   try {
-    if (hasLocalOnlyMongoUri()) {
-      return createSetupResponse(
-        res,
-        "Live booking needs a MongoDB Atlas URI. The current MONGODB_URI points to local MongoDB, which Vercel cannot access."
-      );
-    }
-
-    await ensureDatabase();
+    await ensureApiDatabase();
     return app(req, res);
   } catch (error) {
     console.error("Travel API setup error:", error);
@@ -57,7 +44,7 @@ module.exports = async function handler(req, res) {
       return createSetupResponse(
         res,
         process.env.NODE_ENV === "production"
-          ? "Booking backend needs MongoDB, JWT, and Razorpay environment variables in Vercel."
+          ? "Booking backend needs DATABASE_URL, JWT, and Razorpay environment variables in Vercel."
           : error.message || "Travel API setup is incomplete."
       );
     }

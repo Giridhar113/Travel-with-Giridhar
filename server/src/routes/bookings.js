@@ -1,6 +1,6 @@
 const express = require("express");
 const rateLimit = require("express-rate-limit");
-const Booking = require("../models/Booking");
+const { createBooking, updateBooking } = require("../models/Booking");
 const { validateBookingInput } = require("../utils/validators");
 const { resolveBookingAmount } = require("../utils/packagePricing");
 const { createRazorpayOrder } = require("../utils/razorpay");
@@ -43,7 +43,7 @@ router.post("/", bookingLimiter, async (req, res, next) => {
       });
     }
 
-    const booking = await Booking.create({
+    let booking = await createBooking({
       ...value,
       amount: pricing.amount,
       amountSource: pricing.source,
@@ -54,14 +54,19 @@ router.post("/", bookingLimiter, async (req, res, next) => {
 
     try {
       payment = await createRazorpayOrder(booking);
+      booking = await updateBooking(booking._id, {
+        razorpayOrderId: payment.orderId,
+        paymentStatus: "pending",
+      });
     } catch (paymentError) {
-      booking.paymentStatus = "failed";
-      await booking.save();
+      booking = await updateBooking(booking._id, {
+        paymentStatus: "failed",
+      });
 
       return res.status(502).json({
         success: false,
         error: "Booking was saved, but payment could not start. Please retry payment.",
-        bookingId: booking._id,
+        bookingId: booking && booking._id,
         paymentRetryAvailable: true,
       });
     }
