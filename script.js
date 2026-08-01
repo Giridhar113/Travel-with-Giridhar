@@ -1897,6 +1897,48 @@ function buildTravelApiUrl(path) {
   return `${baseUrl}${path}`;
 }
 
+function getTravelWhatsappNumber() {
+  const config = window.TRAVEL_SITE_CONFIG || {};
+  return config.whatsappNumber || "918179721034";
+}
+
+function buildTravelWhatsappUrl(message) {
+  return `https://wa.me/${getTravelWhatsappNumber()}?text=${encodeURIComponent(message)}`;
+}
+
+function buildBookingWhatsAppMessage(templateParams) {
+  const lines = [
+    "Hi Travel with Giridhar, I want to send this booking request.",
+    "",
+    `Name: ${templateParams.from_name || "Not provided"}`,
+    `Email: ${templateParams.from_email || "Not provided"}`,
+    `Phone: ${templateParams.phone || "Not provided"}`,
+    `Destination: ${templateParams.destination || "Not selected"}`,
+    `Package: ${templateParams.package_name || "Not selected"}`,
+    `Travel Type: ${templateParams.travel_type || "Not selected"}`,
+    `Budget: ${templateParams.approx_budget || "Not provided"}`,
+    `Travel Date: ${templateParams.travel_date || "Not selected"}`,
+    `Travelers: ${templateParams.travelers || "Not provided"}`,
+    `Traveler Type: ${templateParams.travelers_type || "Not selected"}`,
+    `EMI Needed: ${templateParams.emi_needed || "No"}`,
+    `Preferred Contact: ${templateParams.preferred_contact || "WhatsApp"}`,
+    `Requests: ${templateParams.travel_notes || "No special requests added."}`,
+  ];
+
+  return lines.join("\n");
+}
+
+function sendBookingViaWhatsAppFallback(templateParams) {
+  const whatsappUrl = buildTravelWhatsappUrl(buildBookingWhatsAppMessage(templateParams));
+  const openedWindow = window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+
+  return Promise.resolve({
+    whatsappFallback: true,
+    whatsappUrl,
+    popupBlocked: !openedWindow,
+  });
+}
+
 function sendBookingApi(templateParams) {
   if (!isTravelApiConfigured()) {
     return Promise.reject(createTravelApiConfigError());
@@ -2445,6 +2487,14 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
 
   initInlineFormValidation(form);
 
+  if (isBookingApiForm(form) && !isTravelApiConfigured()) {
+    const submitText = form.querySelector('button[type="submit"] .btn-text');
+
+    if (submitText) {
+      submitText.textContent = "Send via WhatsApp";
+    }
+  }
+
   form.addEventListener("submit", function (event) {
     event.preventDefault();
 
@@ -2462,11 +2512,16 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
 
     const templateParams = buildParams(form);
     let paymentResult = null;
+    let handledByWhatsAppFallback = false;
 
     Promise.resolve()
       .then(function () {
         if (isBookingApiForm(form) && !isTravelApiConfigured()) {
-          throw createTravelApiConfigError();
+          handledByWhatsAppFallback = true;
+          return sendBookingViaWhatsAppFallback(templateParams).then(function (result) {
+            paymentResult = result;
+            return result;
+          });
         }
 
         if (shouldUseClientOnlySubmission(form, templateId)) {
@@ -2476,6 +2531,10 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
         return requestTwoFactorVerification(formLabel, templateParams);
       })
       .then(function () {
+        if (handledByWhatsAppFallback) {
+          return Promise.resolve();
+        }
+
         if (shouldUseClientOnlySubmission(form, templateId)) {
           return Promise.resolve();
         }
@@ -2502,6 +2561,24 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
       })
       .then(function () {
         if (paymentResult && paymentResult.paymentPending) {
+          return;
+        }
+
+        if (paymentResult && paymentResult.whatsappFallback) {
+          showToast(
+            paymentResult.popupBlocked
+              ? "Booking details are ready. Open WhatsApp to send the request."
+              : "WhatsApp opened with your booking details. Please press Send to complete the request.",
+            paymentResult.popupBlocked ? "info" : "success",
+            {
+              href: paymentResult.whatsappUrl,
+              label: "Open WhatsApp",
+            }
+          );
+          form.reset();
+          clearTravelFormErrors(form);
+          setupBookingPrefill();
+          initInlineFormValidation(form);
           return;
         }
 
