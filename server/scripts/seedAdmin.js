@@ -25,6 +25,19 @@ async function seedAdmin() {
     passwordHash,
     role: "admin",
   });
+  const demoEmail = String(
+    process.env.ADMIN_DEMO_EMAIL || "admin@travelwithgiridhar.local"
+  )
+    .trim()
+    .toLowerCase();
+
+  if (demoEmail && demoEmail !== email) {
+    await upsertAdmin({
+      email: demoEmail,
+      passwordHash,
+      role: "admin",
+    });
+  }
 
   console.log(`Admin ready: ${admin.email}`);
 }
