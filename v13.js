@@ -393,6 +393,7 @@
           <a href="packages.html" class="btn btn-small">Browse Packages</a>
         </div>
       `;
+      initMotionEnhancements();
       return;
     }
     const total = saved.reduce(function (sum, item) {
@@ -430,6 +431,7 @@
       </div>
       <div class="wishlist-compare-result" id="wishlistCompareResult" aria-live="polite"></div>
     `;
+    initMotionEnhancements();
   }
 
   function getSelectedWishlistItems() {
@@ -2569,6 +2571,112 @@
     });
   }
 
+  function initMotionEnhancements() {
+    const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const selector = [
+      ".home-overview-copy",
+      ".home-stat-card",
+      ".home-process-grid article",
+      ".home-dashboard-side",
+      ".v13-featured-card",
+      ".featured-route-panel",
+      ".v13-trending-card",
+      ".v13-budget-card",
+      ".v13-budget-output",
+      ".ai-history-item",
+      ".offer-card",
+      ".offers-page-card",
+      ".builder-panel",
+      ".builder-result",
+      ".booking-timeline-card",
+      ".trip-overview-card",
+      ".trip-map-card",
+      ".trip-itinerary-list",
+      ".trip-document-list",
+      ".trip-seo-grid article",
+      ".destination-compare-card",
+      ".compare-modal-card",
+      ".saved-trip-item",
+      ".wishlist-summary-card",
+      ".wishlist-compare-result"
+    ].join(",");
+    const revealTargets = Array.from(document.querySelectorAll(selector)).filter(function (item) {
+      return !item.dataset.motionReady;
+    });
+
+    if (!revealTargets.length) {
+      setupMotionTilt();
+      return;
+    }
+
+    revealTargets.forEach(function (item, index) {
+      item.dataset.motionReady = "true";
+      item.classList.add("motion-reveal");
+      item.style.setProperty("--motion-delay", `${Math.min((index % 8) * 65, 390)}ms`);
+
+      if (reduceMotion) {
+        item.classList.add("is-visible");
+      }
+    });
+
+    if (!reduceMotion && "IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+
+      revealTargets.forEach(function (item) {
+        observer.observe(item);
+      });
+    } else {
+      revealTargets.forEach(function (item) {
+        item.classList.add("is-visible");
+      });
+    }
+
+    setupMotionTilt();
+  }
+
+  function setupMotionTilt() {
+    const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const coarsePointer = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+
+    if (reduceMotion || coarsePointer) {
+      return;
+    }
+
+    const selector = [
+      ".v13-featured-card",
+      ".v13-trending-card",
+      ".package-card",
+      ".destination-card",
+      ".offers-page-card",
+      ".home-stat-card",
+      ".builder-panel",
+      ".builder-result",
+      ".trip-seo-grid article"
+    ].join(",");
+
+    document.querySelectorAll(selector).forEach(function (card) {
+      if (card.dataset.tiltReady) return;
+      card.dataset.tiltReady = "true";
+      card.addEventListener("pointermove", function (event) {
+        const rect = card.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - 0.5;
+        const y = (event.clientY - rect.top) / rect.height - 0.5;
+        card.style.setProperty("--tilt-y", `${(x * 5).toFixed(2)}deg`);
+        card.style.setProperty("--tilt-x", `${(-y * 4).toFixed(2)}deg`);
+      });
+      card.addEventListener("pointerleave", function () {
+        card.style.setProperty("--tilt-y", "0deg");
+        card.style.setProperty("--tilt-x", "0deg");
+      });
+    });
+  }
+
   function initFlexibleResultRows() {
     scheduleFlexibleResultRows();
     window.addEventListener("resize", scheduleFlexibleResultRows);
@@ -2808,9 +2916,11 @@
     initRouteMapPlanner();
     initFlexibleResultRows();
     removeFloatingWidgetClutter();
+    initMotionEnhancements();
     document.addEventListener("click", function (event) {
       if (event.target.closest(".v13-trending-card, .v13-featured-card")) {
         setTimeout(decorateSaveButtons, 0);
+        setTimeout(initMotionEnhancements, 0);
       }
     });
     window.addEventListener("storage", updateWishlistUi);

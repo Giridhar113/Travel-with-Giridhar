@@ -16,6 +16,7 @@
 - Added admin dashboard SMTP/email setup status so status email readiness is visible.
 - Upgraded traveler reviews into a photo-based verified traveler carousel.
 - Added sitemap entries and metadata for the new Offers and Trip Details pages.
+- Added polished motion effects for scroll reveals, card hover tilt, CTA shimmer, map glow, and checklist/timeline entrances.
 
 ### Improvements
 

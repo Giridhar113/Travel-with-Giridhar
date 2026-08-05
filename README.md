@@ -20,6 +20,7 @@ Make the website feel closer to a real travel product with detail pages, custom 
 - Added a dedicated Offers page with filter chips and quote actions
 - Upgraded reviews into a photo-based verified traveler carousel
 - Expanded SEO coverage with new sitemap entries and social-ready page metadata
+- Added polished motion effects for scroll reveals, card hover tilt, CTA shimmer, map glow, and timeline/checklist entrances
 
 Full release history is available in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 
