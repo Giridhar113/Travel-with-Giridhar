@@ -15,7 +15,7 @@ Make the website feel more product-ready with shareable planning, saved trip con
 - Added AI Trip Planner share links and local AI plan history
 - Added wishlist drawer improvements with clear empty states and quick booking links
 - Added testimonial submission with local preview and WhatsApp handoff
-- Added INR/USD currency toggle using a fixed static conversion rate
+- Kept package and trip pricing INR-only for clearer local travel planning
 - Added footer newsletter signup with client-side validation
 - Added AI Planner skeleton loading state
 - Fixed footer copyright rendering and cleaned encoding issues
@@ -41,7 +41,7 @@ Full release history is available in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 - Travel checklist saved in localStorage
 - Newsletter signup saved in localStorage
 - Testimonial submission demo flow
-- INR/USD currency toggle
+- INR-only package pricing
 - Seasonal offers
 - Package filters, sorting, wishlist, and comparison modal
 

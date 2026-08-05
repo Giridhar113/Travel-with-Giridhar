@@ -3,10 +3,8 @@
   const whatsappNumber = siteConfig.whatsappNumber || "918179721034";
   const savedTripsKey = "savedTrips";
   const localTestimonialsKey = "travelLocalTestimonials";
-  const currencyPreferenceKey = "travelCurrencyPreference";
   const newsletterKey = "travelNewsletterEmail";
   const aiPlanHistoryKey = "travelAiPlanHistory";
-  const usdConversionRate = 83;
   const quoteText =
     siteConfig.whatsappMessage || "Hi, I want to plan a trip with Travel with Giridhar.";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(quoteText)}`;
@@ -24,36 +22,10 @@
   }
 
   function money(value) {
-    if (getCurrencyPreference() === "USD") {
-      return `$${Math.round(Number(value || 0) / usdConversionRate).toLocaleString("en-US")}`;
-    }
-
     if (typeof formatRupees === "function") {
       return formatRupees(value);
     }
     return `Rs. ${Number(value || 0).toLocaleString("en-IN")}`;
-  }
-
-  function getCurrencyPreference() {
-    try {
-      return localStorage.getItem(currencyPreferenceKey) === "USD" ? "USD" : "INR";
-    } catch (error) {
-      return "INR";
-    }
-  }
-
-  function setCurrencyPreference(currency) {
-    try {
-      localStorage.setItem(currencyPreferenceKey, currency);
-    } catch (error) {}
-  }
-
-  function formatStaticPrice(amount, currency) {
-    if (currency === "USD") {
-      return `$${Math.round(Number(amount || 0) / usdConversionRate).toLocaleString("en-US")}`;
-    }
-
-    return `Rs. ${Number(amount || 0).toLocaleString("en-IN")}`;
   }
 
   function slug(value) {
@@ -459,26 +431,6 @@
     });
   }
 
-  function initCurrencyToggle() {
-    document.querySelectorAll(".navbar").forEach(function (navbar) {
-      if (navbar.querySelector(".currency-toggle-btn")) return;
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "currency-toggle-btn";
-      button.setAttribute("aria-label", "Toggle currency");
-      button.addEventListener("click", function () {
-        const next = getCurrencyPreference() === "INR" ? "USD" : "INR";
-        setCurrencyPreference(next);
-        updateCurrencyToggleLabels();
-        applyCurrencyToPage();
-        toast(`Prices switched to ${next}.`, "success");
-      });
-      navbar.appendChild(button);
-    });
-    updateCurrencyToggleLabels();
-    applyCurrencyToPage();
-  }
-
   function initNewsletterSignup() {
     document.querySelectorAll(".footer-container").forEach(function (footer, index) {
       if (footer.querySelector(".newsletter-signup")) return;
@@ -515,72 +467,6 @@
         toast("Thanks! Travel deals signup saved locally.", "success");
       });
       footer.appendChild(form);
-    });
-  }
-
-  function updateCurrencyToggleLabels() {
-    const currency = getCurrencyPreference();
-    document.querySelectorAll(".currency-toggle-btn").forEach(function (button) {
-      button.innerHTML = `<i class="fas fa-coins"></i><span>${currency}</span>`;
-    });
-  }
-
-  function capturePriceOriginal(element) {
-    if (!element.dataset.priceOriginal) {
-      element.dataset.priceOriginal = element.textContent.trim();
-    }
-
-    if (!element.dataset.priceInr) {
-      const amount = parseAmount(element.dataset.priceOriginal);
-
-      if (amount) {
-        element.dataset.priceInr = String(amount);
-      }
-    }
-  }
-
-  function updatePriceText(element, currency) {
-    capturePriceOriginal(element);
-    const amount = Number(element.dataset.priceInr || 0);
-
-    if (!amount) {
-      return;
-    }
-
-    const replacement = formatStaticPrice(amount, currency);
-    const original = element.dataset.priceOriginal;
-    const pattern = /(From\s*)?(?:Rs\.|₹)\s*[\d,]+/i;
-
-    if (pattern.test(original)) {
-      element.textContent = original.replace(pattern, function (match, fromLabel) {
-        return `${fromLabel || ""}${replacement}`;
-      });
-    } else {
-      element.textContent = replacement;
-    }
-  }
-
-  function applyCurrencyToPage() {
-    const currency = getCurrencyPreference();
-    const priceSelectors = [
-      ".price",
-      ".offer-card > strong",
-      ".slider-meta strong",
-      ".v13-trending-content strong",
-      ".v13-featured-card .card-meta span",
-      ".compare-card strong",
-      ".budget-output strong"
-    ];
-
-    document.querySelectorAll(priceSelectors.join(",")).forEach(function (element) {
-      updatePriceText(element, currency);
-    });
-
-    ["packageMinPrice", "estimateTravelers"].forEach(function (id) {
-      const control = document.getElementById(id);
-      if (control) {
-        control.dispatchEvent(new Event("input", { bubbles: true }));
-      }
     });
   }
 
@@ -2342,7 +2228,6 @@
     initHomeFeaturedTrips();
     initTrendingSlider();
     initBudgetEstimator();
-    initCurrencyToggle();
     initAiPlanHistoryPanel();
     enhanceAiPlannerWhatsAppShare();
     patchAiPlannerButtons();

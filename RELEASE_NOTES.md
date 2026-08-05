@@ -11,7 +11,7 @@
 - Added shareable AI Trip Planner links that restore the selected destination, budget, days, travelers, and travel type.
 - Added local AI plan history with Open, Copy, Book, Remove, and Clear actions.
 - Added testimonial submission on the Contact page with local preview and WhatsApp sharing.
-- Added INR/USD currency toggle using a fixed static conversion rate.
+- Kept package and trip pricing INR-only for clearer local travel planning.
 - Added footer newsletter signup with client-side validation and local demo storage.
 - Added AI Planner skeleton loading state while a plan is being generated.
 

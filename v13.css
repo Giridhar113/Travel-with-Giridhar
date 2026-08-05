@@ -11,7 +11,6 @@
 }
 
 .wishlist-nav-btn,
-.currency-toggle-btn,
 .mobile-saved-btn {
   align-items: center;
   background: rgba(255, 255, 255, 0.06);
@@ -29,7 +28,6 @@
 }
 
 .wishlist-nav-btn:hover,
-.currency-toggle-btn:hover,
 .mobile-saved-btn:hover {
   border-color: var(--primary);
   color: var(--primary);
@@ -1085,8 +1083,7 @@ body.gallery-lightbox-open {
     padding-bottom: 132px;
   }
 
-  .navbar .wishlist-nav-btn,
-  .navbar .currency-toggle-btn {
+  .navbar .wishlist-nav-btn {
     display: none;
   }
 
