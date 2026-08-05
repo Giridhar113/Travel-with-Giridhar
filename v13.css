@@ -2257,6 +2257,424 @@ main > .section {
   }
 }
 
+/* v1.6 product-style additions */
+.section-inline-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.v13-card-action-row,
+.wishlist-summary-actions,
+.trip-detail-actions,
+.route-live-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.v13-card-action-row .btn {
+  flex: 1 1 145px;
+  justify-content: center;
+}
+
+.saved-trip-item {
+  align-items: flex-start;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 30px minmax(0, 1fr);
+  padding: 14px;
+}
+
+.saved-trip-select {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  display: inline-flex;
+  height: 30px;
+  justify-content: center;
+  width: 30px;
+}
+
+.saved-trip-select input {
+  accent-color: var(--accent);
+}
+
+.saved-trip-item p {
+  color: var(--muted);
+  margin: 4px 0 0;
+}
+
+.saved-trip-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  grid-column: 1 / -1;
+}
+
+.wishlist-summary-card,
+.wishlist-compare-result {
+  background:
+    linear-gradient(135deg, rgba(34, 211, 197, 0.1), rgba(255, 107, 87, 0.08)),
+    rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(34, 211, 197, 0.22);
+  border-radius: 18px;
+  margin-top: 14px;
+  padding: 16px;
+}
+
+.wishlist-summary-card {
+  display: grid;
+  gap: 14px;
+}
+
+.wishlist-summary-card span,
+.wishlist-compare-result p {
+  color: var(--muted);
+}
+
+.wishlist-summary-card strong {
+  color: var(--accent);
+  display: block;
+  font-size: 1.5rem;
+}
+
+.wishlist-compare-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  margin-top: 12px;
+}
+
+.wishlist-compare-grid article {
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.smart-package-builder,
+.offers-page-section,
+.trip-detail-root > section {
+  padding: 72px 8%;
+}
+
+.smart-package-builder {
+  background:
+    linear-gradient(135deg, rgba(255, 107, 87, 0.11), transparent 34%),
+    linear-gradient(225deg, rgba(34, 211, 197, 0.11), transparent 36%);
+}
+
+.builder-grid,
+.trip-detail-grid,
+.trip-seo-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  margin-top: 26px;
+}
+
+.builder-panel,
+.builder-result,
+.trip-map-card,
+.trip-itinerary-list,
+.trip-document-list,
+.trip-seo-grid article,
+.offers-page-card,
+.booking-timeline-card,
+.trip-detail-hero-card {
+  background: rgba(16, 19, 22, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.2);
+}
+
+.builder-panel,
+.builder-result,
+.trip-map-card,
+.trip-itinerary-list,
+.trip-document-list,
+.trip-seo-grid article,
+.offers-page-card,
+.booking-timeline-card {
+  padding: 22px;
+}
+
+.builder-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.builder-two {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.builder-options {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.builder-options label {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.builder-options input {
+  accent-color: var(--primary);
+}
+
+.builder-result {
+  align-content: center;
+  background:
+    linear-gradient(135deg, rgba(34, 211, 197, 0.14), rgba(255, 107, 87, 0.08)),
+    rgba(6, 28, 27, 0.92);
+  display: grid;
+  gap: 16px;
+}
+
+.builder-result > strong {
+  color: var(--accent);
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1;
+}
+
+.builder-breakdown {
+  display: grid;
+  gap: 10px;
+}
+
+.builder-breakdown div,
+.trip-detail-meta div,
+.trip-summary-list div {
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 0;
+}
+
+.builder-breakdown dt,
+.trip-detail-meta span,
+.trip-summary-list span {
+  color: var(--muted);
+}
+
+.booking-timeline-card {
+  margin-top: 20px;
+}
+
+.booking-timeline-card h3 {
+  margin-bottom: 14px;
+}
+
+.booking-timeline {
+  display: grid;
+  gap: 12px;
+}
+
+.booking-timeline li {
+  align-items: flex-start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 34px minmax(0, 1fr);
+}
+
+.booking-timeline span {
+  align-items: center;
+  background: rgba(34, 211, 197, 0.14);
+  border: 1px solid rgba(34, 211, 197, 0.3);
+  border-radius: 999px;
+  color: var(--accent);
+  display: inline-flex;
+  font-weight: 800;
+  height: 34px;
+  justify-content: center;
+  width: 34px;
+}
+
+.trip-detail-root {
+  background:
+    radial-gradient(circle at top left, rgba(255, 107, 87, 0.16), transparent 30%),
+    radial-gradient(circle at top right, rgba(34, 211, 197, 0.14), transparent 32%),
+    #050607;
+}
+
+.trip-detail-hero {
+  background-image:
+    linear-gradient(90deg, rgba(5, 6, 7, 0.84), rgba(5, 6, 7, 0.38)),
+    var(--trip-bg);
+  background-position: center;
+  background-size: cover;
+  min-height: 520px;
+  padding: 96px 8%;
+}
+
+.trip-detail-hero-card {
+  backdrop-filter: blur(14px);
+  max-width: 760px;
+  padding: clamp(24px, 5vw, 46px);
+}
+
+.trip-detail-hero h1 {
+  font-size: clamp(2.8rem, 7vw, 5.7rem);
+  line-height: 0.98;
+  margin: 8px 0 18px;
+}
+
+.trip-detail-hero p {
+  color: var(--muted);
+  max-width: 660px;
+}
+
+.trip-detail-meta,
+.trip-summary-list {
+  display: grid;
+  gap: 2px;
+  margin: 18px 0;
+}
+
+.trip-map-card iframe {
+  border: 0;
+  border-radius: 16px;
+  height: 340px;
+  width: 100%;
+}
+
+.trip-itinerary-list,
+.trip-document-list {
+  list-style: none;
+}
+
+.trip-itinerary-list li,
+.trip-document-list li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 0;
+}
+
+.trip-itinerary-list li:last-child,
+.trip-document-list li:last-child {
+  border-bottom: 0;
+}
+
+.trip-document-list label {
+  align-items: flex-start;
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+}
+
+.trip-document-list input {
+  accent-color: var(--accent);
+  margin-top: 5px;
+}
+
+.trip-seo-grid article h3 {
+  margin-bottom: 8px;
+}
+
+.offers-page-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 26px;
+}
+
+.offers-page-card {
+  display: grid;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.offers-page-card img {
+  aspect-ratio: 16 / 10;
+  height: auto;
+  object-fit: cover;
+  width: 100%;
+}
+
+.offers-page-card-content {
+  display: grid;
+  gap: 12px;
+  padding: 0 20px 22px;
+}
+
+.offer-discount-badge {
+  align-self: start;
+  background: rgba(255, 107, 87, 0.16);
+  border: 1px solid rgba(255, 107, 87, 0.38);
+  border-radius: 999px;
+  color: #ffb4aa;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 8px 12px;
+  width: fit-content;
+}
+
+.offers-page-card .tag-row,
+.trip-detail-hero .tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+body.light-mode .builder-panel,
+body.light-mode .builder-result,
+body.light-mode .trip-map-card,
+body.light-mode .trip-itinerary-list,
+body.light-mode .trip-document-list,
+body.light-mode .trip-seo-grid article,
+body.light-mode .offers-page-card,
+body.light-mode .booking-timeline-card,
+body.light-mode .trip-detail-hero-card,
+body.light-mode .saved-trip-item,
+body.light-mode .wishlist-summary-card,
+body.light-mode .wishlist-compare-result {
+  background: linear-gradient(135deg, #ffffff 0%, #eef5f7 100%);
+  color: var(--ink);
+}
+
+@media (max-width: 980px) {
+  .builder-grid,
+  .trip-detail-grid,
+  .trip-seo-grid,
+  .offers-page-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .smart-package-builder,
+  .offers-page-section,
+  .trip-detail-root > section,
+  .trip-detail-hero {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+
+  .builder-two,
+  .builder-options {
+    grid-template-columns: 1fr;
+  }
+
+  .trip-detail-actions .btn,
+  .wishlist-summary-actions .btn,
+  .saved-trip-actions .btn {
+    flex: 1 1 100%;
+  }
+}
+
 /* Popular destinations panel fix */
 .home-dashboard-side {
   align-items: start;

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Browse seasonal travel offers, family deals, honeymoon specials, weekend trips, and WhatsApp quote options from Travel with Giridhar."
+    />
+    <title>Offers - Travel with Giridhar</title>
+    <meta property="og:title" content="Offers - Travel with Giridhar" />
+    <meta property="og:description" content="Browse seasonal travel offers, family deals, honeymoon specials, weekend trips, and WhatsApp quote options." />
+    <meta property="og:image" content="https://travel-with-giridhar.vercel.app/services1.jpg" />
+    <meta property="og:url" content="https://travel-with-giridhar.vercel.app/offers.html" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Offers - Travel with Giridhar" />
+    <meta name="twitter:description" content="Browse seasonal travel offers, family deals, honeymoon specials, weekend trips, and WhatsApp quote options." />
+    <meta name="twitter:image" content="https://travel-with-giridhar.vercel.app/services1.jpg" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="v13.css" />
+  </head>
+  <body class="offers-page">
+    <header>
+      <nav class="navbar">
+        <div class="logo">
+          <a href="index.html" class="logo-link">
+            <i class="fas fa-plane-departure"></i>
+            <div>
+              <span class="logo-text">Travel with</span>
+              <span class="logo-subtext">Giridhar</span>
+            </div>
+          </a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="destinations.html">Destinations</a></li>
+          <li><a href="packages.html">Packages</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <h1>Seasonal Travel Offers</h1>
+        <p>
+          Compare limited-time trip ideas for families, friends, couples, and
+          quick weekend escapes.
+        </p>
+      </section>
+
+      <section class="section offers-page-section">
+        <div class="section-heading-left">
+          <p class="hero-kicker">Offers & Deals</p>
+          <h2>Pick an offer, then request a custom quote</h2>
+          <p>
+            These are starter plans. Final price depends on travel date, hotel
+            comfort, travelers, transfers, and activity choices.
+          </p>
+        </div>
+        <div class="v13-filter-chips" id="offerFilters" aria-label="Offer filters">
+          <button type="button" class="v13-chip is-active" data-offer-filter="all">All</button>
+          <button type="button" class="v13-chip" data-offer-filter="family">Family</button>
+          <button type="button" class="v13-chip" data-offer-filter="honeymoon">Honeymoon</button>
+          <button type="button" class="v13-chip" data-offer-filter="weekend">Weekend</button>
+          <button type="button" class="v13-chip" data-offer-filter="international">International</button>
+        </div>
+        <div class="offer-grid offers-page-grid" id="offersGrid">
+          <!-- Offers render from data.js. -->
+        </div>
+      </section>
+    </main>
+
+    <a
+      href="https://wa.me/918179721034?text=Hi%2C%20I%20want%20to%20plan%20a%20trip%20with%20Travel%20with%20Giridhar."
+      class="whatsapp-float"
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Book via WhatsApp"
+    >
+      <i class="fab fa-whatsapp"></i>
+      <span>WhatsApp</span>
+    </a>
+
+    <footer class="footer">
+      <div class="footer-container">
+        <div>
+          <h3>Travel with Giridhar</h3>
+          <p>&copy; 2026 Travel with Giridhar. All rights reserved.</p>
+          <p>Developed by Giridhar Reddy</p>
+        </div>
+        <div class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="destinations.html">Destinations</a>
+          <a href="packages.html">Packages</a>
+          <a href="offers.html">Offers</a>
+          <a href="contact.html">Contact</a>
+          <a
+            href="https://github.com/Giridhar113/Travel-with-Giridhar"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub</a
+          >
+          <a
+            href="https://giridhar-portfolio-ten.vercel.app/"
+            target="_blank"
+            rel="noreferrer"
+            >Portfolio</a
+          >
+        </div>
+      </div>
+    </footer>
+    <script defer src="site-config.js"></script>
+    <script defer src="data.js"></script>
+    <script defer src="script.js"></script>
+    <script defer src="v13.js"></script>
+  </body>
+</html>

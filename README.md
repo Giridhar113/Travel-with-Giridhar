@@ -1,24 +1,25 @@
 # Travel with Giridhar
 
-**Release:** Travel Website v1.5
+**Release:** Travel Website v1.6
 
-A travel startup-style website built with HTML, CSS, and vanilla JavaScript. The experience helps users discover destinations, compare packages, estimate budgets, generate Claude-powered trip plans, save/share trip ideas, and send booking inquiries to a real Express/SQL backend with WhatsApp follow-up.
+A travel startup-style website built with HTML, CSS, and vanilla JavaScript. The experience helps users discover destinations, compare packages, estimate budgets, generate Claude-powered trip plans, save/share trip ideas, view detailed trip pages, explore seasonal offers, and send booking inquiries to a real Express/SQL backend with WhatsApp follow-up.
 
-## v1.5 Goal
+## v1.6 Goal
 
-Make the website feel more product-ready with shareable planning, saved trip context, stronger filtering controls, and client-side lead capture.
+Make the website feel closer to a real travel product with detail pages, custom package building, richer wishlist management, admin email readiness, booking timeline, documents checklist, and SEO improvements.
 
-## v1.5 Updates
+## v1.6 Updates
 
-- Added debounced destination search with focused travel-type filters
-- Added live package price filtering with a reset action
-- Added AI Trip Planner share links and local AI plan history
-- Added wishlist drawer improvements with clear empty states and quick booking links
-- Added testimonial submission with local preview and WhatsApp handoff
-- Kept package and trip pricing INR-only for clearer local travel planning
-- Added footer newsletter signup with client-side validation
-- Added AI Planner skeleton loading state
-- Fixed footer copyright rendering and cleaned encoding issues
+- Added reusable Trip Details pages for package and destination deep links
+- Added Smart Package Builder on the Packages page
+- Upgraded Saved Trips drawer with selected booking, comparison, total saved value, details links, and clear action
+- Added backend/admin email setup visibility for SMTP status notifications
+- Added booking timeline inside the Contact page review step
+- Added travel documents checklist on trip detail pages
+- Added detail and comparison actions across package, featured trip, trending, and wishlist flows
+- Added a dedicated Offers page with filter chips and quote actions
+- Upgraded reviews into a photo-based verified traveler carousel
+- Expanded SEO coverage with new sitemap entries and social-ready page metadata
 
 Full release history is available in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 
@@ -44,12 +45,17 @@ Full release history is available in [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 - INR-only package pricing
 - Seasonal offers
 - Package filters, sorting, wishlist, and comparison modal
+- Trip detail pages with itinerary, map, checklist, FAQ, and booking actions
+- Smart package builder
+- Offers and deals page
 
 ## Pages
 
 - `index.html` - Home page with hero slider, featured trips, AI planner, saved AI plans, budget estimator, seasonal offers, checklist, FAQ, and reviews
 - `destinations.html` - Destination cards with search, filters, advanced search, comparison, best-time labels, and saved trips
 - `packages.html` - Package cards with filters, sorting, wishlist, comparison, budget estimator, and package detail guide
+- `trip-details.html` - Dynamic trip detail page with itinerary, map, documents checklist, SEO guide, and booking CTA
+- `offers.html` - Seasonal offers and quote actions
 - `blog.html` - Travel tips and planning guides
 - `gallery.html` - Filterable masonry gallery with lightbox
 - `about.html` - Company story, mission, reasons to choose us, and developer profile

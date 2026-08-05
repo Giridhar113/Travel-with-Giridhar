@@ -118,5 +118,6 @@ async function sendBookingStatusEmail(booking, status) {
 }
 
 module.exports = {
+  getSmtpConfig,
   sendBookingStatusEmail,
 };

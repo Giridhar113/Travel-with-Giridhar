@@ -16,7 +16,7 @@ const {
 } = require("../models/Booking");
 const requireAdminAuth = require("../middleware/auth");
 const { allowedStatuses, validateStatus } = require("../utils/validators");
-const { sendBookingStatusEmail } = require("../utils/mailer");
+const { getSmtpConfig, sendBookingStatusEmail } = require("../utils/mailer");
 
 const router = express.Router();
 
@@ -185,6 +185,7 @@ function buildDemoStats(bookings) {
           booking.paymentStatus === "whatsapp" && new Date(booking.createdAt) >= monthStart
       )
       .reduce((sum, booking) => sum + Number(booking.amount || 0), 0),
+    emailConfigured: getSmtpConfig().configured,
   };
 }
 
@@ -323,6 +324,7 @@ router.get("/bookings", requireAdminAuth, async (req, res, next) => {
       thisWeek: await countBookings({ since: weekAgo }),
       paidThisWeek: await countBookings({ paymentStatus: "paid", since: weekAgo }),
       revenueThisMonth: await revenueSince(monthStart),
+      emailConfigured: getSmtpConfig().configured,
     };
 
     return res.json({

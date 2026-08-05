@@ -1,5 +1,35 @@
 # Travel with Giridhar Release Notes
 
+## Travel Website v1.6
+
+**Release goal:** Add the next layer of product depth so users can move from discovery to trip details, saved planning, package building, and admin follow-up more naturally.
+
+### New Features
+
+- Added dynamic `trip-details.html` pages for package and destination deep links.
+- Added a Smart Package Builder on the Packages page with destination, travelers, duration, hotel tier, transport, and activity options.
+- Added a dedicated `offers.html` page with seasonal offer filters and quote actions.
+- Added travel documents checklist content to trip detail pages.
+- Added booking timeline content to the Contact page review step.
+- Added package/destination detail links across Featured Trips, Trending Trips, package cards, comparison modal, and wishlist drawer.
+- Added wishlist comparison, selected booking, total saved value, and clear-all actions.
+- Added admin dashboard SMTP/email setup status so status email readiness is visible.
+- Upgraded traveler reviews into a photo-based verified traveler carousel.
+- Added sitemap entries and metadata for the new Offers and Trip Details pages.
+
+### Improvements
+
+- Improved package action rows so Book, Compare, and Details behave consistently.
+- Improved saved-trip management so shortlist review feels closer to a real travel product.
+- Improved detail-page trust content with itinerary, map, inclusions, checklist, FAQs, and WhatsApp booking.
+- Improved release documentation to reflect the current v1.6 scope.
+
+### Result
+
+v1.6 adds the missing product depth around trip details, planning continuity, offers, admin readiness, and booking confidence.
+
+---
+
 ## Travel Website v1.5
 
 **Release goal:** Make the travel website feel more product-ready with better planning continuity, shareable trip ideas, stronger filters, and a clearer booking lead flow.

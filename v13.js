@@ -12,6 +12,9 @@
   const travelData = window.TRAVEL_DATA || {};
   const basePackages = Array.isArray(travelData.basePackages) ? travelData.basePackages : [];
   const budgetDestinations = Array.isArray(travelData.budgetDestinations) ? travelData.budgetDestinations : [];
+  const destinationCatalog = Array.isArray(travelData.destinations)
+    ? travelData.destinations
+    : [];
 
   function ready(callback) {
     if (document.readyState === "loading") {
@@ -207,6 +210,24 @@
     return `contact.html?package=${encodeURIComponent(item.title || "Custom Trip")}&destination=${encodeURIComponent(item.destination || "")}#bookingForm`;
   }
 
+  function tripDetailsUrl(item, type) {
+    const params = new URLSearchParams();
+    const mode = type || (item && item.title ? "package" : "destination");
+    params.set("type", mode);
+    if (item && item.id) params.set("id", item.id);
+    if (item && item.title) params.set("package", item.title);
+    if (item && (item.destination || item.name)) params.set("destination", item.destination || item.name);
+    return `trip-details.html?${params.toString()}`;
+  }
+
+  function destinationByName(name) {
+    const needle = String(name || "").toLowerCase();
+    return destinationCatalog.find(function (item) {
+      return String(item.destination || item.name || "").toLowerCase() === needle ||
+        String(item.id || "").toLowerCase() === needle;
+    });
+  }
+
   function toast(message, type, action) {
     if (typeof showToast === "function") {
       showToast(message, type || "success", action);
@@ -321,6 +342,26 @@
           window.applyDestinationFilters();
         }
       }
+      const clear = event.target.closest("[data-clear-wishlist]");
+      if (clear) {
+        setSavedTrips([]);
+        updateWishlistUi();
+        toast("Wishlist cleared.", "success");
+      }
+      const compare = event.target.closest("[data-wishlist-compare]");
+      if (compare) {
+        renderWishlistComparison();
+      }
+      const bookSelected = event.target.closest("[data-wishlist-book]");
+      if (bookSelected) {
+        const selected = getSelectedWishlistItems();
+        if (!selected.length) {
+          toast("Select at least one saved trip first.", "error");
+          return;
+        }
+        const first = selected[0];
+        window.location.href = bookingUrl({ title: first.packageName || first.name, destination: first.destination || first.name });
+      }
     });
     document.body.appendChild(drawer);
   }
@@ -354,21 +395,75 @@
       `;
       return;
     }
+    const total = saved.reduce(function (sum, item) {
+      return sum + Number(item.price || parseAmount(item.priceText) || 0);
+    }, 0);
     list.innerHTML = saved.map(function (item) {
       const linkItem = { title: item.packageName || item.name, destination: item.destination || item.name };
       return `
         <article class="saved-trip-item">
+          <label class="saved-trip-select">
+            <input type="checkbox" data-select-saved="${escapeHtml(item.id)}" aria-label="Select ${escapeHtml(item.name)}" />
+          </label>
           <div>
             <strong>${item.name}</strong>
             <p>${item.destination || item.type} - ${item.priceText || "Custom quote"}</p>
           </div>
           <div class="saved-trip-actions">
             <a class="btn btn-small" href="${bookingUrl(linkItem)}">Book Now</a>
+            <a class="btn btn-outline btn-small" href="${tripDetailsUrl(linkItem, item.type)}">Details</a>
             <button type="button" class="btn btn-outline btn-small" data-remove-trip="${item.id}">Remove</button>
           </div>
         </article>
       `;
-    }).join("");
+    }).join("") + `
+      <div class="wishlist-summary-card">
+        <div>
+          <span>Total saved value</span>
+          <strong>${total ? money(total) : "Custom quotes"}</strong>
+        </div>
+        <div class="wishlist-summary-actions">
+          <button type="button" class="btn btn-small" data-wishlist-book>Book Selected</button>
+          <button type="button" class="btn btn-outline btn-small" data-wishlist-compare>Compare Selected</button>
+          <button type="button" class="btn btn-outline btn-small" data-clear-wishlist>Remove All</button>
+        </div>
+      </div>
+      <div class="wishlist-compare-result" id="wishlistCompareResult" aria-live="polite"></div>
+    `;
+  }
+
+  function getSelectedWishlistItems() {
+    const selectedIds = Array.from(document.querySelectorAll("[data-select-saved]:checked")).map(function (input) {
+      return input.dataset.selectSaved;
+    });
+    return getSavedTrips().filter(function (item) {
+      return selectedIds.includes(item.id);
+    });
+  }
+
+  function renderWishlistComparison() {
+    const target = document.getElementById("wishlistCompareResult");
+    const selected = getSelectedWishlistItems();
+    if (!target) return;
+    if (selected.length < 2) {
+      target.innerHTML = '<p class="v13-empty-state">Select 2 or more saved trips to compare them.</p>';
+      return;
+    }
+    target.innerHTML = `
+      <h3>Saved Trip Comparison</h3>
+      <div class="wishlist-compare-grid">
+        ${selected.slice(0, 4).map(function (item) {
+          return `
+            <article>
+              <strong>${escapeHtml(item.name)}</strong>
+              <span>${escapeHtml(item.destination || "Flexible destination")}</span>
+              <small>${escapeHtml(item.priceText || "Custom quote")}</small>
+              <a href="${tripDetailsUrl({ title: item.packageName || item.name, destination: item.destination || item.name }, item.type)}">Open details</a>
+            </article>
+          `;
+        }).join("")}
+      </div>
+    `;
   }
 
   function decorateSaveButtons() {
@@ -603,7 +698,17 @@
       ];
       summary.innerHTML = rows.map(function (row) {
         return `<div class="summary-row"><span>${row[0]}</span><strong>${row[1] || "Not selected"}</strong></div>`;
-      }).join("");
+      }).join("") + `
+        <div class="booking-timeline-card">
+          <h3>Booking Timeline</h3>
+          <ol>
+            <li class="is-active"><span>1</span><strong>Request Sent</strong><small>Your details are saved in the booking desk.</small></li>
+            <li><span>2</span><strong>Reviewed</strong><small>The trip is checked for date, budget, and package fit.</small></li>
+            <li><span>3</span><strong>Contacted</strong><small>You receive WhatsApp or email follow-up.</small></li>
+            <li><span>4</span><strong>Confirmed</strong><small>The final plan is confirmed after your approval.</small></li>
+          </ol>
+        </div>
+      `;
     }
 
     fillDestinations();
@@ -656,6 +761,130 @@
       form.dataset.readyToSubmit = "true";
       renderSummary();
     }, true);
+  }
+
+  function initSmartPackageBuilder() {
+    if (!document.body.classList.contains("packages-page") || document.getElementById("smartPackageBuilder")) {
+      return;
+    }
+
+    const packageTools = document.querySelector(".package-tools");
+    const packages = getPackageCatalog();
+
+    if (!packageTools || !packages.length) {
+      return;
+    }
+
+    const destinations = Array.from(new Set(packages.map(function (item) {
+      return item.destination;
+    }).filter(Boolean)));
+    const section = document.createElement("section");
+    section.className = "section smart-package-builder";
+    section.id = "smartPackageBuilder";
+    section.innerHTML = `
+      <div class="section-heading-left">
+        <p class="hero-kicker">Smart Package Builder</p>
+        <h2>Build a custom trip estimate</h2>
+        <p>Choose destination, travelers, hotel comfort, transport, and activities to get a quick INR estimate before sending an inquiry.</p>
+      </div>
+      <div class="builder-grid">
+        <form class="builder-panel" id="packageBuilderForm">
+          <label>Destination
+            <select id="builderDestination">
+              ${destinations.map(function (name) { return `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`; }).join("")}
+            </select>
+          </label>
+          <div class="builder-two">
+            <label>Travelers
+              <input type="number" id="builderTravelers" min="1" max="12" value="2" />
+            </label>
+            <label>Days
+              <input type="number" id="builderDays" min="2" max="12" value="5" />
+            </label>
+          </div>
+          <div>
+            <strong>Hotel type</strong>
+            <div class="v13-tier-options" id="builderHotel">
+              ${["Budget", "Standard", "Premium", "Luxury"].map(function (tier, index) {
+                return `<button type="button" class="v13-pill${index === 1 ? " is-active" : ""}" data-builder-tier="${tier.toLowerCase()}">${tier}</button>`;
+              }).join("")}
+            </div>
+          </div>
+          <div class="builder-options">
+            <label><input type="checkbox" id="builderTransport" checked /> Local transport</label>
+            <label><input type="checkbox" id="builderActivities" checked /> Guided activities</label>
+          </div>
+        </form>
+        <aside class="builder-result" id="builderResult" aria-live="polite"></aside>
+      </div>
+    `;
+    packageTools.after(section);
+
+    const destination = section.querySelector("#builderDestination");
+    const travelers = section.querySelector("#builderTravelers");
+    const days = section.querySelector("#builderDays");
+    const transport = section.querySelector("#builderTransport");
+    const activities = section.querySelector("#builderActivities");
+    const result = section.querySelector("#builderResult");
+    let tier = "standard";
+    const multipliers = {
+      budget: 0.82,
+      standard: 1,
+      premium: 1.28,
+      luxury: 1.65,
+    };
+
+    function bestPackage() {
+      const byDestination = packages.filter(function (item) {
+        return item.destination === destination.value;
+      });
+      return byDestination.sort(function (a, b) {
+        return Math.abs(Number(a.days || 5) - Number(days.value || 5)) - Math.abs(Number(b.days || 5) - Number(days.value || 5));
+      })[0] || packages[0];
+    }
+
+    function render() {
+      const match = bestPackage();
+      const travelerCount = Number(travelers.value || 1);
+      const dayCount = Number(days.value || match.days || 5);
+      const basePerPerson = Number(match.amount || match.price || 30000);
+      const dayFactor = Math.max(0.75, dayCount / Math.max(Number(match.days || 5), 1));
+      const extras = (transport.checked ? 2500 : 0) + (activities.checked ? 1800 : 0);
+      const total = Math.round((basePerPerson * dayFactor * multipliers[tier] + extras) * travelerCount);
+      const linkItem = { title: `${match.title} Custom Plan`, destination: destination.value };
+
+      result.innerHTML = `
+        <span class="ai-pill">Estimate Ready</span>
+        <h3>${escapeHtml(destination.value)} custom plan</h3>
+        <strong>${money(total)}</strong>
+        <dl class="builder-breakdown">
+          <div><dt>Base match</dt><dd>${escapeHtml(match.title)}</dd></div>
+          <div><dt>Duration</dt><dd>${dayCount} days</dd></div>
+          <div><dt>Travelers</dt><dd>${travelerCount}</dd></div>
+          <div><dt>Hotel</dt><dd>${tier.charAt(0).toUpperCase() + tier.slice(1)}</dd></div>
+        </dl>
+        <p>Estimate includes selected comfort level and optional add-ons. Final quote is confirmed after date and availability check.</p>
+        <div class="v13-card-action-row">
+          <a class="btn" href="${bookingUrl(linkItem)}">Send Inquiry</a>
+          <a class="btn btn-outline" href="${tripDetailsUrl(match, "package")}">View Similar Trip</a>
+        </div>
+      `;
+    }
+
+    section.querySelectorAll("[data-builder-tier]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        tier = button.dataset.builderTier;
+        section.querySelectorAll("[data-builder-tier]").forEach(function (item) {
+          item.classList.toggle("is-active", item === button);
+        });
+        render();
+      });
+    });
+    [destination, travelers, days, transport, activities].forEach(function (control) {
+      control.addEventListener("input", render);
+      control.addEventListener("change", render);
+    });
+    render();
   }
 
   function initPackageFilters() {
@@ -744,6 +973,11 @@
         compareButton.textContent = "Compare";
         compareButton.dataset.compareButton = slug(title);
         row.appendChild(compareButton);
+        const detailsLink = document.createElement("a");
+        detailsLink.className = "btn btn-outline";
+        detailsLink.href = tripDetailsUrl(catalog || { title, destination: card.dataset.packageDestination }, "package");
+        detailsLink.textContent = "Details";
+        row.appendChild(detailsLink);
       }
     });
 
@@ -962,6 +1196,7 @@
             <span>${item.duration}</span>
             <small>Best for: ${item.bestFor}</small>
             <ul>${features.map(function (feature) { return `<li>${feature}</li>`; }).join("")}</ul>
+            <a class="btn btn-outline" href="${tripDetailsUrl(item, "package")}">View Details</a>
             <a class="btn" href="${bookingUrl(item)}">Book This</a>
           </article>
         `;
@@ -1061,7 +1296,10 @@
                 <div class="card-meta"><h3>${trip.title}</h3><span class="price">${money(trip.price)}</span></div>
                 <div class="tag-row">${trip.tags.slice(0, 4).map(function (tag) { return `<span class="tag">${tag}</span>`; }).join("")}</div>
                 <p>${trip.duration} - ${trip.bestFor}</p>
-                <a class="btn" href="${bookingUrl(trip)}">Book Now</a>
+                <div class="v13-card-action-row">
+                  <a class="btn" href="${bookingUrl(trip)}">Book Now</a>
+                  <a class="btn btn-outline" href="${tripDetailsUrl(trip, "package")}">Details</a>
+                </div>
               </div>
             </article>
           `;
@@ -1128,7 +1366,10 @@
                 <strong>From ${money(item[2])}</strong>
                 <span>${item[3]}</span>
                 <span class="v13-stars" aria-label="${item[5]} star rating">${ratingStarsMarkup(item[5])} ${item[5]}</span>
-                <a class="btn btn-small" href="${bookingUrl(trip)}">Book Now</a>
+                <div class="v13-card-action-row">
+                  <a class="btn btn-small" href="${bookingUrl(trip)}">Book Now</a>
+                  <a class="btn btn-outline btn-small" href="${tripDetailsUrl(packageByTitle(item[0]) || trip, "package")}">Details</a>
+                </div>
               </div>
             </article>
           `;
@@ -1804,7 +2045,8 @@
     if (!panel || panel.dataset.v13Ready) return;
     panel.dataset.v13Ready = "true";
     document.querySelectorAll(".destination-card").forEach(function (card) {
-      const name = card.querySelector("h2") ? card.querySelector("h2").textContent.toLowerCase() : "";
+      const titleText = card.querySelector("h2") ? card.querySelector("h2").textContent.trim() : "";
+      const name = titleText.toLowerCase();
       const price = parseAmount(card.querySelector(".price") ? card.querySelector(".price").textContent : "");
       let category = card.dataset.category || "";
       if (price && price < 30000) category += " budget";
@@ -1813,6 +2055,16 @@
       if (/manali|ooty|darjeeling|kashmir|ladakh|coorg|shillong/.test(name)) category += " hill station";
       card.dataset.category = category;
       card.dataset.destination = `${card.dataset.destination || ""} ${category}`;
+      const actions = card.querySelector(".destination-actions");
+      if (actions && !actions.querySelector("[data-destination-details]")) {
+        const item = destinationByName(titleText) || { name: titleText, destination: titleText };
+        const link = document.createElement("a");
+        link.className = "btn btn-outline";
+        link.href = tripDetailsUrl(item, "destination");
+        link.textContent = "Details";
+        link.dataset.destinationDetails = "true";
+        actions.appendChild(link);
+      }
     });
     panel.querySelectorAll(".filter-chip").forEach(function (chip) {
       chip.addEventListener("click", function () {
@@ -2005,10 +2257,314 @@
     render();
   }
 
+  function resolveTripDetail() {
+    const params = new URLSearchParams(window.location.search);
+    const id = String(params.get("id") || "").toLowerCase();
+    const packageName = String(params.get("package") || "").toLowerCase();
+    const destinationName = String(params.get("destination") || "").toLowerCase();
+    const packages = getPackageCatalog();
+    const packageMatch =
+      packages.find(function (item) { return String(item.id || "").toLowerCase() === id; }) ||
+      packages.find(function (item) { return String(item.title || "").toLowerCase() === packageName; }) ||
+      packages.find(function (item) { return String(item.destination || "").toLowerCase() === destinationName; });
+    const destinationMatch =
+      destinationCatalog.find(function (item) { return String(item.id || "").toLowerCase() === id; }) ||
+      destinationCatalog.find(function (item) { return String(item.name || item.destination || "").toLowerCase() === destinationName; }) ||
+      destinationByName(packageMatch ? packageMatch.destination : "");
+
+    if (packageMatch) {
+      return {
+        type: "package",
+        package: packageMatch,
+        destination: destinationMatch || destinationByName(packageMatch.destination),
+      };
+    }
+
+    if (destinationMatch) {
+      return {
+        type: "destination",
+        package: packages.find(function (item) {
+          return String(item.destination || "").toLowerCase() === String(destinationMatch.destination || destinationMatch.name || "").toLowerCase();
+        }),
+        destination: destinationMatch,
+      };
+    }
+
+    return null;
+  }
+
+  function tripDayPlan(item, destination) {
+    const days = Math.max(3, Math.min(10, Number(item.days || parseDays(item.duration) || 5)));
+    const place = destination.destination || destination.name || item.destination;
+    const ideas = [
+      `Arrival in ${place}, hotel check-in, local orientation, and relaxed evening walk.`,
+      "Guided sightseeing covering the most popular landmarks and photo spots.",
+      "Local food, culture, markets, and flexible free-time slots.",
+      "Experience-focused day for beaches, mountains, adventure, or city attractions.",
+      "Slow morning, shopping or cafe time, transfer support, and departure planning.",
+      "Optional add-on day for nearby places, premium activities, or family-friendly rest time.",
+    ];
+
+    return Array.from({ length: days }).map(function (_, index) {
+      return {
+        day: index + 1,
+        text: ideas[index] || ideas[ideas.length - 1],
+      };
+    });
+  }
+
+  function documentChecklist(item, destination) {
+    const text = `${item.destination || ""} ${destination.name || ""} ${(item.tags || []).join(" ")}`.toLowerCase();
+    const international = !/india|goa|manali|kerala|rajasthan|ladakh|coorg|ooty|darjeeling|kashmir|mysore|rishikesh/.test(text);
+    const adventure = /adventure|mountain|trek|snow|ladakh|rishikesh|queenstown|manali/.test(text);
+    const beach = /beach|bali|goa|maldives|phuket|andaman|mauritius|island/.test(text);
+    return [
+      "Government ID proof for all travelers",
+      international ? "Passport with valid expiry" : "Train/flight tickets and hotel confirmation",
+      international ? "Visa or entry document check" : "Emergency contact list",
+      "Travel insurance copy",
+      beach ? "Beachwear, sunscreen, and waterproof pouch" : "Weather-appropriate clothing",
+      adventure ? "Comfortable shoes and activity consent documents" : "Local transport confirmation",
+    ];
+  }
+
+  function renderTripDetailsPage() {
+    const root = document.getElementById("tripDetailRoot");
+    if (!root) return;
+    const resolved = resolveTripDetail();
+    if (!resolved) {
+      root.innerHTML = `
+        <section class="page-hero">
+          <h1>Trip Not Found</h1>
+          <p>Choose a package or destination from the main pages to open a detailed trip plan.</p>
+          <a href="packages.html" class="btn">Browse Packages</a>
+        </section>
+      `;
+      return;
+    }
+
+    const fallbackDestination = resolved.destination || {};
+    const item = resolved.package || {
+      title: fallbackDestination.name || "Custom Trip",
+      destination: fallbackDestination.destination || fallbackDestination.name || "Flexible destination",
+      amount: fallbackDestination.amount || parseAmount(fallbackDestination.price) || 30000,
+      price: fallbackDestination.amount || parseAmount(fallbackDestination.price) || 30000,
+      duration: "Custom duration",
+      days: 5,
+      tags: fallbackDestination.tags || ["Custom"],
+      features: [
+        fallbackDestination.desc || fallbackDestination.description || "Curated destination planning",
+        "Hotel and local transport quote support",
+        "WhatsApp follow-up with flexible options",
+      ],
+      bestFor: (fallbackDestination.tags || ["Flexible travelers"]).join(", "),
+      image: fallbackDestination.image || "",
+    };
+    const destination = fallbackDestination.destination ? fallbackDestination : {
+      name: item.destination,
+      destination: item.destination,
+      bestTimeToVisit: item.bestTimeToVisit || "Flexible season",
+      desc: item.description || item.bestFor,
+      detail: item.description || item.bestFor,
+      image: item.image,
+      tags: item.tags || [],
+    };
+    const image = item.image || destination.image || "services1.jpg";
+    const inclusions = item.inclusions || item.features || [];
+    const exclusions = ["Flights unless requested", "Personal shopping", "Entry tickets not listed", "Meals not listed in final quote"];
+    const dayPlan = tripDayPlan(item, destination);
+    const docs = documentChecklist(item, destination);
+    const bookingLink = bookingUrl({ title: item.title, destination: item.destination || destination.name });
+    const mapUrl = `https://www.google.com/maps?q=${encodeURIComponent(item.destination || destination.name)}&output=embed`;
+    const openMapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.destination || destination.name)}`;
+
+    document.title = `${item.title || destination.name} - Travel with Giridhar`;
+    root.innerHTML = `
+      <section class="trip-detail-hero" style="--trip-bg:url('${escapeHtml(image)}')">
+        <div class="trip-detail-hero-card">
+          <p class="hero-kicker">Trip Detail Page</p>
+          <h1>${escapeHtml(item.title || destination.name)}</h1>
+          <p>${escapeHtml(destination.desc || item.description || "A curated travel plan with clear pricing, itinerary, and support.")}</p>
+          <div class="tag-row">${(item.tags || destination.tags || []).slice(0, 5).map(function (tag) { return `<span class="tag">${escapeHtml(tag)}</span>`; }).join("")}</div>
+          <div class="trip-detail-actions">
+            <a href="${bookingLink}" class="btn">Book via Form</a>
+            <a href="${whatsappUrl}" class="btn btn-outline" target="_blank" rel="noreferrer">WhatsApp</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section trip-detail-grid">
+        <article class="panel trip-overview-card">
+          <p class="hero-kicker">Overview</p>
+          <h2>${escapeHtml(item.destination || destination.name)}</h2>
+          <dl>
+            <div><dt>Price from</dt><dd>${money(item.amount || item.price || destination.amount)}</dd></div>
+            <div><dt>Duration</dt><dd>${escapeHtml(item.duration || `${item.days || 5} Days`)}</dd></div>
+            <div><dt>Best time</dt><dd>${escapeHtml(destination.bestTimeToVisit || destination.best || item.bestTimeToVisit || "Flexible")}</dd></div>
+            <div><dt>Best for</dt><dd>${escapeHtml(item.bestFor || (item.tags || []).join(", ") || "Flexible travelers")}</dd></div>
+          </dl>
+        </article>
+        <article class="panel trip-map-card">
+          <p class="hero-kicker">Map Preview</p>
+          <h2>Explore the route area</h2>
+          <iframe title="Google Map for ${escapeHtml(item.destination || destination.name)}" src="${mapUrl}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <a class="btn btn-outline btn-small" href="${openMapUrl}" target="_blank" rel="noreferrer">Open in Google Maps</a>
+        </article>
+      </section>
+
+      <section class="section trip-detail-grid">
+        <article class="panel">
+          <p class="hero-kicker">Day-wise Itinerary</p>
+          <h2>Simple route plan</h2>
+          <ol class="trip-itinerary-list">
+            ${dayPlan.map(function (day) { return `<li><strong>Day ${day.day}</strong><span>${escapeHtml(day.text)}</span></li>`; }).join("")}
+          </ol>
+        </article>
+        <article class="panel">
+          <p class="hero-kicker">Travel Documents</p>
+          <h2>Checklist for this trip</h2>
+          <ul class="trip-document-list">
+            ${docs.map(function (doc, index) { return `<li><label><input type="checkbox" data-trip-doc="${index}" /> <span>${escapeHtml(doc)}</span></label></li>`; }).join("")}
+          </ul>
+        </article>
+      </section>
+
+      <section class="section trip-detail-grid">
+        <article class="panel">
+          <p class="hero-kicker">Inclusions</p>
+          <h2>What is covered</h2>
+          <ul class="trip-document-list">${inclusions.map(function (feature) { return `<li><i class="fas fa-check"></i>${escapeHtml(feature)}</li>`; }).join("")}</ul>
+        </article>
+        <article class="panel">
+          <p class="hero-kicker">Exclusions</p>
+          <h2>Plan separately</h2>
+          <ul class="trip-document-list">${exclusions.map(function (feature) { return `<li><i class="fas fa-minus"></i>${escapeHtml(feature)}</li>`; }).join("")}</ul>
+        </article>
+      </section>
+
+      <section class="section trip-seo-section">
+        <p class="hero-kicker">Trip Guide</p>
+        <h2>Best time, budget, and things to do in ${escapeHtml(item.destination || destination.name)}</h2>
+        <div class="trip-seo-grid">
+          <article><h3>Best Time To Visit</h3><p>${escapeHtml(destination.bestTimeToVisit || destination.best || "Choose pleasant weather months and avoid heavy rush dates when possible.")}</p></article>
+          <article><h3>Things To Do</h3><p>${escapeHtml(destination.detail || item.description || "Sightseeing, local food, relaxed exploration, and optional activities can be added to the final plan.")}</p></article>
+          <article><h3>Budget Guide</h3><p>Start from ${money(item.amount || item.price || destination.amount)} and customize hotel, transport, travelers, and activities before confirming.</p></article>
+        </div>
+      </section>
+
+      <section class="section faq-section">
+        <div class="faq-grid">
+          <details open><summary>Can this trip be customized?</summary><p>Yes. Dates, hotel comfort, traveler count, transport, and activities can be changed in the booking request.</p></details>
+          <details><summary>How do I confirm availability?</summary><p>Use the booking form or WhatsApp. The admin dashboard stores your request for follow-up.</p></details>
+          <details><summary>Is this a final price?</summary><p>No. This is a starting price. Final quote depends on date, season, hotel type, and inclusions.</p></details>
+        </div>
+      </section>
+    `;
+
+    const docKey = `travelDocChecklist-${slug(item.title || destination.name)}`;
+    const docInputs = Array.from(root.querySelectorAll("[data-trip-doc]"));
+    let savedDocs = {};
+
+    try {
+      savedDocs = JSON.parse(localStorage.getItem(docKey)) || {};
+    } catch (error) {
+      savedDocs = {};
+    }
+
+    docInputs.forEach(function (input) {
+      input.checked = Boolean(savedDocs[input.dataset.tripDoc]);
+      input.addEventListener("change", function () {
+        savedDocs[input.dataset.tripDoc] = input.checked;
+        try {
+          localStorage.setItem(docKey, JSON.stringify(savedDocs));
+        } catch (error) {
+          toast("Document checklist could not be saved in this browser.", "error");
+        }
+      });
+    });
+  }
+
+  function initOffersPage() {
+    const grid = document.getElementById("offersGrid");
+    if (!grid || grid.dataset.ready) return;
+    grid.dataset.ready = "true";
+    const source = getPackageCatalog();
+    const preferred = [
+      "Goa Beach Escape",
+      "Singapore Family Fun",
+      "Premium Bali Tour",
+      "Manali Adventure Holiday",
+      "Maldives Island Stay",
+      "Kerala Backwater Retreat",
+      "Dubai Desert Luxury",
+      "Santorini Honeymoon Tour",
+    ].map(packageByTitle).filter(Boolean);
+    const offers = (preferred.length ? preferred : source.slice(0, 8)).map(function (item, index) {
+      const tags = item.tags || [];
+      const category = tags.includes("Family") ? "family" :
+        tags.includes("Honeymoon") || tags.includes("Romantic") ? "honeymoon" :
+        tags.includes("International") ? "international" :
+        Number(item.days || 5) <= 4 ? "weekend" : "family";
+      return {
+        ...item,
+        offerCategory: category,
+        badge: ["Seasonal Pick", "Family Deal", "Couple Special", "Weekend Ready"][index % 4],
+      };
+    });
+
+    function render(filter) {
+      const visible = offers.filter(function (item) {
+        return filter === "all" || item.offerCategory === filter || (filter === "international" && (item.tags || []).includes("International"));
+      });
+      grid.innerHTML = visible.map(function (item) {
+        return `
+          <article class="offer-card offers-page-card" data-offer-category="${item.offerCategory}">
+            <span class="trend-badge">${escapeHtml(item.badge)}</span>
+            <h3>${escapeHtml(item.title)}</h3>
+            <p>${escapeHtml(item.destination)} - ${escapeHtml(item.bestFor || item.description || "Flexible travel plan")}</p>
+            <strong>From ${money(item.amount || item.price)}</strong>
+            <div class="tag-row">${(item.tags || []).slice(0, 4).map(function (tag) { return `<span class="tag">${escapeHtml(tag)}</span>`; }).join("")}</div>
+            <div class="v13-card-action-row">
+              <a class="btn btn-small" href="${bookingUrl(item)}">Request Quote</a>
+              <a class="btn btn-outline btn-small" href="${tripDetailsUrl(item, "package")}">Details</a>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    document.querySelectorAll("[data-offer-filter]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        const filter = button.dataset.offerFilter;
+        document.querySelectorAll("[data-offer-filter]").forEach(function (item) {
+          item.classList.toggle("is-active", item === button);
+        });
+        render(filter);
+      });
+    });
+    render("all");
+  }
+
   function updateFooterVersion() {
     document.querySelectorAll("footer p").forEach(function (paragraph) {
       if (/Travel Website v/i.test(paragraph.textContent)) {
         paragraph.remove();
+      }
+    });
+  }
+
+  function ensureOffersFooterLink() {
+    document.querySelectorAll(".footer-links").forEach(function (links) {
+      if (links.querySelector('a[href="offers.html"]')) return;
+      const offers = document.createElement("a");
+      offers.href = "offers.html";
+      offers.textContent = "Offers";
+      const contact = links.querySelector('a[href="contact.html"]');
+
+      if (contact) {
+        links.insertBefore(offers, contact);
+      } else {
+        links.appendChild(offers);
       }
     });
   }
@@ -2221,9 +2777,12 @@
   }
   function initV13() {
     keepHomeAtHeroOnFreshLoad();
+    renderTripDetailsPage();
+    initOffersPage();
     ensureWishlistNav();
     ensureWishlistDrawer();
     initBookingStepper();
+    initSmartPackageBuilder();
     initPackageFilters();
     initHomeFeaturedTrips();
     initTrendingSlider();
@@ -2244,6 +2803,7 @@
     initTravelChecklist();
     initDestinationComparison();
     updateFooterVersion();
+    ensureOffersFooterLink();
     initNewsletterSignup();
     initRouteMapPlanner();
     initFlexibleResultRows();

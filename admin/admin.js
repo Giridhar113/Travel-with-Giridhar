@@ -303,6 +303,7 @@
       ["New Leads", stats.new || bookings.filter((booking) => booking.status === "new").length, "Need first response"],
       ["This Week", stats.thisWeek || getThisWeekBookings(bookings).length, "Recent booking demand"],
       ["WhatsApp Leads", whatsAppLeads, "Bookings routed to WhatsApp"],
+      ["Email Setup", stats.emailConfigured ? "Ready" : "Not Set", stats.emailConfigured ? "Status emails can be sent" : "Add SMTP vars in Vercel"],
     ]
       .map(function ([title, value, helper]) {
         return `
