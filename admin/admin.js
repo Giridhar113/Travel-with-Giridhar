@@ -8,7 +8,7 @@
     bookings: [],
     filtered: [],
     status: "",
-    paymentStatus: "",
+    contactChannel: "",
     query: "",
     sortKey: "createdAt",
     sortDirection: "desc",
@@ -120,9 +120,9 @@
     return `<span class="status-badge status-${safeStatus}">${labelize(safeStatus)}</span>`;
   }
 
-  function paymentBadge(status) {
-    const safeStatus = String(status || "pending").toLowerCase();
-    return `<span class="payment-badge payment-${safeStatus}">${labelize(safeStatus)}</span>`;
+  function channelBadge(status) {
+    const safeStatus = String(status || "whatsapp").toLowerCase();
+    return `<span class="channel-badge channel-${safeStatus}">${labelize(safeStatus)}</span>`;
   }
 
   function setButtonLoading(button, isLoading) {
@@ -261,8 +261,8 @@
       params.set("status", filters.status);
     }
 
-    if (filters && filters.paymentStatus) {
-      params.set("paymentStatus", filters.paymentStatus);
+    if (filters && filters.contactChannel) {
+      params.set("contactChannel", filters.contactChannel);
     }
 
     const data = await apiFetch(`/api/admin/bookings${params.toString() ? `?${params}` : ""}`);
@@ -270,33 +270,19 @@
     return data;
   }
 
-  function getThisWeekBookings(bookings, paymentStatus) {
+  function getThisWeekBookings(bookings, contactChannel) {
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
 
     return bookings.filter(function (booking) {
-      const matchesPayment = !paymentStatus || booking.paymentStatus === paymentStatus;
-      return matchesPayment && new Date(booking.createdAt) >= weekAgo;
+      const matchesChannel = !contactChannel || booking.contactChannel === contactChannel;
+      return matchesChannel && new Date(booking.createdAt) >= weekAgo;
     });
-  }
-
-  function getMonthRevenue(bookings) {
-    const monthStart = new Date();
-    monthStart.setDate(1);
-    monthStart.setHours(0, 0, 0, 0);
-
-    return bookings
-      .filter(function (booking) {
-        return booking.paymentStatus === "paid" && new Date(booking.createdAt) >= monthStart;
-      })
-      .reduce(function (sum, booking) {
-        return sum + Number(booking.amount || 0);
-      }, 0);
   }
 
   function renderDashboardStats(bookings, stats) {
     const statsGrid = document.getElementById("dashboardStats");
-    const whatsAppLeads = bookings.filter((booking) => booking.paymentStatus === "whatsapp").length;
+    const whatsAppLeads = bookings.filter((booking) => booking.contactChannel === "whatsapp").length;
 
     statsGrid.innerHTML = [
       ["Total Bookings", stats.total || bookings.length, "All stored inquiries"],
@@ -432,7 +418,7 @@
           <tr>
             <td><strong>${escapeHtml(booking.name)}</strong><br><span class="muted">${escapeHtml(booking.email)}</span></td>
             <td><strong>${escapeHtml(booking.destination)}</strong><br><span class="muted">${escapeHtml(booking.package)}</span></td>
-            <td>${paymentBadge(booking.paymentStatus)}</td>
+            <td>${channelBadge(booking.contactChannel)}</td>
             <td>${statusBadge(booking.status)}</td>
             <td>${escapeHtml(formatDateTime(booking.createdAt))}</td>
           </tr>
@@ -469,9 +455,9 @@
           .toLowerCase();
         const matchesQuery = !query || searchable.includes(query);
         const matchesStatus = !state.status || booking.status === state.status;
-        const matchesPayment = !state.paymentStatus || booking.paymentStatus === state.paymentStatus;
+        const matchesChannel = !state.contactChannel || booking.contactChannel === state.contactChannel;
 
-        return matchesQuery && matchesStatus && matchesPayment;
+        return matchesQuery && matchesStatus && matchesChannel;
       })
       .sort(function (a, b) {
         const left = a[state.sortKey] || "";
@@ -523,7 +509,7 @@
             <td>${escapeHtml(formatDate(booking.travelDate))}</td>
             <td>${escapeHtml(booking.travelers)}</td>
             <td>${statusBadge(booking.status)}</td>
-            <td>${paymentBadge(booking.paymentStatus)}</td>
+            <td>${channelBadge(booking.contactChannel)}</td>
             <td>${escapeHtml(formatDateTime(booking.createdAt))}</td>
           </tr>
         `;
@@ -548,7 +534,7 @@
         ${detailTile("Travel Date", formatDate(booking.travelDate))}
         ${detailTile("Travelers", booking.travelers)}
         ${detailTile("Amount", formatRupees(booking.amount))}
-        ${detailTile("Contact Channel", paymentBadge(booking.paymentStatus), true)}
+        ${detailTile("Contact Channel", channelBadge(booking.contactChannel), true)}
       </div>
       <label class="search-control">
         Update lead status
@@ -659,11 +645,11 @@
       });
     });
 
-    document.querySelectorAll("[data-payment-filter]").forEach(function (button) {
+    document.querySelectorAll("[data-channel-filter]").forEach(function (button) {
       button.addEventListener("click", function () {
-        document.querySelectorAll("[data-payment-filter]").forEach((item) => item.classList.remove("is-active"));
+        document.querySelectorAll("[data-channel-filter]").forEach((item) => item.classList.remove("is-active"));
         button.classList.add("is-active");
-        state.paymentStatus = button.dataset.paymentFilter;
+        state.contactChannel = button.dataset.channelFilter;
         state.page = 1;
         applyBookingFilters();
       });

@@ -57,7 +57,7 @@ router.post("/", bookingLimiter, async (req, res, next) => {
         success: false,
         error: "We could not match this package to a secure price. Please choose a listed package.",
         errors: {
-          package: "Choose a listed package so payment amount can be calculated safely.",
+          package: "Choose a listed package so the quote amount can be calculated safely.",
         },
       });
     }
@@ -66,7 +66,7 @@ router.post("/", bookingLimiter, async (req, res, next) => {
       ...value,
       amount: pricing.amount,
       amountSource: pricing.source,
-      paymentStatus: "whatsapp",
+      contactChannel: "whatsapp",
     });
 
     const whatsappMessage = buildWhatsAppBookingMessage(booking);

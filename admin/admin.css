@@ -638,7 +638,7 @@ h2 {
 }
 
 .status-badge,
-.payment-badge {
+.channel-badge {
   display: inline-flex;
   border-radius: 999px;
   padding: 6px 10px;
@@ -647,8 +647,7 @@ h2 {
   text-transform: capitalize;
 }
 
-.status-new,
-.payment-pending {
+.status-new {
   background: #fef3c7;
   color: #92400e;
 }
@@ -658,13 +657,12 @@ h2 {
   color: #1d4ed8;
 }
 
-.status-confirmed,
-.payment-paid {
+.status-confirmed {
   background: #dcfce7;
   color: #166534;
 }
 
-.payment-whatsapp {
+.channel-whatsapp {
   background: #d1fae5;
   color: #047857;
 }
@@ -672,11 +670,6 @@ h2 {
 .status-closed {
   background: #f1f5f9;
   color: #475569;
-}
-
-.payment-failed {
-  background: #fee2e2;
-  color: #b91c1c;
 }
 
 .filters-card {

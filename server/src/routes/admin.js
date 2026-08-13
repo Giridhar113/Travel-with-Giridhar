@@ -11,7 +11,7 @@ const {
   deleteBooking,
   findBookingById,
   listBookings,
-  revenueSince,
+  quoteValueSince,
   updateBooking,
 } = require("../models/Booking");
 const requireAdminAuth = require("../middleware/auth");
@@ -89,7 +89,7 @@ function getDemoBookings() {
       travelers: 2,
       message: "Looking for a beach honeymoon plan with airport transfers.",
       status: "new",
-      paymentStatus: "whatsapp",
+      contactChannel: "whatsapp",
       amount: 40000,
       amountSource: "demo",
       createdAt: dateOffset(-1),
@@ -107,7 +107,7 @@ function getDemoBookings() {
       travelers: 4,
       message: "Friends trip. Need budget hotel and local sightseeing.",
       status: "contacted",
-      paymentStatus: "whatsapp",
+      contactChannel: "whatsapp",
       amount: 18000,
       amountSource: "demo",
       createdAt: dateOffset(-3),
@@ -125,7 +125,7 @@ function getDemoBookings() {
       travelers: 3,
       message: "Family mountain holiday with safe transport and guided activities.",
       status: "confirmed",
-      paymentStatus: "whatsapp",
+      contactChannel: "whatsapp",
       amount: 24000,
       amountSource: "demo",
       createdAt: dateOffset(-8),
@@ -143,7 +143,7 @@ function getDemoBookings() {
       travelers: 5,
       message: "Luxury family package with desert safari and city tour.",
       status: "closed",
-      paymentStatus: "whatsapp",
+      contactChannel: "whatsapp",
       amount: 58000,
       amountSource: "demo",
       createdAt: dateOffset(-15),
@@ -156,10 +156,10 @@ function filterDemoBookings(bookings, query) {
   const filter = buildAdminBookingQuery(query || {});
   return bookings.filter(function (booking) {
     const matchesStatus = !filter.status || booking.status === filter.status;
-    const matchesPayment =
-      !filter.paymentStatus || booking.paymentStatus === filter.paymentStatus;
+    const matchesChannel =
+      !filter.contactChannel || booking.contactChannel === filter.contactChannel;
 
-    return matchesStatus && matchesPayment;
+    return matchesStatus && matchesChannel;
   });
 }
 
@@ -175,14 +175,14 @@ function buildDemoStats(bookings) {
     new: bookings.filter((booking) => booking.status === "new").length,
     confirmed: bookings.filter((booking) => booking.status === "confirmed").length,
     thisWeek: bookings.filter((booking) => new Date(booking.createdAt) >= weekAgo).length,
-    paidThisWeek: bookings.filter(
+    whatsAppThisWeek: bookings.filter(
       (booking) =>
-        booking.paymentStatus === "whatsapp" && new Date(booking.createdAt) >= weekAgo
+        booking.contactChannel === "whatsapp" && new Date(booking.createdAt) >= weekAgo
     ).length,
-    revenueThisMonth: bookings
+    quoteValueThisMonth: bookings
       .filter(
         (booking) =>
-          booking.paymentStatus === "whatsapp" && new Date(booking.createdAt) >= monthStart
+          booking.contactChannel === "whatsapp" && new Date(booking.createdAt) >= monthStart
       )
       .reduce((sum, booking) => sum + Number(booking.amount || 0), 0),
     emailConfigured: getSmtpConfig().configured,
@@ -192,14 +192,14 @@ function buildDemoStats(bookings) {
 function buildAdminBookingQuery(query) {
   const filter = {};
   const status = validateStatus(query.status);
-  const paymentStatus = String(query.paymentStatus || "").trim().toLowerCase();
+  const contactChannel = String(query.contactChannel || "").trim().toLowerCase();
 
   if (status) {
     filter.status = status;
   }
 
-  if (["whatsapp", "pending", "paid", "failed"].includes(paymentStatus)) {
-    filter.paymentStatus = paymentStatus;
+  if (["whatsapp"].includes(contactChannel)) {
+    filter.contactChannel = contactChannel;
   }
 
   return filter;
@@ -302,7 +302,7 @@ router.get("/bookings", requireAdminAuth, async (req, res, next) => {
         bookings,
         stats: buildDemoStats(getDemoBookings()),
         statuses: allowedStatuses,
-        paymentStatuses: ["whatsapp"],
+        contactChannels: ["whatsapp"],
       });
     }
 
@@ -322,8 +322,8 @@ router.get("/bookings", requireAdminAuth, async (req, res, next) => {
       new: await countBookings({ status: "new" }),
       confirmed: await countBookings({ status: "confirmed" }),
       thisWeek: await countBookings({ since: weekAgo }),
-      paidThisWeek: await countBookings({ paymentStatus: "paid", since: weekAgo }),
-      revenueThisMonth: await revenueSince(monthStart),
+      whatsAppThisWeek: await countBookings({ contactChannel: "whatsapp", since: weekAgo }),
+      quoteValueThisMonth: await quoteValueSince(monthStart),
       emailConfigured: getSmtpConfig().configured,
     };
 
@@ -332,7 +332,7 @@ router.get("/bookings", requireAdminAuth, async (req, res, next) => {
       bookings,
       stats,
       statuses: allowedStatuses,
-        paymentStatuses: ["whatsapp"],
+      contactChannels: ["whatsapp"],
     });
   } catch (error) {
     return next(error);

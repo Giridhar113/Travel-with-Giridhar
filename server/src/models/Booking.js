@@ -34,7 +34,7 @@ function mapBooking(row) {
     emiNeeded: row.emi_needed || "",
     travelersType: row.travelers_type || "",
     preferredContact: row.preferred_contact || "",
-    paymentStatus: row.payment_status || "pending",
+    contactChannel: row.contact_channel || "whatsapp",
     amount: Number(row.amount || 0),
     amountSource: row.amount_source || "",
     status: row.status || "new",
@@ -61,7 +61,7 @@ async function createBooking(value) {
       emi_needed,
       travelers_type,
       preferred_contact,
-      payment_status,
+      contact_channel,
       amount,
       amount_source,
       status
@@ -81,7 +81,7 @@ async function createBooking(value) {
       ${value.emiNeeded || ""},
       ${value.travelersType || ""},
       ${value.preferredContact || ""},
-      ${value.paymentStatus || "pending"},
+      ${value.contactChannel || "whatsapp"},
       ${Number(value.amount || 0)},
       ${value.amountSource || ""},
       ${value.status || "new"}
@@ -112,15 +112,15 @@ async function updateBooking(id, patch) {
 
   const next = {
     status: patch.status !== undefined ? patch.status : current.status,
-    paymentStatus:
-      patch.paymentStatus !== undefined ? patch.paymentStatus : current.paymentStatus,
+    contactChannel:
+      patch.contactChannel !== undefined ? patch.contactChannel : current.contactChannel,
   };
 
   const rows = await query`
     UPDATE bookings
     SET
       status = ${next.status},
-      payment_status = ${next.paymentStatus},
+      contact_channel = ${next.contactChannel},
       updated_at = NOW()
     WHERE id = ${id}
     RETURNING *
@@ -139,20 +139,20 @@ async function deleteBooking(id) {
   return mapBooking(rows[0]);
 }
 
-async function listBookings({ status = "", paymentStatus = "", sortDirection = "desc" } = {}) {
+async function listBookings({ status = "", contactChannel = "", sortDirection = "desc" } = {}) {
   const sortAsc = sortDirection === "asc";
   let rows;
 
-  if (status && paymentStatus) {
+  if (status && contactChannel) {
     rows = sortAsc
       ? await query`
           SELECT * FROM bookings
-          WHERE status = ${status} AND payment_status = ${paymentStatus}
+          WHERE status = ${status} AND contact_channel = ${contactChannel}
           ORDER BY created_at ASC
         `
       : await query`
           SELECT * FROM bookings
-          WHERE status = ${status} AND payment_status = ${paymentStatus}
+          WHERE status = ${status} AND contact_channel = ${contactChannel}
           ORDER BY created_at DESC
         `;
   } else if (status) {
@@ -167,16 +167,16 @@ async function listBookings({ status = "", paymentStatus = "", sortDirection = "
           WHERE status = ${status}
           ORDER BY created_at DESC
         `;
-  } else if (paymentStatus) {
+  } else if (contactChannel) {
     rows = sortAsc
       ? await query`
           SELECT * FROM bookings
-          WHERE payment_status = ${paymentStatus}
+          WHERE contact_channel = ${contactChannel}
           ORDER BY created_at ASC
         `
       : await query`
           SELECT * FROM bookings
-          WHERE payment_status = ${paymentStatus}
+          WHERE contact_channel = ${contactChannel}
           ORDER BY created_at DESC
         `;
   } else {
@@ -188,14 +188,14 @@ async function listBookings({ status = "", paymentStatus = "", sortDirection = "
   return rows.map(mapBooking);
 }
 
-async function countBookings({ status = "", paymentStatus = "", since = null } = {}) {
+async function countBookings({ status = "", contactChannel = "", since = null } = {}) {
   let rows;
 
-  if (status && paymentStatus && since) {
+  if (status && contactChannel && since) {
     rows = await query`
       SELECT COUNT(*)::int AS count
       FROM bookings
-      WHERE status = ${status} AND payment_status = ${paymentStatus} AND created_at >= ${since}
+      WHERE status = ${status} AND contact_channel = ${contactChannel} AND created_at >= ${since}
     `;
   } else if (status && since) {
     rows = await query`
@@ -203,17 +203,17 @@ async function countBookings({ status = "", paymentStatus = "", since = null } =
       FROM bookings
       WHERE status = ${status} AND created_at >= ${since}
     `;
-  } else if (paymentStatus && since) {
+  } else if (contactChannel && since) {
     rows = await query`
       SELECT COUNT(*)::int AS count
       FROM bookings
-      WHERE payment_status = ${paymentStatus} AND created_at >= ${since}
+      WHERE contact_channel = ${contactChannel} AND created_at >= ${since}
     `;
-  } else if (status && paymentStatus) {
+  } else if (status && contactChannel) {
     rows = await query`
       SELECT COUNT(*)::int AS count
       FROM bookings
-      WHERE status = ${status} AND payment_status = ${paymentStatus}
+      WHERE status = ${status} AND contact_channel = ${contactChannel}
     `;
   } else if (status) {
     rows = await query`
@@ -221,11 +221,11 @@ async function countBookings({ status = "", paymentStatus = "", since = null } =
       FROM bookings
       WHERE status = ${status}
     `;
-  } else if (paymentStatus) {
+  } else if (contactChannel) {
     rows = await query`
       SELECT COUNT(*)::int AS count
       FROM bookings
-      WHERE payment_status = ${paymentStatus}
+      WHERE contact_channel = ${contactChannel}
     `;
   } else if (since) {
     rows = await query`
@@ -240,11 +240,11 @@ async function countBookings({ status = "", paymentStatus = "", since = null } =
   return Number(rows[0] ? rows[0].count : 0);
 }
 
-async function revenueSince(since) {
+async function quoteValueSince(since) {
   const rows = await query`
     SELECT COALESCE(SUM(amount), 0)::int AS total
     FROM bookings
-    WHERE payment_status = 'paid' AND created_at >= ${since}
+    WHERE contact_channel = 'whatsapp' AND created_at >= ${since}
   `;
 
   return Number(rows[0] ? rows[0].total : 0);
@@ -257,6 +257,6 @@ module.exports = {
   findBookingById,
   listBookings,
   mapBooking,
-  revenueSince,
+  quoteValueSince,
   updateBooking,
 };

@@ -59,7 +59,7 @@ async function ensureDatabase() {
             emi_needed TEXT NOT NULL DEFAULT '',
             travelers_type TEXT NOT NULL DEFAULT '',
             preferred_contact TEXT NOT NULL DEFAULT '',
-            payment_status TEXT NOT NULL DEFAULT 'pending',
+            contact_channel TEXT NOT NULL DEFAULT 'whatsapp',
             amount INTEGER NOT NULL DEFAULT 0,
             amount_source TEXT NOT NULL DEFAULT '',
             status TEXT NOT NULL DEFAULT 'new',
@@ -68,9 +68,33 @@ async function ensureDatabase() {
           )
         `;
 
+        await sql`
+          ALTER TABLE bookings
+          ADD COLUMN IF NOT EXISTS contact_channel TEXT NOT NULL DEFAULT 'whatsapp'
+        `;
+
+        await sql`
+          DO $$
+          BEGIN
+            IF EXISTS (
+              SELECT 1
+              FROM information_schema.columns
+              WHERE table_name = 'bookings'
+                AND column_name = 'payment_status'
+            ) THEN
+              UPDATE bookings
+              SET contact_channel = 'whatsapp'
+              WHERE contact_channel IS NULL OR contact_channel = '';
+
+              ALTER TABLE bookings DROP COLUMN payment_status;
+            END IF;
+          END $$;
+        `;
+
         await sql`CREATE INDEX IF NOT EXISTS idx_bookings_created_at ON bookings (created_at DESC)`;
         await sql`CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings (status)`;
-        await sql`CREATE INDEX IF NOT EXISTS idx_bookings_payment_status ON bookings (payment_status)`;
+        await sql`DROP INDEX IF EXISTS idx_bookings_payment_status`;
+        await sql`CREATE INDEX IF NOT EXISTS idx_bookings_contact_channel ON bookings (contact_channel)`;
       })
       .catch(function (error) {
         schemaPromise = null;

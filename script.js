@@ -1435,20 +1435,10 @@ if (surpriseTripButton) {
 
 renderSharedPlannerFromUrl();
 
-// EmailJS config - replace with your credentials.
-const emailJsConfig = {
-  publicKey: "07_pX4KHdEQuQPzbb",
-  serviceId: "service_200l461",
-  bookingTemplateId: "template_1t7ejfe",
-  feedbackTemplateId: "template_9f26bcf",
-  autoReplyTemplateId: "",
-  ownerEmail: "giridhar.parlapalli@gmail.com",
-};
-const emailJsWhatsAppUrl =
+const formWhatsAppUrl =
   `https://wa.me/${
     window.TRAVEL_SITE_CONFIG ? window.TRAVEL_SITE_CONFIG.whatsappNumber : "918179721034"
   }?text=Hi%2C%20I%20tried%20the%20website%20form%20and%20want%20to%20plan%20a%20trip.`;
-let emailJsInitialized = false;
 
 function getFormValue(form, fieldName) {
   const field = form.elements[fieldName];
@@ -1466,24 +1456,6 @@ function formatTravelPhone(value) {
 }
 
 window.formatTravelPhone = formatTravelPhone;
-
-function isEmailJsValueConfigured(value) {
-  return Boolean(value && !String(value).startsWith("YOUR_"));
-}
-
-function hasEmailJsCredentials(templateId) {
-  return (
-    isEmailJsValueConfigured(emailJsConfig.publicKey) &&
-    isEmailJsValueConfigured(emailJsConfig.serviceId) &&
-    isEmailJsValueConfigured(templateId)
-  );
-}
-
-function getConfiguredTemplateId(primaryTemplateId, fallbackTemplateId) {
-  return isEmailJsValueConfigured(primaryTemplateId)
-    ? primaryTemplateId
-    : fallbackTemplateId;
-}
 
 function getToastContainer() {
   let toastContainer = document.getElementById("toastContainer");
@@ -1837,28 +1809,12 @@ function applyServerValidationErrors(form, details) {
   }
 }
 
-function isPlaceholderFormspreeForm(form) {
-  return isFormspreeForm(form) && form.action.includes("YOUR_");
-}
-
-function shouldUseClientOnlySubmission(form, templateId) {
-  if (isBookingApiForm(form)) {
-    return false;
-  }
-
-  if (form && form.dataset.submitEndpoint === "feedback-demo") {
-    return true;
-  }
-
-  if (isPlaceholderFormspreeForm(form)) {
-    return true;
-  }
-
-  return !isFormspreeForm(form) && !hasEmailJsCredentials(templateId);
-}
-
 function isBookingApiForm(form) {
   return Boolean(form && form.dataset.submitEndpoint === "booking-api");
+}
+
+function isFeedbackDemoForm(form) {
+  return Boolean(form && form.dataset.submitEndpoint === "feedback-demo");
 }
 
 function getTravelApiBaseUrl() {
@@ -2002,8 +1958,7 @@ function handleBookingWhatsAppSubmission(submissionData, templateParams) {
   });
 }
 
-function sendClientOnlyForm(form) {
-  // TODO: wire to backend endpoint / email service - currently client-side only.
+function sendFeedbackDemoForm(form) {
   return new Promise(function (resolve) {
     window.setTimeout(function () {
       resolve(form);
@@ -2013,39 +1968,6 @@ function sendClientOnlyForm(form) {
 
 window.validateTravelFormFields = validateTravelFormFields;
 window.initInlineFormValidation = initInlineFormValidation;
-
-function getEmailJsClient(templateId, formLabel) {
-  if (!window.emailjs) {
-    throw new Error("EmailJS SDK is not loaded. Check your internet connection or CDN script.");
-  }
-
-  if (!isEmailJsValueConfigured(emailJsConfig.publicKey)) {
-    throw new Error("EmailJS public key is missing.");
-  }
-
-  if (!isEmailJsValueConfigured(emailJsConfig.serviceId)) {
-    throw new Error("EmailJS service ID is missing.");
-  }
-
-  if (!isEmailJsValueConfigured(templateId)) {
-    throw new Error(`${formLabel || "EmailJS"} template ID is missing. Add the template ID in script.js.`);
-  }
-
-  if (!emailJsInitialized) {
-    window.emailjs.init({ publicKey: emailJsConfig.publicKey });
-    emailJsInitialized = true;
-  }
-
-  return window.emailjs;
-}
-
-function sendEmailJs(templateId, templateParams, formLabel) {
-  return getEmailJsClient(templateId, formLabel).send(
-    emailJsConfig.serviceId,
-    templateId,
-    templateParams
-  );
-}
 
 function getFormSendErrorMessage(error) {
   if (error && error.code === "TRAVEL_API_NOT_CONFIGURED") {
@@ -2083,55 +2005,6 @@ function shouldFallbackBookingToWhatsApp(error) {
   return false;
 }
 
-function sendAutoReply(templateParams) {
-  if (!isEmailJsValueConfigured(emailJsConfig.autoReplyTemplateId)) {
-    return Promise.resolve();
-  }
-
-  return sendEmailJs(emailJsConfig.autoReplyTemplateId, templateParams, "Auto reply").catch(function (error) {
-    console.warn("EmailJS auto reply failed:", error);
-  });
-}
-
-function isFormspreeForm(form) {
-  return Boolean(form && form.action && form.action.includes("formspree.io"));
-}
-
-function sendFormspree(form, templateParams) {
-  if (!isFormspreeForm(form) || form.action.includes("YOUR_")) {
-    return Promise.reject(
-      new Error("Formspree endpoint is missing. Replace the YOUR_FORM_ID placeholder in contact.html.")
-    );
-  }
-
-  const formData = new FormData(form);
-
-  Object.entries(templateParams).forEach(function ([key, value]) {
-    formData.set(key, value);
-  });
-
-  return fetch(form.action, {
-    method: "POST",
-    body: formData,
-    headers: {
-      Accept: "application/json",
-    },
-  }).then(function (response) {
-    if (response.ok) {
-      return response;
-    }
-
-    return response.json().catch(function () {
-      return {};
-    }).then(function (data) {
-      const message =
-        data && data.errors && data.errors[0] && data.errors[0].message
-          ? data.errors[0].message
-          : "Formspree submission failed.";
-      throw new Error(message);
-    });
-  });
-}
 
 let activeTwoFactorModal = null;
 
@@ -2267,7 +2140,7 @@ function requestTwoFactorVerification(formLabel, templateParams) {
   });
 }
 
-function attachEmailJsSubmit(form, buildParams, templateId, successMessage, formLabel) {
+function attachTravelFormSubmit(form, buildParams, successMessage, formLabel) {
   if (!form) {
     return;
   }
@@ -2298,7 +2171,7 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
     setFormLoading(form, true);
 
     const templateParams = buildParams(form);
-    let paymentResult = null;
+    let submissionResult = null;
     let handledByWhatsAppFallback = false;
 
     Promise.resolve()
@@ -2306,13 +2179,13 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
         if (isBookingApiForm(form) && !isTravelApiConfigured()) {
           handledByWhatsAppFallback = true;
           return sendBookingViaWhatsAppFallback(templateParams).then(function (result) {
-            paymentResult = result;
+            submissionResult = result;
             return result;
           });
         }
 
-        if (shouldUseClientOnlySubmission(form, templateId)) {
-          return sendClientOnlyForm(form);
+        if (isFeedbackDemoForm(form)) {
+          return sendFeedbackDemoForm(form);
         }
 
         return requestTwoFactorVerification(formLabel, templateParams);
@@ -2322,39 +2195,30 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
           return Promise.resolve();
         }
 
-        if (shouldUseClientOnlySubmission(form, templateId)) {
+        if (isFeedbackDemoForm(form)) {
           return Promise.resolve();
-        }
-
-        if (isFormspreeForm(form)) {
-          return sendFormspree(form, templateParams);
         }
 
         if (isBookingApiForm(form)) {
           return sendBookingApi(templateParams).then(function (data) {
             return handleBookingWhatsAppSubmission(data, templateParams).then(function (result) {
-              paymentResult = result;
+              submissionResult = result;
               return data;
             });
           });
         }
 
-        return sendEmailJs(templateId, templateParams, formLabel);
+        return Promise.resolve();
       })
       .then(function () {
-        return isFormspreeForm(form) || isBookingApiForm(form) || shouldUseClientOnlySubmission(form, templateId)
-          ? Promise.resolve()
-          : sendAutoReply(templateParams);
-      })
-      .then(function () {
-        if (paymentResult && paymentResult.whatsappFallback) {
+        if (submissionResult && submissionResult.whatsappFallback) {
           showToast(
-            paymentResult.popupBlocked
+            submissionResult.popupBlocked
               ? "Booking saved in admin. Open WhatsApp to send the final message."
               : "Booking saved in admin. WhatsApp opened; press Send to continue.",
-            paymentResult.popupBlocked ? "info" : "success",
+            submissionResult.popupBlocked ? "info" : "success",
             {
-              href: paymentResult.whatsappUrl,
+              href: submissionResult.whatsappUrl,
               label: "Open WhatsApp",
             }
           );
@@ -2397,7 +2261,7 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
         }
 
         showToast(getFormSendErrorMessage(error), "error", {
-          href: emailJsWhatsAppUrl,
+          href: formWhatsAppUrl,
           label: "WhatsApp us",
         });
       })
@@ -2408,15 +2272,13 @@ function attachEmailJsSubmit(form, buildParams, templateId, successMessage, form
   });
 }
 
-attachEmailJsSubmit(
+attachTravelFormSubmit(
   bookingForm,
   function (form) {
     return {
       from_name: getFormValue(form, "bookingName"),
       from_email: getFormValue(form, "bookingEmail"),
       customer_email: getFormValue(form, "bookingEmail"),
-      to_email: emailJsConfig.ownerEmail,
-      owner_email: emailJsConfig.ownerEmail,
       reply_to: getFormValue(form, "bookingEmail"),
       phone: formatTravelPhone(getFormValue(form, "bookingPhone")),
       destination: getFormValue(form, "destination"),
@@ -2433,13 +2295,12 @@ attachEmailJsSubmit(
       travelers_type: getFormValue(form, "travelersType"),
     };
   },
-  emailJsConfig.bookingTemplateId,
   "Booking request saved successfully.",
   "Booking"
 );
 
 
-attachEmailJsSubmit(
+attachTravelFormSubmit(
   contactForm,
   function (form) {
     const customerEmail = getFormValue(form, "email");
@@ -2448,16 +2309,13 @@ attachEmailJsSubmit(
       from_name: getFormValue(form, "name"),
       from_email: customerEmail,
       customer_email: customerEmail,
-      to_email: emailJsConfig.ownerEmail,
-      owner_email: emailJsConfig.ownerEmail,
       reply_to: customerEmail,
       feedback_type: getFormValue(form, "feedbackType") || "General Message",
       feedback_rating: getFormValue(form, "feedbackRating") || "Not rated",
       message: getFormValue(form, "message"),
     };
   },
-  emailJsConfig.feedbackTemplateId,
-  "Your feedback was sent! Thank you for rating Travel with Giridhar.",
+  "Feedback saved locally for this demo. Use WhatsApp for urgent trip help.",
   "Feedback"
 );
 

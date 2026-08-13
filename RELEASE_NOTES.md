@@ -98,7 +98,6 @@ The site now feels more like a real travel startup experience with planning tool
 
 ### New Features
 
-- Added EmailJS-ready booking and feedback form support.
 - Added 3-step booking inquiry form.
 - Added destination search and category filters.
 - Added package search, sorting, price range filters, and result count.
@@ -118,7 +117,6 @@ The site now feels more like a real travel startup experience with planning tool
 - Improved booking links with pre-filled package and destination details.
 - Improved spacing, buttons, hover animations, and mobile responsiveness.
 - Added footer version consistency across pages.
-- Added clearer EmailJS error handling.
 
 ### Fixes
 

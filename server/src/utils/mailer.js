@@ -56,7 +56,7 @@ function statusCopy(status) {
     confirmed: {
       subject: "Your trip request is confirmed",
       title: "Your travel plan is confirmed",
-      body: "Your booking request has been marked as confirmed. Please stay available on WhatsApp for final itinerary and payment instructions.",
+      body: "Your booking request has been marked as confirmed. Please stay available on WhatsApp for the final itinerary and next steps.",
     },
     closed: {
       subject: "Your travel request has been closed",

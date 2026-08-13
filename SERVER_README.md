@@ -110,7 +110,7 @@ POST /api/admin/login
 List bookings:
 
 ```txt
-GET /api/admin/bookings?status=new&paymentStatus=whatsapp&sort=desc
+GET /api/admin/bookings?status=new&contactChannel=whatsapp&sort=desc
 ```
 
 Update lead status:
