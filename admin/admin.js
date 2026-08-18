@@ -511,6 +511,7 @@
             <td>${statusBadge(booking.status)}</td>
             <td>${channelBadge(booking.contactChannel)}</td>
             <td>${escapeHtml(formatDateTime(booking.createdAt))}</td>
+            <td>${escapeHtml(formatDateTime(booking.updatedAt || booking.createdAt))}</td>
           </tr>
         `;
       })
@@ -535,6 +536,7 @@
         ${detailTile("Travelers", booking.travelers)}
         ${detailTile("Amount", formatRupees(booking.amount))}
         ${detailTile("Contact Channel", channelBadge(booking.contactChannel), true)}
+        ${detailTile("Last Updated", formatDateTime(booking.updatedAt || booking.createdAt))}
       </div>
       <label class="search-control">
         Update lead status

@@ -103,6 +103,27 @@ async function findBookingById(id) {
   return mapBooking(rows[0]);
 }
 
+async function findBookingsByContact({ email = "", phone = "" } = {}) {
+  const normalizedEmail = String(email || "").trim().toLowerCase();
+  const phoneDigits = String(phone || "").replace(/\D/g, "");
+  const phoneTail = phoneDigits.slice(-10);
+
+  if (!normalizedEmail || phoneTail.length < 7) {
+    return [];
+  }
+
+  const rows = await query`
+    SELECT *
+    FROM bookings
+    WHERE LOWER(email) = ${normalizedEmail}
+      AND RIGHT(REGEXP_REPLACE(phone, '[^0-9]', '', 'g'), ${phoneTail.length}) = ${phoneTail}
+    ORDER BY created_at DESC
+    LIMIT 10
+  `;
+
+  return rows.map(mapBooking);
+}
+
 async function updateBooking(id, patch) {
   const current = await findBookingById(id);
 
@@ -255,6 +276,7 @@ module.exports = {
   createBooking,
   deleteBooking,
   findBookingById,
+  findBookingsByContact,
   listBookings,
   mapBooking,
   quoteValueSince,

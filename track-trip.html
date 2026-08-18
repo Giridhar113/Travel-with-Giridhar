@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Track your Travel with Giridhar booking request status using the email and phone number from your trip inquiry."
+    />
+    <title>Track Trip - Travel with Giridhar</title>
+    <meta property="og:title" content="Track Trip - Travel with Giridhar" />
+    <meta property="og:description" content="Check whether your travel request is new, contacted, confirmed, or closed." />
+    <meta property="og:image" content="https://travel-with-giridhar.vercel.app/services1.jpg" />
+    <meta property="og:url" content="https://travel-with-giridhar.vercel.app/track-trip.html" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="v13.css" />
+  </head>
+  <body class="track-trip-page">
+    <header>
+      <nav class="navbar">
+        <div class="logo">
+          <a href="index.html" class="logo-link">
+            <i class="fas fa-plane-departure" aria-hidden="true"></i>
+            <div>
+              <span class="logo-text">Travel with</span>
+              <span class="logo-subtext">Giridhar</span>
+            </div>
+          </a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="destinations.html">Destinations</a></li>
+          <li><a href="packages.html">Packages</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <p class="hero-kicker">Trip Status</p>
+        <h1>Track Your Booking Request</h1>
+        <p>
+          Enter the email and phone number used in the booking form to see the
+          latest status saved in the travel desk.
+        </p>
+      </section>
+
+      <section class="section tracker-layout">
+        <form class="panel tracker-form" id="tripStatusForm" novalidate>
+          <div>
+            <p class="hero-kicker">Customer Lookup</p>
+            <h2>Check trip status</h2>
+            <p>
+              For privacy, both email and phone are required. This only shows
+              your booking summary and status, not admin-only notes.
+            </p>
+          </div>
+          <label>
+            Email used for booking
+            <input type="email" name="email" placeholder="your@email.com" required />
+          </label>
+          <label>
+            Phone used for booking
+            <input type="tel" name="phone" placeholder="+91 9876543210" required />
+          </label>
+          <button type="submit" class="btn">Check Status</button>
+        </form>
+
+        <div class="tracker-results" id="tripStatusResult" aria-live="polite">
+          <div class="empty-state-card">
+            <h3>No lookup yet</h3>
+            <p>Your matching booking requests will appear here.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <a
+      href="https://wa.me/918179721034?text=Hi%2C%20I%20want%20to%20check%20my%20Travel%20with%20Giridhar%20booking%20status."
+      class="whatsapp-float"
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Check booking status on WhatsApp"
+    >
+      <i class="fab fa-whatsapp"></i>
+      <span>WhatsApp</span>
+    </a>
+
+    <footer class="footer">
+      <div class="footer-container">
+        <div>
+          <h3>Travel with Giridhar</h3>
+          <p>&copy; 2026 Travel with Giridhar. All rights reserved.</p>
+          <p>Developed by Giridhar Reddy</p>
+        </div>
+        <div class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="packages.html">Packages</a>
+          <a href="track-trip.html">Track Trip</a>
+          <a href="contact.html">Contact</a>
+          <a
+            href="https://github.com/Giridhar113/Travel-with-Giridhar"
+            target="_blank"
+            rel="noreferrer"
+            >GitHub</a
+          >
+          <a
+            href="https://giridhar-portfolio-ten.vercel.app/"
+            target="_blank"
+            rel="noreferrer"
+            >Portfolio</a
+          >
+        </div>
+      </div>
+    </footer>
+    <script defer src="site-config.js"></script>
+    <script defer src="data.js"></script>
+    <script defer src="v13.js"></script>
+  </body>
+</html>

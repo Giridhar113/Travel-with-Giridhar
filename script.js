@@ -1958,6 +1958,48 @@ function handleBookingWhatsAppSubmission(submissionData, templateParams) {
   });
 }
 
+function saveBookingConfirmation(submissionData, templateParams, submissionResult) {
+  const confirmation = {
+    bookingId: (submissionData && submissionData.bookingId) || (submissionResult && submissionResult.bookingId) || "",
+    destination: templateParams.destination || "",
+    packageName: templateParams.package_name || "",
+    name: templateParams.from_name || "",
+    email: templateParams.from_email || "",
+    phone: templateParams.phone || "",
+    travelDate: templateParams.travel_date || "",
+    travelers: templateParams.travelers || "",
+    whatsappUrl: (submissionResult && submissionResult.whatsappUrl) || (submissionData && submissionData.whatsappUrl) || "",
+    status: "new",
+    savedAt: new Date().toISOString(),
+  };
+
+  try {
+    sessionStorage.setItem("travelLastBookingConfirmation", JSON.stringify(confirmation));
+  } catch (error) {
+    console.warn("Booking confirmation could not be saved in this tab.", error);
+  }
+
+  return confirmation;
+}
+
+function buildThankYouUrl(confirmation) {
+  const params = new URLSearchParams();
+
+  if (confirmation.bookingId) {
+    params.set("bookingId", confirmation.bookingId);
+  }
+
+  if (confirmation.destination) {
+    params.set("destination", confirmation.destination);
+  }
+
+  if (confirmation.packageName) {
+    params.set("package", confirmation.packageName);
+  }
+
+  return `thank-you.html${params.toString() ? `?${params.toString()}` : ""}`;
+}
+
 function sendFeedbackDemoForm(form) {
   return new Promise(function (resolve) {
     window.setTimeout(function () {
@@ -2202,7 +2244,12 @@ function attachTravelFormSubmit(form, buildParams, successMessage, formLabel) {
         if (isBookingApiForm(form)) {
           return sendBookingApi(templateParams).then(function (data) {
             return handleBookingWhatsAppSubmission(data, templateParams).then(function (result) {
-              submissionResult = result;
+              submissionResult = {
+                ...result,
+                bookingId: data.bookingId,
+                booking: data.booking,
+                redirectToThankYou: true,
+              };
               return data;
             });
           });
@@ -2212,6 +2259,16 @@ function attachTravelFormSubmit(form, buildParams, successMessage, formLabel) {
       })
       .then(function () {
         if (submissionResult && submissionResult.whatsappFallback) {
+          let confirmation = null;
+
+          if (submissionResult.redirectToThankYou) {
+            confirmation = saveBookingConfirmation(
+              { bookingId: submissionResult.bookingId, booking: submissionResult.booking },
+              templateParams,
+              submissionResult
+            );
+          }
+
           showToast(
             submissionResult.popupBlocked
               ? "Booking saved in admin. Open WhatsApp to send the final message."
@@ -2226,6 +2283,13 @@ function attachTravelFormSubmit(form, buildParams, successMessage, formLabel) {
           clearTravelFormErrors(form);
           setupBookingPrefill();
           initInlineFormValidation(form);
+
+          if (confirmation) {
+            window.setTimeout(function () {
+              window.location.href = buildThankYouUrl(confirmation);
+            }, 1000);
+          }
+
           return;
         }
 

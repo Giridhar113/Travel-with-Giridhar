@@ -8,6 +8,13 @@
   const quoteText =
     siteConfig.whatsappMessage || "Hi, I want to plan a trip with Travel with Giridhar.";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(quoteText)}`;
+  const apiBaseUrl = String(
+    siteConfig.apiBaseUrl ||
+      (window.location.protocol === "file:" ||
+      ["localhost", "127.0.0.1"].includes(window.location.hostname)
+        ? "http://localhost:5000"
+        : window.location.origin)
+  ).replace(/\/$/, "");
 
   const travelData = window.TRAVEL_DATA || {};
   const basePackages = Array.isArray(travelData.basePackages) ? travelData.basePackages : [];
@@ -29,6 +36,36 @@
       return formatRupees(value);
     }
     return `Rs. ${Number(value || 0).toLocaleString("en-IN")}`;
+  }
+
+  function travelApiUrl(path) {
+    return `${apiBaseUrl}${path}`;
+  }
+
+  function formatLocalDate(value) {
+    if (!value) {
+      return "Not set";
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return String(value);
+    }
+
+    return new Intl.DateTimeFormat("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }).format(date);
+  }
+
+  function statusLabel(value) {
+    return String(value || "new")
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, function (letter) {
+        return letter.toUpperCase();
+      });
   }
 
   function slug(value) {
@@ -2150,6 +2187,7 @@
     const boxes = Array.from(document.querySelectorAll("[data-checklist-item]"));
     const progressText = document.getElementById("checklistProgressText");
     const progressBar = document.getElementById("checklistProgressBar");
+    const downloadButton = document.getElementById("downloadChecklistPdf");
     const key = "travelChecklistV14";
 
     if (!boxes.length) return;
@@ -2194,6 +2232,47 @@
       box.checked = Boolean(saved[box.dataset.checklistItem]);
       box.addEventListener("change", update);
     });
+
+    if (downloadButton && !downloadButton.dataset.ready) {
+      downloadButton.dataset.ready = "true";
+      downloadButton.addEventListener("click", function () {
+        const checklistRows = boxes.map(function (box) {
+          const label = box.closest("label");
+          const text = label ? label.textContent.trim() : box.dataset.checklistItem;
+          return `<li>${box.checked ? "✓" : "□"} ${escapeHtml(text)}</li>`;
+        }).join("");
+        const printWindow = window.open("", "_blank");
+
+        if (!printWindow) {
+          toast("Allow popups to print or save the checklist as PDF.", "error");
+          return;
+        }
+
+        printWindow.document.write(`
+          <!doctype html>
+          <html>
+            <head>
+              <title>Travel Checklist - Travel with Giridhar</title>
+              <style>
+                body { font-family: Arial, sans-serif; color: #111827; padding: 32px; }
+                h1 { margin-bottom: 8px; }
+                p { color: #4b5563; }
+                li { margin: 12px 0; font-size: 16px; }
+              </style>
+            </head>
+            <body>
+              <h1>Travel Checklist</h1>
+              <p>Prepared from Travel with Giridhar. Use Print > Save as PDF to keep a copy.</p>
+              <ul>${checklistRows}</ul>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+      });
+    }
+
     update();
   }
 
@@ -2571,6 +2650,24 @@
     });
   }
 
+  function ensureTrackFooterLink() {
+    document.querySelectorAll(".footer-links").forEach(function (links) {
+      if (links.querySelector('a[href="track-trip.html"]')) return;
+      const tracker = document.createElement("a");
+      tracker.href = "track-trip.html";
+      tracker.textContent = "Track Trip";
+      const contact = links.querySelector('a[href="contact.html"]');
+
+      if (contact && contact.nextSibling) {
+        links.insertBefore(tracker, contact.nextSibling);
+      } else if (contact) {
+        links.appendChild(tracker);
+      } else {
+        links.appendChild(tracker);
+      }
+    });
+  }
+
   function initMotionEnhancements() {
     const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const selector = [
@@ -2883,8 +2980,191 @@
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     }, 80);
   }
+
+  function getStoredBookingConfirmation() {
+    try {
+      return JSON.parse(sessionStorage.getItem("travelLastBookingConfirmation") || "{}");
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function initThankYouPage() {
+    const root = document.getElementById("thankYouRoot");
+
+    if (!root || root.dataset.ready) {
+      return;
+    }
+
+    root.dataset.ready = "true";
+
+    const params = new URLSearchParams(window.location.search);
+    const stored = getStoredBookingConfirmation();
+    const bookingId = params.get("bookingId") || stored.bookingId || "";
+    const destination = params.get("destination") || stored.destination || "Your selected destination";
+    const packageName = params.get("package") || stored.packageName || "Custom travel request";
+    const travelDate = stored.travelDate || "";
+    const travelers = stored.travelers || "";
+    const trackHref = "track-trip.html";
+    const message = [
+      "Hi Travel with Giridhar, I completed the website booking request.",
+      bookingId ? `Booking ID: ${bookingId}` : "",
+      `Package: ${packageName}`,
+      `Destination: ${destination}`,
+      travelDate ? `Travel date: ${travelDate}` : "",
+      travelers ? `Travelers: ${travelers}` : "",
+      "Please confirm availability and next steps.",
+    ].filter(Boolean).join("\n");
+    const thankYouWhatsApp = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
+    root.innerHTML = `
+      <section class="section confirmation-hero">
+        <div class="confirmation-card">
+          <span class="confirmation-icon" aria-hidden="true"><i class="fas fa-check"></i></span>
+          <p class="hero-kicker">Booking Request Saved</p>
+          <h1>Thank you, ${escapeHtml(stored.name || "traveler")}</h1>
+          <p>
+            Your trip request is now in the booking desk. Send the WhatsApp
+            message to continue the conversation and check your status anytime.
+          </p>
+          <div class="confirmation-summary">
+            <div><span>Booking ID</span><strong>${escapeHtml(bookingId || "Generated in admin")}</strong></div>
+            <div><span>Package</span><strong>${escapeHtml(packageName)}</strong></div>
+            <div><span>Destination</span><strong>${escapeHtml(destination)}</strong></div>
+            <div><span>Current status</span><strong class="status-pill status-new">New</strong></div>
+          </div>
+          <div class="confirmation-actions">
+            <a class="btn" href="${thankYouWhatsApp}" target="_blank" rel="noreferrer">Continue on WhatsApp</a>
+            <a class="btn btn-outline" href="${trackHref}">Track Trip Status</a>
+            <a class="btn btn-outline" href="packages.html">Compare More Packages</a>
+          </div>
+        </div>
+      </section>
+      <section class="section flow-section">
+        <p class="hero-kicker">What happens next</p>
+        <h2>Website form to confirmed booking</h2>
+        <div class="flow-grid">
+          <article><span>1</span><h3>Request saved</h3><p>The form creates a SQL booking record for the admin dashboard.</p></article>
+          <article><span>2</span><h3>Admin reviews</h3><p>The travel desk checks destination, budget, package, and date.</p></article>
+          <article><span>3</span><h3>Status updates</h3><p>When the admin changes status, the customer can receive an email notification.</p></article>
+          <article><span>4</span><h3>WhatsApp confirm</h3><p>The final itinerary and next steps are confirmed in WhatsApp.</p></article>
+        </div>
+      </section>
+    `;
+  }
+
+  function renderTrackedBookings(target, items) {
+    if (!items.length) {
+      target.innerHTML = `
+        <div class="empty-state-card">
+          <h3>No trips found</h3>
+          <p>Check the email and phone number used in the booking form, or message us on WhatsApp.</p>
+          <a class="btn btn-outline btn-small" href="${whatsappUrl}" target="_blank" rel="noreferrer">Open WhatsApp</a>
+        </div>
+      `;
+      return;
+    }
+
+    target.innerHTML = items.map(function (booking) {
+      return `
+        <article class="tracked-trip-card">
+          <div>
+            <p class="hero-kicker">Booking ${escapeHtml(booking.bookingId || booking.id)}</p>
+            <h3>${escapeHtml(booking.package)}</h3>
+            <p>${escapeHtml(booking.destination)} - ${escapeHtml(formatLocalDate(booking.travelDate))}</p>
+          </div>
+          <div class="tracked-trip-meta">
+            <span class="status-pill status-${escapeHtml(booking.status)}">${escapeHtml(statusLabel(booking.status))}</span>
+            <span>${escapeHtml(booking.travelers)} travelers</span>
+            <span>Updated ${escapeHtml(formatLocalDate(booking.updatedAt || booking.createdAt))}</span>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  function initTripStatusPage() {
+    const form = document.getElementById("tripStatusForm");
+    const result = document.getElementById("tripStatusResult");
+
+    if (!form || !result || form.dataset.ready) {
+      return;
+    }
+
+    form.dataset.ready = "true";
+
+    const stored = getStoredBookingConfirmation();
+
+    if (stored.email && form.elements.email) {
+      form.elements.email.value = stored.email;
+    }
+
+    if (stored.phone && form.elements.phone) {
+      form.elements.phone.value = stored.phone;
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      const email = form.elements.email.value.trim();
+      const phone = form.elements.phone.value.trim();
+      const button = form.querySelector('button[type="submit"]');
+
+      if (!email || !phone) {
+        result.innerHTML = '<div class="empty-state-card"><h3>Enter email and phone</h3><p>Both fields are required to protect booking privacy.</p></div>';
+        return;
+      }
+
+      if (button) {
+        button.disabled = true;
+        button.textContent = "Checking...";
+      }
+
+      result.innerHTML = '<div class="empty-state-card"><h3>Checking booking desk...</h3><p>Please wait while we find your trip status.</p></div>';
+
+      fetch(travelApiUrl("/api/bookings/lookup"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ email, phone }),
+      })
+        .then(function (response) {
+          return response.json().catch(function () {
+            return {};
+          }).then(function (data) {
+            if (!response.ok) {
+              throw new Error(data.error || "Could not check trip status.");
+            }
+
+            return data;
+          });
+        })
+        .then(function (data) {
+          renderTrackedBookings(result, Array.isArray(data.bookings) ? data.bookings : []);
+        })
+        .catch(function (error) {
+          result.innerHTML = `
+            <div class="empty-state-card">
+              <h3>Status check unavailable</h3>
+              <p>${escapeHtml(error.message || "Please use WhatsApp and share your booking details.")}</p>
+              <a class="btn btn-outline btn-small" href="${whatsappUrl}" target="_blank" rel="noreferrer">Open WhatsApp</a>
+            </div>
+          `;
+        })
+        .finally(function () {
+          if (button) {
+            button.disabled = false;
+            button.textContent = "Check Status";
+          }
+        });
+    });
+  }
+
   function initV13() {
     keepHomeAtHeroOnFreshLoad();
+    initThankYouPage();
+    initTripStatusPage();
     renderTripDetailsPage();
     initOffersPage();
     ensureWishlistNav();
@@ -2912,6 +3192,7 @@
     initDestinationComparison();
     updateFooterVersion();
     ensureOffersFooterLink();
+    ensureTrackFooterLink();
     initNewsletterSignup();
     initRouteMapPlanner();
     initFlexibleResultRows();
